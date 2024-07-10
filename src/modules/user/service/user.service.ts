@@ -1,4 +1,4 @@
-import UserModel, { IUser, UserInput } from "../model/user.model";
+import UserModel, { UserInput } from "../model/user.model";
 
 export async function createUser(input: UserInput){
     try {

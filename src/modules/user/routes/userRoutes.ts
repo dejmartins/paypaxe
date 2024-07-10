@@ -1,4 +1,4 @@
-import { Express, Request, Response, Router } from "express";
+import { Router } from "express";
 import { createUserHandler } from "../controller/user.controller";
 import validate from "../../../shared/middlewares/validateResource";
 import { createUserSchema } from "../schema/user.schema";

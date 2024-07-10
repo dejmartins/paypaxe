@@ -10,6 +10,12 @@ export interface IAccount extends Document {
     updatedAt: Date;
 }
 
+export interface AccountInput {
+    userId: string;
+    accountType: string;
+    subscriptionPlan: string;
+}
+
 const accountSchema = new Schema<IAccount>(
     {
         user: {
@@ -28,8 +34,7 @@ const accountSchema = new Schema<IAccount>(
             enum: ['basic', 'premium']
         },
         trialEndDate: {
-            type: Date,
-            required: true
+            type: Date
         }
     }, 
     { 
