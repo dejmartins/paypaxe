@@ -1,6 +1,4 @@
-import UserModel, { IUser } from "../model/user.model";
-
-type UserInput = Omit<IUser, 'createdAt' | 'updatedAt' | 'comparePassword'>;
+import UserModel, { IUser, UserInput } from "../model/user.model";
 
 export async function createUser(input: UserInput){
     try {

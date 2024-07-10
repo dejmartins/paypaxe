@@ -1,14 +1,20 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, Model } from 'mongoose';
 import bcrypt from 'bcrypt';
-import config from "../../../../config/default";
+import config from '../../../../config/default';
 
-export interface IUser {
-    email: string,
-    name: string,
-    password: string,
-    createdAt: Date,
-    updatedAt: Date,
-    comparePassword(password: string): Promise<boolean> 
+export interface IUser extends Document {
+    email: string;
+    name: string;
+    password: string;
+    createdAt: Date;
+    updatedAt: Date;
+    comparePassword(password: string): Promise<boolean>;
+}
+
+export interface UserInput {
+    email: string;
+    name: string;
+    password: string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -30,30 +36,25 @@ const userSchema = new Schema<IUser>(
     { 
         timestamps: true
     }
-)
+);
 
-userSchema.pre("save", async function(next: (err?: Error) => void){
-    let user = this as IUser;
-
-    if(!this.isModified('password')){
+userSchema.pre<IUser>('save', async function(next) {
+    if (!this.isModified('password')) {
         return next();
     }
 
     const salt = await bcrypt.genSalt(config.saltWorkFactor);
+    const hash = await bcrypt.hash(this.password, salt);
 
-    const hash = bcrypt.hashSync(user.password, salt);
+    this.password = hash;
 
-    user.password = hash;
+    next();
+});
 
-    return next();
-})
+userSchema.methods.comparePassword = async function(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password).catch(() => false);
+};
 
-userSchema.methods.comparePassword = async function(password: string): Promise<boolean>{
-    const user = this as IUser;
-    return bcrypt.compare(password, user.password).catch((err) => false)
-}
-
-const UserModel = mongoose.model("User", userSchema);
+const UserModel: Model<IUser> = mongoose.model<IUser>('User', userSchema);
 
 export default UserModel;
-
