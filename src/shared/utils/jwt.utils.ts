@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import config from '../../../config/default'
-import { error } from 'console';
+import { IUser } from '../../modules/user/model/user.model';
 
 const privateKey = config.privateKey;
 const publicKey = config.publicKey;
@@ -29,4 +29,9 @@ export function verifyJwt(token: string){
             decoded: null
         }
     }
+}
+
+export function generateVerificationToken(user: IUser){
+    const payload = { userId: user._id, email: user.email };
+    return signJwt(payload, { expiresIn: config.verificationTokenTtl })
 }

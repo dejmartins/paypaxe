@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import { loadVariables } from 'apitoolz';
-// import { values } from 'lodash';
 
 dotenv.config();
 
@@ -61,6 +60,12 @@ const constants = loadVariables(
             parser: (value: string) => (currentDeployment.isDev ? '1y' : value)
         },
 
+        VERIFICATION_TOKEN_TTL: {
+            required: !currentDeployment.isTest,
+            default: '20m',
+            parser: (value: string) => (currentDeployment.isDev ? '1h' : value)
+        },
+
         PP_API_KEY: {
             required: !currentDeployment.isTest,
             default: ""
@@ -74,7 +79,22 @@ const constants = loadVariables(
         PP_SK: {
             required: !currentDeployment.isTest,
             default: ""
-        }
+        },
+
+        EMAIL_USER: {
+            required: !currentDeployment.isTest,
+            default: ""
+        },
+
+        EMAIL_PASS: {
+            required: !currentDeployment.isTest,
+            default: ""
+        },
+
+        CLIENT_URL: {
+            required: !currentDeployment.isTest,
+            default: ""
+        },
     }
 )
 
@@ -88,9 +108,14 @@ export const config = {
     privateKey: constants.PRIVATE_KEY,
     accessTokenTtl: constants.ACCESS_TOKEN_TTL,
     refreshTokenTtl: constants.REFRESH_TOKEN_TTL,
+    verificationTokenTtl: constants.VERIFICATION_TOKEN_TTL,
     payPaxeApiKey: constants.PP_API_KEY,
     payPaxeSecretKey: constants.PP_SK,
-    payPaxePrivateKey: constants.PP_PK
+    payPaxePrivateKey: constants.PP_PK,
+    emailUser: constants.EMAIL_USER,
+    emailPass: constants.EMAIL_PASS,
+    clientUrl: constants.CLIENT_URL
 }
 
 export default config;
+
