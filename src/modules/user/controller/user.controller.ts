@@ -3,6 +3,8 @@ import log from "../../../shared/utils/logger";
 import { createUser } from "../service/user.service";
 import { CreateUserInput } from "../schema/user.schema";
 import { omit } from "lodash";
+import { verifyJwt } from "../../../shared/utils/jwt.utils";
+import UserModel, { IUser } from "../model/user.model";
 
 export async function createUserHandler(req: Request<{}, {}, CreateUserInput['body']>, res: Response){
     try{
@@ -11,5 +13,36 @@ export async function createUserHandler(req: Request<{}, {}, CreateUserInput['bo
     }catch(e: any){
         log.error(e)
         return res.status(409).send(e.message)
+    }
+}
+
+export async function verifyEmail(req: Request, res: Response) {
+    const token = req.query.token as string;
+
+    if (!token) {
+        return res.status(400).send('Verification token is required');
+    }
+
+    try {
+        const { decoded } = verifyJwt(token);
+
+        if (!decoded || typeof decoded === 'string') {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        const user = decoded as IUser;
+
+        if (user.verified) {
+            return res.status(400).send('User is already verified');
+        }
+
+        user.verified = true;
+
+        await UserModel.findByIdAndUpdate(user._id, { verified: true });
+
+        return res.send('Email verified successfully');
+
+    } catch (error: any) {
+        return res.status(400).send('Invalid or expired token');
     }
 }

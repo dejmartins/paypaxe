@@ -40,11 +40,13 @@ export async function sendVerificationEmail(email: string, token: string){
         }
     });
 
+    const verificationUrl = `${config.clientUrl}/verify-email?token=${token}`;
+
     const mailOptions = {
         from: config.emailUser,
         to: email,
         subject: 'Verify your email',
-        text: `Please verify your email by clicking the following link: ${config.clientUrl}/verify-email?token=${token}`,
+        html: `Please click on the following link to verify your email: <a href="${verificationUrl}">Verify Email</a>`
     }
 
     await transporter.sendMail(mailOptions);
