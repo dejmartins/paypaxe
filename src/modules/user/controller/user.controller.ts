@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import log from "../../../shared/utils/logger";
-import { createUser } from "../service/user.service";
+import { createUser, sendVerificationEmail } from "../service/user.service";
 import { CreateUserInput } from "../schema/user.schema";
 import { omit } from "lodash";
-import { verifyJwt } from "../../../shared/utils/jwt.utils";
+import { generateVerificationToken, verifyJwt } from "../../../shared/utils/jwt.utils";
 import UserModel, { IUser } from "../model/user.model";
 
 export async function createUserHandler(req: Request<{}, {}, CreateUserInput['body']>, res: Response){
@@ -45,4 +45,27 @@ export async function verifyEmail(req: Request, res: Response) {
     } catch (error: any) {
         return res.status(400).send('Invalid or expired token');
     }
+}
+
+export async function resendVerificationEmail(req: Request, res: Response) {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).send('Email is required');
+    }
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+        return res.status(404).send('User not found');
+    }
+
+    if (user.verified) {
+        return res.status(400).send('User is already verified');
+    }
+
+    const token = generateVerificationToken(user);
+    await sendVerificationEmail(user.email, token);
+
+    return res.send('Verification email sent');
 }
