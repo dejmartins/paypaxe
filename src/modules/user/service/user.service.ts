@@ -8,7 +8,7 @@ export async function createUser(input: UserInput){
     try {
         const user = await UserModel.create(input)
         const token = generateVerificationToken({
-            _id: user._id,
+            _id: user._id as string,
             email: user.email,
             name: user.name,
             verified: user.verified
@@ -61,7 +61,7 @@ export async function resendVerificationEmail(email: string){
         }
 
         const token = generateVerificationToken({
-            _id: user._id,
+            _id: user._id as string,
             email: user.email,
             name: user.name,
             verified: user.verified
