@@ -35,3 +35,8 @@ export function generateVerificationToken(user: IUser){
     const payload = { userId: user._id, email: user.email };
     return signJwt(payload, { expiresIn: config.verificationTokenTtl })
 }
+
+export function generatePasswordResetToken(user: IUser){
+    const payload = { userId: user._id, email: user.email };
+    return signJwt(payload, { expiresIn: '15m' })
+}

@@ -5,7 +5,7 @@ import config from '../../../../config/default';
 export interface IUser extends Document {
     email: string;
     name: string;
-    password: string;
+    password?: string;
     verified: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -31,7 +31,6 @@ const userSchema = new Schema<IUser>(
         },
         password: {
             type: String,
-            required: true
         },
         verified: {
             type: Boolean,
@@ -49,9 +48,12 @@ userSchema.pre<IUser>('save', async function(next) {
     }
 
     const salt = await bcrypt.genSalt(config.saltWorkFactor);
-    const hash = await bcrypt.hash(this.password, salt);
+    
+    if(this.password){
+        const hash = await bcrypt.hash(this.password, salt);
+        this.password = hash;
+    }
 
-    this.password = hash;
 
     next();
 });

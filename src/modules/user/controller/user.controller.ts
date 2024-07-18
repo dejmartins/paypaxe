@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import log from "../../../shared/utils/logger";
-import { createUser, sendVerificationEmail } from "../service/user.service";
+import { createUser, requestPasswordReset } from "../service/user.service";
 import { CreateUserInput } from "../schema/user.schema";
 import { omit } from "lodash";
 import { generateVerificationToken, verifyJwt } from "../../../shared/utils/jwt.utils";
 import UserModel, { IUser } from "../model/user.model";
+import { sendVerificationEmail } from "../../email/services/email.service";
 
 export async function createUserHandler(req: Request<{}, {}, CreateUserInput['body']>, res: Response){
     try{
@@ -68,4 +69,47 @@ export async function resendVerificationEmail(req: Request, res: Response) {
     await sendVerificationEmail(user.email, token);
 
     return res.send('Verification email sent');
+}
+
+export async function requestPasswordResetHandler(req: Request, res: Response) {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).send('Email is required');
+    }
+
+    requestPasswordReset(email);
+
+    return res.send('Password reset email sent');
+}
+
+export async function resetPassword(req: Request, res: Response) {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        return res.status(400).send('Token and new password are required');
+    }
+
+    const { decoded, expired } = verifyJwt(token);
+
+    if (expired) {
+        return res.status(400).send('Token expired');
+    }
+
+    if (!decoded) {
+        return res.status(400).send('Invalid token');
+    }
+
+    // @ts-ignore
+    const user = await UserModel.findById(decoded.userId);
+
+    if (!user) {
+        return res.status(404).send('User not found');
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+
+    return res.send('Password reset successfully');
 }

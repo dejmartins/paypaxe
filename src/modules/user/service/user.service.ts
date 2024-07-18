@@ -1,8 +1,7 @@
 import { omit } from "lodash";
-import UserModel, { IUser, UserInput } from "../model/user.model";
-import nodemailer from 'nodemailer'
-import config from "../../../../config/default";
-import { generateVerificationToken } from "../../../shared/utils/jwt.utils";
+import UserModel, { UserInput } from "../model/user.model";
+import { generatePasswordResetToken, generateVerificationToken } from "../../../shared/utils/jwt.utils";
+import { sendPasswordResetEmail, sendVerificationEmail } from "../../email/services/email.service";
 
 export async function createUser(input: UserInput){
     try {
@@ -31,23 +30,13 @@ export async function validatePassword({email, password}: {email: string, passwo
     return omit(user.toJSON(), "password");
 }
 
-export async function sendVerificationEmail(email: string, token: string){
-    const transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: config.emailUser,
-            pass: config.emailPass
-        }
-    });
+export async function requestPasswordReset(email: string) {
+    const user = await UserModel.findOne({ email });
 
-    const verificationUrl = `${config.clientUrl}/verify-email?token=${token}`;
-
-    const mailOptions = {
-        from: config.emailUser,
-        to: email,
-        subject: 'Verify your email',
-        html: `Please click on the following link to verify your email: <a href="${verificationUrl}">Verify Email</a>`
+    if (!user) {
+        throw new Error('User not found');
     }
 
-    await transporter.sendMail(mailOptions);
+    const token = generatePasswordResetToken(user);
+    await sendPasswordResetEmail(user.email, token);
 }

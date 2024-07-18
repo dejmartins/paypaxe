@@ -95,6 +95,16 @@ const constants = loadVariables(
             required: !currentDeployment.isTest,
             default: ""
         },
+
+        GOOGLE_CLIENT_SECRET: {
+            required: !currentDeployment.isTest,
+            default: ""
+        },
+
+        GOOGLE_CLIENT_ID: {
+            required: !currentDeployment.isTest,
+            default: ""
+        },
     }
 )
 
@@ -114,7 +124,9 @@ export const config = {
     payPaxePrivateKey: constants.PP_PK,
     emailUser: constants.EMAIL_USER,
     emailPass: constants.EMAIL_PASS,
-    clientUrl: constants.CLIENT_URL
+    clientUrl: constants.CLIENT_URL,
+    googleClientID: constants.GOOGLE_CLIENT_ID,
+    googleClientSecret: constants.GOOGLE_CLIENT_SECRET
 }
 
 export default config;
