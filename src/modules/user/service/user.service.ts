@@ -1,6 +1,6 @@
 import { omit } from "lodash";
 import UserModel, { IUser } from "../model/user.model";
-import { UserInput } from "../types/userTypes";
+import { PasswordTokenInput, UserInput } from "../types/userTypes";
 import { generatePasswordResetToken, generateVerificationToken, verifyJwt } from "../../../shared/utils/jwt.utils";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../../email/services/email.service";
 
@@ -96,7 +96,7 @@ export async function requestPasswordReset(email: string) {
         throw new Error('User not found');
     }
 
-    const token = generatePasswordResetToken(user);
+    const token = generatePasswordResetToken({ _id: user._id as string });
     await sendPasswordResetEmail(user.email, token);
 }
 
@@ -111,7 +111,12 @@ export async function resetPassword(token: string, password: string) {
         throw new Error('Invalid token');
     }
 
-    const user = decoded as IUser;
+    const userId = (decoded as any)._id;
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+        throw new Error('User not found');
+    }
 
     user.password = password;
 

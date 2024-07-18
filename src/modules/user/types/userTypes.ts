@@ -9,9 +9,13 @@ export type ResetPasswordInput = {
     password: string | undefined;
 }
 
-export type VerifyTokenInput = {
+export type VerificationTokenInput = {
     _id: string,
     name: string,
     verified: boolean
     email: string;
+}
+
+export type PasswordTokenInput = {
+    _id: string,
 }

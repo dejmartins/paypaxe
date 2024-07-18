@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken'
 import config from '../../../config/default'
-import { IUser } from '../../modules/user/model/user.model';
-import { VerifyTokenInput } from '../../modules/user/types/userTypes';
+import { PasswordTokenInput, VerificationTokenInput } from '../../modules/user/types/userTypes';
 
 const privateKey = config.privateKey;
 const publicKey = config.publicKey;
@@ -32,12 +31,12 @@ export function verifyJwt(token: string){
     }
 }
 
-export function generateVerificationToken(user: VerifyTokenInput){
+export function generateVerificationToken(user: VerificationTokenInput){
     const payload = { ...user };
     return signJwt(payload, { expiresIn: config.verificationTokenTtl })
 }
 
-export function generatePasswordResetToken(user: IUser){
-    const payload = { ...user, email: user.email };
+export function generatePasswordResetToken(user: PasswordTokenInput){
+    const payload = { ...user };
     return signJwt(payload, { expiresIn: '15m' })
 }

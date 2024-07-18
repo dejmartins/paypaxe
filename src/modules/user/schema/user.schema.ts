@@ -40,9 +40,9 @@ export const requestResetPasswordSchema = object({
 
 export const resetPasswordSchema = object({
     body: object({
-        email: string({
-            required_error: "Email is required"
-        }).email("Not a valid email address"),
+        newPassword: string({
+            required_error: "Password is required"
+        }).min(8, "Password too short"),
         token: string({
             required_error: "Verification token is required"
         })
