@@ -12,12 +12,6 @@ export interface IUser extends Document {
     comparePassword(password: string): Promise<boolean>;
 }
 
-export interface UserInput {
-    email: string;
-    name: string;
-    password: string;
-}
-
 const userSchema = new Schema<IUser>(
     {
         email: { 

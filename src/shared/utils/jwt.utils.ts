@@ -31,12 +31,12 @@ export function verifyJwt(token: string){
     }
 }
 
-export function generateVerificationToken(user: IUser){
-    const payload = { userId: user._id, email: user.email };
+export function generateVerificationToken(user: Object){
+    const payload = { ...user };
     return signJwt(payload, { expiresIn: config.verificationTokenTtl })
 }
 
 export function generatePasswordResetToken(user: IUser){
-    const payload = { userId: user._id, email: user.email };
+    const payload = { ...user, email: user.email };
     return signJwt(payload, { expiresIn: '15m' })
 }

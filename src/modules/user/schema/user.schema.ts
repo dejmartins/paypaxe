@@ -14,4 +14,39 @@ export const createUserSchema = object({
     })
 })
 
+export const verifyEmailSchema = object({
+    query: object({
+        token: string({
+            required_error: "Verification token is required"
+        })
+    })
+})
+
+export const resendVerificationEmailSchema = object({
+    body: object({
+        email: string({
+            required_error: "Email is required"
+        }).email("Not a valid email address")
+    })
+})
+
+export const requestResetPasswordSchema = object({
+    body: object({
+        email: string({
+            required_error: "Email is required"
+        }).email("Not a valid email address")
+    })
+})
+
+export const resetPasswordSchema = object({
+    body: object({
+        email: string({
+            required_error: "Email is required"
+        }).email("Not a valid email address"),
+        token: string({
+            required_error: "Verification token is required"
+        })
+    })
+})
+
 export type CreateUserInput = TypeOf<typeof createUserSchema>;
