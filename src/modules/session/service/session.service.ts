@@ -1,19 +1,27 @@
 import { FilterQuery, UpdateQuery } from "mongoose";
 import SessionModel, { ISession } from "../model/session.model";
+import { AppError } from "../../../shared/utils/customErrors";
 
 export async function createSession(userId: string, userAgent: string){
-    const session = await SessionModel.create({user: userId, userAgent});
-
-    return session.toJSON();
+    try {
+        const session = await SessionModel.create({user: userId, userAgent});
+        return session.toJSON();
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode, true);
+    }
 }
 
 export async function findSessions(query: FilterQuery<ISession>) {
-    return SessionModel.find(query).lean();
+    try {
+        return SessionModel.find(query).lean();
+    } catch (e: any){
+        throw new AppError(e.message, e.statusCode, true);
+    }   
 }
 
-export async function updateSession(query: FilterQuery<ISession>, update: UpdateQuery<ISession>){
-    return SessionModel.updateOne(query, update);
-}
+// export async function updateSession(query: FilterQuery<ISession>, update: UpdateQuery<ISession>){
+//     return SessionModel.updateOne(query, update);
+// }
 
 // export async function reIssueAccessToken({refreshToken}: {refreshToken: string}){
 //     const { decoded } = verifyJwt(refreshToken);

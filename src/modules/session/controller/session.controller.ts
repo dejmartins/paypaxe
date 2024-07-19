@@ -3,13 +3,11 @@ import { validatePassword } from "../../user/service/user.service";
 import { createSession, findSessions } from "../service/session.service";
 import { signJwt } from "../../../shared/utils/jwt.utils";
 import config from "../../../../config/default";
+import asyncHandler from "../../../shared/utils/asyncHandler";
+import { successResponse } from "../../../shared/utils/response";
 
-export async function createUserSessionHandler(req: Request, res: Response){
+export const createUserSessionHandler =  asyncHandler(async (req: Request, res: Response) => {
     const user = await validatePassword(req.body);
-
-    if(!user) {
-        return res.status(401).send("Invalid email or password");
-    }
 
     // @ts-ignore
     const session = await createSession(user._id, req.get("user-agent") || "");
@@ -34,13 +32,11 @@ export async function createUserSessionHandler(req: Request, res: Response){
         }
     );
 
-    return res.send({ accessToken, refreshToken })
-}
+    return res.send(successResponse({ accessToken, refreshToken }, "Session created successfully"))
+})
 
-export async function getUserSessionsHandler(req: Request, res: Response){
+export const getUserSessionsHandler = asyncHandler(async (req: Request, res: Response) => {
     const userId = res.locals.user._id;
-
     const sessions = await findSessions({user: userId, valid: true});
-
-    return res.send(sessions);
-}
+    return res.send(successResponse(sessions));
+})

@@ -17,7 +17,7 @@ export async function createUser(input: UserInput): Promise<IUser> {
         await sendVerificationEmail(user.email, token);
         return user;
     } catch (e: any) {
-        throw new AppError(e.message, 409, false, e.stack);
+        throw new AppError(e.message, e.statusCode, true, e.stack);
     }
 }
 
@@ -25,12 +25,8 @@ export async function verifyEmail(token: string): Promise<void> {
     try {
         const { decoded, expired } = verifyJwt(token);
 
-        if (expired) {
+        if (expired || !decoded) {
             throw new AppError('Invalid or expired token', 400);
-        }
-
-        if (!decoded) {
-            throw new AppError('Invalid token', 400);
         }
 
         const user = decoded as IUser;
@@ -41,7 +37,7 @@ export async function verifyEmail(token: string): Promise<void> {
 
         await UserModel.findByIdAndUpdate(user._id, { verified: true });
     } catch (e: any) {
-        throw new AppError(e.message, 409, false, e.stack);
+        throw new AppError(e.message, e.statusCode, true, e.stack);
     }
 }
 
@@ -65,7 +61,7 @@ export async function resendVerificationEmail(email: string): Promise<void> {
         });
         await sendVerificationEmail(user.email, token);
     } catch (e: any) {
-        throw new AppError(e.message, 409, false, e.stack);
+        throw new AppError(e.message, e.statusCode, true, e.stack);
     }
 }
 
@@ -85,7 +81,7 @@ export async function validatePassword({ email, password }: { email: string, pas
 
         return omit(user.toJSON(), "password");
     } catch (e: any) {
-        throw new AppError(e.message, 409, false, e.stack);
+        throw new AppError(e.message, e.statusCode, true, e.stack);
     }
 }
 
@@ -100,7 +96,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
         const token = generatePasswordResetToken({ _id: user._id as string });
         await sendPasswordResetEmail(user.email, token);
     } catch (e: any) {
-        throw new AppError(e.message, 409, false, e.stack);
+        throw new AppError(e.message, e.statusCode, true, e.stack);
     }
 }
 
@@ -127,6 +123,6 @@ export async function resetPassword(token: string, password: string): Promise<vo
 
         await user.save();
     } catch (e: any) {
-        throw new AppError(e.message, 409, false, e.stack);
+        throw new AppError(e.message, e.statusCode, true, e.stack);
     }
 }
