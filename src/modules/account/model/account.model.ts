@@ -10,12 +10,6 @@ export interface IAccount extends Document {
     updatedAt: Date;
 }
 
-export interface AccountInput {
-    userId: string;
-    accountType: string;
-    subscriptionPlan: string;
-}
-
 const accountSchema = new Schema<IAccount>(
     {
         user: {
