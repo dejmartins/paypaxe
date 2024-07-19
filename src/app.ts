@@ -8,6 +8,7 @@ import accountRoutes from './modules/account/routes/accountRoutes';
 import sessionRoutes from './modules/session/routes/sessionRoutes';
 import authRoutes from './modules/auth/routes/authRoutes';
 import passport from './modules/auth/strategy/google.strategy';
+import errorHandler from './shared/middlewares/errorHandler';
 
 const port: number = config.port;
 
@@ -21,6 +22,8 @@ app.use('/api', userRoutes)
 app.use('/api', accountRoutes)
 app.use('/api', sessionRoutes)
 app.use('/api/auth', authRoutes)
+
+app.use(errorHandler)
 
 app.listen(port, async () => {
     log.info(`App is running at http://localhost:${port}`)
