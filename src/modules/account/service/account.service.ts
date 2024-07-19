@@ -1,4 +1,5 @@
 import { AppError } from '../../../shared/utils/customErrors';
+import log from '../../../shared/utils/logger';
 import UserModel from '../../user/model/user.model';
 import AccountModel from '../model/account.model';
 import { AccountInput } from '../types/accountTypes';
@@ -17,7 +18,11 @@ export async function createAccount(input: AccountInput) {
             throw new AppError(`User already has the ${input.accountType} account`, 400);
         }
 
-        return await AccountModel.create({ user: input.userId, ...input });
+        const account = await AccountModel.create({ user: input.userId, ...input });
+
+        log.info(`${input.accountType} account created for user with ID: ${input.userId}`);
+
+        return account;
     } catch (e: any){
         throw new AppError(e.message, e.statusCode, true);
     }

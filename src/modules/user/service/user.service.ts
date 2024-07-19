@@ -4,6 +4,7 @@ import { UserInput } from "../types/userTypes";
 import { generatePasswordResetToken, generateVerificationToken, verifyJwt } from "../../../shared/utils/jwt.utils";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../../email/services/email.service";
 import { AppError } from "../../../shared/utils/customErrors";
+import log from "../../../shared/utils/logger";
 
 export async function createUser(input: UserInput): Promise<IUser> {
     try {
@@ -15,8 +16,10 @@ export async function createUser(input: UserInput): Promise<IUser> {
             verified: user.verified
         });
         await sendVerificationEmail(user.email, token);
+        log.info(`User created with ID: ${user._id}`);
         return user;
     } catch (e: any) {
+        log.error(`Error creating user: ${e.message}`);
         throw new AppError(e.message, e.statusCode, true, e.stack);
     }
 }
@@ -60,6 +63,7 @@ export async function resendVerificationEmail(email: string): Promise<void> {
             verified: user.verified
         });
         await sendVerificationEmail(user.email, token);
+
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode, true, e.stack);
     }
