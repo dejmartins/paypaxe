@@ -9,6 +9,7 @@ import sessionRoutes from './modules/session/routes/sessionRoutes';
 import authRoutes from './modules/auth/routes/authRoutes';
 import passport from './modules/auth/strategy/google.strategy';
 import errorHandler from './shared/middlewares/errorHandler';
+import { generalLimiter } from './shared/middlewares/rateLimiter';
 
 const port: number = config.port;
 
@@ -18,6 +19,7 @@ app.use(express.json())
 app.use(deserializeUser);
 app.use(passport.initialize());
 
+app.use('/api', generalLimiter)
 app.use('/api', userRoutes)
 app.use('/api', accountRoutes)
 app.use('/api', sessionRoutes)

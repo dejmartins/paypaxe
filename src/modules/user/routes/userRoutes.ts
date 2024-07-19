@@ -10,13 +10,14 @@ import { createUserSchema,
     requestResetPasswordSchema, 
     verifyEmailSchema, 
     resetPasswordSchema} from "../schema/user.schema";
+import { createUserLimiter, emailLimiter } from "../../../shared/middlewares/rateLimiter";
 
 const router = Router();
 
-router.post('/users', validate(createUserSchema), createUserHandler);
+router.post('/users', createUserLimiter, validate(createUserSchema), createUserHandler);
 router.get('/verify-email', validate(verifyEmailSchema), verifyEmailHandler);
-router.post('/resend-verification-email', validate(resendVerificationEmailSchema), resendVerificationEmailHandler);
-router.post('/request-password-reset', validate(requestResetPasswordSchema), requestPasswordResetHandler);
+router.post('/resend-verification-email', emailLimiter, validate(resendVerificationEmailSchema), resendVerificationEmailHandler);
+router.post('/request-password-reset', emailLimiter, validate(requestResetPasswordSchema), requestPasswordResetHandler);
 router.post('/reset-password', validate(resetPasswordSchema), resetPasswordHandler);
 
 export default router;
