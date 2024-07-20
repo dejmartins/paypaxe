@@ -1,6 +1,10 @@
 import { FilterQuery, UpdateQuery } from "mongoose";
 import SessionModel, { ISession } from "../model/session.model";
 import { AppError } from "../../../shared/utils/customErrors";
+import { signJwt, verifyJwt } from "../../../shared/utils/jwt.utils";
+import { get } from "lodash";
+import { findUser } from "../../user/service/user.service";
+import config from "../../../../config/default";
 
 export async function createSession(userId: string, userAgent: string){
     try {
@@ -27,35 +31,41 @@ export async function updateSession(query: FilterQuery<ISession>, update: Update
     }  
 }
 
-// export async function reIssueAccessToken({refreshToken}: {refreshToken: string}){
-//     const { decoded } = verifyJwt(refreshToken);
+export async function reIssueAccessToken({refreshToken}: {refreshToken: string}){
+    const { decoded } = verifyJwt(refreshToken);
 
-//     if(!decoded || !get(decoded, 'session')) {
-//         throw new Error("Invalid token or id not found.");
-//     }
+    const sessionId = get(decoded, 'session');
 
-//     const session = await SessionModel.findById(get(decoded, 'session'));
+    if(!decoded || !sessionId) {
+        throw new AppError("Invalid token", 400);
+    }
 
-//     if(!session || !session.valid){
-//         throw new Error("No session found or session is invalid");
-//     }
+    const session = await SessionModel.findById(sessionId);
 
-//     const user = await findUser({ _id: session.user });
+    if(!session){
+        throw new AppError("No session found", 400);
+    }
 
-//     if(!user) {
-//         throw new Error("User not found.");
-//     }
+    if(!session.valid){
+        throw new AppError("Session is invalid", 400);
+    }
 
-//     const accessToken = signJwt(
-//         {
-//             ...user,
-//             session: (await session)._id
-//         },
-//         { 
-//             expiresIn: config.accessTokenTtl 
-//         }
-//     );
+    const user = await findUser({ _id: session.user });
 
-//     return accessToken;
+    if(!user) {
+        throw new AppError("User not found", 400);
+    }
 
-// }
+    const accessToken = signJwt(
+        {
+            ...user,
+            session: session._id
+        },
+        { 
+            expiresIn: config.accessTokenTtl 
+        }
+    );
+
+    return accessToken;
+
+}

@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import config from '../../../../config/default';
 import { IUser } from '../../user/model/user.model';
 
 export interface ISession extends Document {

@@ -43,9 +43,7 @@ export const getUserSessionsHandler = asyncHandler(async (req: Request, res: Res
 
 export const deleteSessionHandler = asyncHandler(async (req: Request, res: Response) => {
     const sessionId = res.locals.user.session;
-
     await updateSession({ _id: sessionId }, { valid: false })
-
     return res.send(successResponse({
         accessToken: null, refreshToken: null
     }))

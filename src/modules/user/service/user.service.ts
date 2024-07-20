@@ -5,6 +5,7 @@ import { generatePasswordResetToken, generateVerificationToken, verifyJwt } from
 import { sendPasswordResetEmail, sendVerificationEmail } from "../../email/services/email.service";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
+import { FilterQuery } from "mongoose";
 
 export async function createUser(input: UserInput): Promise<IUser> {
     try {
@@ -126,6 +127,14 @@ export async function resetPassword(token: string, password: string): Promise<vo
         user.password = password;
 
         await user.save();
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode, true, e.stack);
+    }
+}
+
+export async function findUser(query: FilterQuery<IUser>){
+    try {
+        return UserModel.findOne(query).lean();
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode, true, e.stack);
     }
