@@ -19,9 +19,13 @@ export async function findSessions(query: FilterQuery<ISession>) {
     }   
 }
 
-// export async function updateSession(query: FilterQuery<ISession>, update: UpdateQuery<ISession>){
-//     return SessionModel.updateOne(query, update);
-// }
+export async function updateSession(query: FilterQuery<ISession>, update: UpdateQuery<ISession>){
+    try {
+        return SessionModel.updateOne(query, update);
+    } catch (e: any){
+        throw new AppError(e.message, e.statusCode, true);
+    }  
+}
 
 // export async function reIssueAccessToken({refreshToken}: {refreshToken: string}){
 //     const { decoded } = verifyJwt(refreshToken);
