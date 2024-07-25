@@ -6,7 +6,7 @@ import { get } from "lodash";
 import { findUser } from "../../user/service/user.service";
 import config from "../../../../config/default";
 
-export async function createSession(userId: string, userAgent: string){
+export async function createSession(userId: string, userAgent: string): Promise<ISession>{
     try {
         const session = await SessionModel.create({user: userId, userAgent});
         return session.toJSON();

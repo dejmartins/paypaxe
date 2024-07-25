@@ -1,6 +1,6 @@
 import * as UserService from '../../../modules/user/service/user.service'
 import supertest from 'supertest'
-import { createUserPayload, createUserReturnPayload } from '../../utils/fixtures'
+import { createUserPayload, userReturnPayload } from '../../utils/fixtures'
 import createServer from '../../../shared/utils/server'
 
 const app = createServer()
@@ -12,7 +12,7 @@ describe('User', () => {
             it('should return the user payload', async () => {
                 const createUserServiceMock = jest
                     .spyOn(UserService, 'createUser')
-                    .mockResolvedValueOnce(createUserReturnPayload);
+                    .mockResolvedValueOnce(userReturnPayload);
     
                 const { statusCode, body } = await supertest(app)
                     .post('/api/users')
@@ -21,7 +21,7 @@ describe('User', () => {
                 expect(statusCode).toBe(200);
     
                 const actualUser = body.data;
-                const expectedUser = createUserReturnPayload.toJSON();
+                const expectedUser = userReturnPayload.toJSON();
                 expectedUser._id = expectedUser._id.toString();
     
                 expect(actualUser).toStrictEqual(expectedUser);
