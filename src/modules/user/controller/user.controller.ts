@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import log from "../../../shared/utils/logger";
 import { createUser, requestPasswordReset, resendVerificationEmail, resetPassword, verifyEmail } from "../service/user.service";
 import { CreateUserInput } from "../schema/user.schema";
 import { omit } from "lodash";
