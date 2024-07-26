@@ -1,10 +1,7 @@
 import * as UserService from '../../../modules/user/service/user.service'
 import * as SessionService from '../../../modules/session/service/session.service'
-import supertest from 'supertest'
 import { sessionPayload, userReturnPayload } from '../../utils/fixtures'
-import createServer from '../../../shared/utils/server'
 import { createUserSessionHandler } from '../../../modules/session/controller/session.controller'
-import { lazy } from 'zod'
 
 describe('User', () => {
     describe('User Authentication', () => {

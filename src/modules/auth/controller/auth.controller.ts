@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { createSession } from '../../session/service/session.service';
-import { signJwt, verifyJwt } from '../../../shared/utils/jwt.utils';
+import { signJwt } from '../../../shared/utils/jwt.utils';
 import config from '../../../../config/default';
 
 export async function googleOAuthCallbackHandler(req: Request, res: Response) {
