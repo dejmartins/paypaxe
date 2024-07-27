@@ -1,10 +1,10 @@
 import { AppError } from '../../../shared/utils/customErrors';
 import log from '../../../shared/utils/logger';
 import UserModel from '../../user/model/user.model';
-import AccountModel from '../model/account.model';
+import AccountModel, { IAccount } from '../model/account.model';
 import { AccountInput } from '../types/accountTypes';
 
-export async function createAccount(input: AccountInput) {
+export async function createAccount(input: AccountInput): Promise<IAccount> {
     try {
         const user = await UserModel.findById(input.userId);
 

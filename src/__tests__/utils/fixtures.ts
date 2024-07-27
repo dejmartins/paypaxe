@@ -1,14 +1,10 @@
 import mongoose from "mongoose";
 import UserModel from "../../modules/user/model/user.model";
 import SessionModel from "../../modules/session/model/session.model";
+import AccountModel from "../../modules/account/model/account.model";
 
 const userId = new mongoose.Types.ObjectId().toString();
-
-// export const userPayload = {
-//     "user": userId,
-//     "email": "dejalltime@gmail.com",
-//     "username": "dej"
-// }
+const accountId = new mongoose.Types.ObjectId().toString();
 
 export const createUserPayload = {
     email: "dej@gmail.com",
@@ -16,11 +12,24 @@ export const createUserPayload = {
     password: "pass12345678"
 }
 
+export const createAccountPayload = {
+    userId: userId,
+    accountType: "family",
+    subscriptionPlan: "basic"
+}
+
 export const userReturnPayload = new UserModel({
     _id: userId,
     name: "Dej Lok",
     verified: false,
     email: "dej@gmail.com"
+})
+
+export const accountReturnPayload = new AccountModel({
+    _id: accountId,
+    user: userId,
+    accountType: "family",
+    subscriptionPlan: "basic"
 })
 
 export const sessionPayload = new SessionModel({
