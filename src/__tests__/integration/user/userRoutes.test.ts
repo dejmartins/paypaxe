@@ -11,10 +11,6 @@ const app = createServer()
 describe('User', () => {
     describe('User Registration', () => {
 
-        beforeEach(() => {
-            jest.clearAllMocks();
-        });
-
         describe('given that the email and password are valid', () => {
             it('should return the user payload', async () => {
                 const createUserServiceMock = jest
