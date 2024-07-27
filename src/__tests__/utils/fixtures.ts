@@ -3,8 +3,8 @@ import UserModel from "../../modules/user/model/user.model";
 import SessionModel from "../../modules/session/model/session.model";
 import AccountModel from "../../modules/account/model/account.model";
 
-const userId = new mongoose.Types.ObjectId().toString();
-const accountId = new mongoose.Types.ObjectId().toString();
+export const userId = new mongoose.Types.ObjectId().toString();
+export const accountId = new mongoose.Types.ObjectId().toString();
 
 export const createUserPayload = {
     email: "dej@gmail.com",
