@@ -111,10 +111,25 @@ describe('UserService - resendVerificationEmail', () => {
             };
 
             (UserModel.findOne as jest.Mock).mockResolvedValue(user);
-            
+
             await expect(UserService.resendVerificationEmail(email))
             .rejects
             .toThrow(new AppError('User is already verified', 400))
         })
     })
 })
+
+describe('UserService - findUser', () => {
+    describe('given a valid email', () => {
+        it('should return the user', async () => {
+            const query = { email: 'dej@gmail.com' };
+
+            (UserModel.findOne as jest.Mock).mockResolvedValue(userReturnPayload);
+
+            const result = await UserModel.findOne(query);
+
+            expect(UserModel.findOne).toHaveBeenCalledWith(query);
+            expect(result).toEqual(userReturnPayload);
+        });
+    })
+});
