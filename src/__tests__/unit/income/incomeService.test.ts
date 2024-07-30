@@ -6,7 +6,7 @@ import { accountExists } from '../../../modules/account/service/account.service'
 jest.mock('../../../modules/income/model/income.model')
 jest.mock('../../../modules/account/service/account.service');
 
-describe('Income Service - addIncome', () => {
+describe('IncomeService - addIncome', () => {
     describe('given income details are valid', () => {
         it('should add the income linked to the user account type', async () => {
             (accountExists as jest.Mock).mockResolvedValue(true);

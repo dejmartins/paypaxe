@@ -3,10 +3,12 @@ import UserModel from "../../modules/user/model/user.model";
 import SessionModel from "../../modules/session/model/session.model";
 import AccountModel from "../../modules/account/model/account.model";
 import IncomeModel from "../../modules/income/model/income.model";
+import FinancialGoalModel from "../../modules/financialGoal/model/financialGoal.model";
 
 export const userId = new mongoose.Types.ObjectId().toString();
 export const accountId = new mongoose.Types.ObjectId().toString();
 export const incomeId = new mongoose.Types.ObjectId().toString();
+export const financialGoalId = new mongoose.Types.ObjectId().toString();
 
 export const createUserPayload = {
     email: "dej@gmail.com",
@@ -42,6 +44,16 @@ export const addIncomePayload = {
 }
 
 export const incomeReturnPayload = new IncomeModel({
+    _id: financialGoalId,
+    account: accountId,
+    title: 'New Car Purchase',
+    targetAmount: 40050,
+    currentProgress: 10050,
+    description: "",
+    deadline: '25-07-2024'
+})
+
+export const financialGoalReturnPayload = new FinancialGoalModel({
     _id: incomeId,
     account: accountId,
     amount: 40050,
