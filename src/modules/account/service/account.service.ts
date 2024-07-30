@@ -24,11 +24,15 @@ export async function createAccount(input: AccountInput): Promise<IAccount> {
 
         return account;
     } catch (e: any){
-        throw new AppError(e.message, e.statusCode, true);
+        throw new AppError(e.message, e.statusCode);
     }
 }
 
 export async function accountExists(accountId: string): Promise<boolean> {
-    const account = await AccountModel.findById(accountId);
-    return !!account;
+    try {
+        const account = await AccountModel.findById(accountId);
+        return !!account;
+    } catch (e: any){
+        throw new AppError(e.message, e.statusCode);
+    }
 }
