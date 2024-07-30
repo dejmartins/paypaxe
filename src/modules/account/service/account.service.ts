@@ -27,3 +27,8 @@ export async function createAccount(input: AccountInput): Promise<IAccount> {
         throw new AppError(e.message, e.statusCode, true);
     }
 }
+
+export async function accountExists(accountId: string): Promise<boolean> {
+    const account = await AccountModel.findById(accountId);
+    return !!account;
+}

@@ -14,12 +14,6 @@ export const createUserPayload = {
     password: "pass12345678"
 }
 
-export const createAccountPayload = {
-    userId: userId,
-    accountType: "family",
-    subscriptionPlan: "basic"
-}
-
 export const userReturnPayload = new UserModel({
     _id: userId,
     name: "Dej Lok",
@@ -27,12 +21,25 @@ export const userReturnPayload = new UserModel({
     email: "dej@gmail.com"
 })
 
+export const createAccountPayload = {
+    userId: userId,
+    accountType: "family",
+    subscriptionPlan: "basic"
+}
+
 export const accountReturnPayload = new AccountModel({
     _id: accountId,
     user: userId,
     accountType: "family",
     subscriptionPlan: "basic"
 })
+
+export const addIncomePayload = {
+    accountId: accountId,
+    amount: 400.50,
+    category: "salary",
+    dateReceived: "25-07-2024"
+}
 
 export const incomeReturnPayload = new IncomeModel({
     _id: incomeId,
