@@ -2,7 +2,6 @@ import * as IncomeService from '../../../modules/income/service/income.service'
 import IncomeModel from "../../../modules/income/model/income.model"
 import { addIncomePayload, incomeReturnPayload } from "../../utils/fixtures"
 import { accountExists } from '../../../modules/account/service/account.service'
-import { ApiError } from 'apitoolz'
 
 jest.mock('../../../modules/income/model/income.model')
 jest.mock('../../../modules/account/service/account.service');

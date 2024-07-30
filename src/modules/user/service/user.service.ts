@@ -21,7 +21,7 @@ export async function createUser(input: UserInput): Promise<IUser> {
         return user;
     } catch (e: any) {
         log.error(`Error creating user: ${e.message}`);
-        throw new AppError(e.message, e.statusCode, true, e.stack);
+        throw new AppError(e.message, e.statusCode, e.stack);
     }
 }
 
@@ -41,7 +41,7 @@ export async function verifyEmail(token: string): Promise<void> {
 
         await UserModel.findByIdAndUpdate(user._id, { verified: true });
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode, true, e.stack);
+        throw new AppError(e.message, e.statusCode, e.stack);
     }
 }
 
@@ -66,7 +66,7 @@ export async function resendVerificationEmail(email: string): Promise<void> {
         await sendVerificationEmail(user.email, token);
 
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode, true, e.stack);
+        throw new AppError(e.message, e.statusCode, e.stack);
     }
 }
 
@@ -86,7 +86,7 @@ export async function validatePassword({ email, password }: { email: string, pas
 
         return omit(user.toJSON(), "password");
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode, true, e.stack);
+        throw new AppError(e.message, e.statusCode, e.stack);
     }
 }
 
@@ -101,7 +101,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
         const token = generatePasswordResetToken({ _id: user._id as string });
         await sendPasswordResetEmail(user.email, token);
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode, true, e.stack);
+        throw new AppError(e.message, e.statusCode, e.stack);
     }
 }
 
@@ -128,7 +128,7 @@ export async function resetPassword(token: string, password: string): Promise<vo
 
         await user.save();
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode, true, e.stack);
+        throw new AppError(e.message, e.statusCode, e.stack);
     }
 }
 
@@ -136,6 +136,6 @@ export async function findUser(query: FilterQuery<IUser>){
     try {
         return UserModel.findOne(query).lean();
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode, true, e.stack);
+        throw new AppError(e.message, e.statusCode, e.stack);
     }
 }

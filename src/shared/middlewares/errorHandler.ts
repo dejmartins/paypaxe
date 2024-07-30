@@ -6,8 +6,8 @@ import log from '../utils/logger';
 const errorHandler = (err: AppError, req: Request, res: Response, next: NextFunction) => {
     log.error(`Error: ${err.message}`, { stack: err.stack });
 
-    if (!err.isOperational) {
-        return res.status(500).json(errorResponse('Something went wrong on server', 500));
+    if (!(err instanceof AppError)) {
+        err = new AppError('Something went wrong on server', 500, false);
     }
 
     return res.status(err.statusCode).json(errorResponse(err.message, err.statusCode));
