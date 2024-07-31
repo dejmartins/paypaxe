@@ -43,23 +43,32 @@ export const addIncomePayload = {
     dateReceived: "25-07-2024"
 }
 
-export const incomeReturnPayload = new IncomeModel({
-    _id: financialGoalId,
-    account: accountId,
-    title: 'New Car Purchase',
-    targetAmount: 40050,
-    currentProgress: 10050,
-    description: "",
-    deadline: '25-07-2024'
-})
-
-export const financialGoalReturnPayload = new FinancialGoalModel({
+export const incomeReturnPayload  = new IncomeModel({
     _id: incomeId,
     account: accountId,
-    amount: 40050,
+    amount: 400.50,
     category: "salary",
     description: "",
     dateReceived: '25-07-2024'
+})
+
+export const financialGoalPayload = {
+    account: accountId,
+    title: 'New Car Purchase',
+    description: "",
+    targetAmount: 400.50,
+    currentProgress: 100.50,
+    deadline: '25-07-2024'
+}
+
+export const financialGoalReturnPayload = new FinancialGoalModel({
+    _id: financialGoalId,
+    account: accountId,
+    title: 'New Car Purchase',
+    targetAmount: 400.50,
+    currentProgress: 100.50,
+    description: "",
+    deadline: '25-07-2024'
 })
 
 export const sessionPayload = new SessionModel({
