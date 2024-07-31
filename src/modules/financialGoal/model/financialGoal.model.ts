@@ -19,6 +19,35 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             type: Schema.Types.ObjectId,
             ref: 'Account'
         },
+        title: {
+            type: String,
+            required: true,
+        },
+        type: {
+            type: String,
+            enum: ['savings', 'investment', 'retirement', 'debtRepayment', 'other'],
+            required: true,
+            default: 'savings'
+        },
+        targetAmount: {
+            type: Schema.Types.Number,
+            required: true,
+            get: (v: number) => parseFloat((v / 100).toFixed(2)),
+            set: (v: number) => Math.round(v * 100),
+        },
+        deadline: {
+            type: Date,
+            required: true,
+        },
+        currentProgress: {
+            type: Schema.Types.Number,
+            required: true,
+            get: (v: number) => parseFloat((v / 100).toFixed(2)),
+            set: (v: number) => Math.round(v * 100),
+        },
+        description: {
+            type: String,
+        },
     },
     {
         timestamps: true,

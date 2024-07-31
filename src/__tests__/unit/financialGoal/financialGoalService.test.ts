@@ -4,6 +4,7 @@ import FinancialGoalModel from "../../../modules/financialGoal/model/financialGo
 import { financialGoalPayload, financialGoalReturnPayload } from "../../utils/fixtures";
 
 jest.mock('../../../modules/account/service/account.service')
+jest.mock('../../../modules/financialGoal/model/financialGoal.model')
 
 describe('FinancialGoalService - addGoal', () => {
     describe('given the savings goal details are valid', () => {
@@ -12,6 +13,10 @@ describe('FinancialGoalService - addGoal', () => {
             (FinancialGoalModel.create as jest.Mock).mockResolvedValue(financialGoalReturnPayload);
 
             const result = await FinancialGoalService.addGoal(financialGoalPayload);
+
+            expect(accountExists).toHaveBeenCalledWith(financialGoalPayload.account);
+            expect(result).toStrictEqual(financialGoalReturnPayload);
+            expect(FinancialGoalModel.create).toHaveBeenCalledWith(financialGoalPayload);
         })
     })
 })
