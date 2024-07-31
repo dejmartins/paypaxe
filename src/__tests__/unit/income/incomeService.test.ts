@@ -19,6 +19,19 @@ describe('IncomeService - addIncome', () => {
             expect(IncomeModel.create).toHaveBeenCalledWith(addIncomePayload);
             expect(accountExists).toHaveBeenCalledWith(addIncomePayload.accountId);
         })
+
+        it("should ensure date is not in the future", async () => {
+            (accountExists as jest.Mock).mockResolvedValue(true);
+            jest.useFakeTimers().setSystemTime(new Date('2024-07-20'));
+
+            const futureDatePayload = {
+                ...addIncomePayload,
+                dateReceived: '2024-07-29'
+            };
+            
+            await expect(IncomeService.addIncome(futureDatePayload))
+                .rejects.toThrow('Invalid Date - date cannot be in the future')
+        })
     })
 
     describe('given that the account does not exists', () => {

@@ -5,6 +5,12 @@ import { IncomeType } from "../types/incomeTypes";
 
 export async function addIncome(input: IncomeType){
     try{
+        const currentDate = new Date();
+        const incomeDate = new Date(input.dateReceived);
+
+        if(incomeDate > currentDate){
+            throw new AppError('Invalid Date - date cannot be in the future', 400);
+        }
         const accountExist = await accountExists(input.accountId);
 
         if(!accountExist){
