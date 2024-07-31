@@ -3,6 +3,7 @@ import deserializeUser from '../middlewares/deserializeUser';
 import userRoutes from '../../modules/user/routes/userRoutes';
 import accountRoutes from '../../modules/account/routes/accountRoutes';
 import sessionRoutes from '../../modules/session/routes/sessionRoutes';
+import incomeRoutes from '../../modules/income/routes/incomeRoutes';
 import authRoutes from '../../modules/auth/routes/authRoutes';
 import passport from '../../modules/auth/strategy/google.strategy';
 import { generalLimiter } from '../middlewares/rateLimiter';
@@ -18,8 +19,9 @@ function createServer() {
 
     app.use('/api', generalLimiter)
     app.use('/api', userRoutes)
-    app.use('/api', accountRoutes)
     app.use('/api', sessionRoutes)
+    app.use('/api', accountRoutes)
+    app.use('/api', incomeRoutes)
     app.use('/api/auth', authRoutes)
 
     return app;

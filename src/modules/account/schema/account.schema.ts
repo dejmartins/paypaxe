@@ -1,11 +1,5 @@
 import { TypeOf, object, string } from "zod";
-import mongoose from "mongoose";
-
-const objectIdValidator = string({
-    required_error: 'User ID is required'
-}).refine(value => mongoose.Types.ObjectId.isValid(value), {
-    message: 'Invalid User ID format'
-});
+import { objectIdValidator } from "../../../shared/utils/validator";
 
 export const createAccountSchema = object({
     body: object({

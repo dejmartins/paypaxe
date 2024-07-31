@@ -1,9 +1,9 @@
 import { AppError } from "../../../shared/utils/customErrors";
 import { accountExists } from "../../account/service/account.service";
-import IncomeModel from "../model/income.model";
+import IncomeModel, { IIncome } from "../model/income.model";
 import { IncomeType } from "../types/incomeTypes";
 
-export async function addIncome(input: IncomeType){
+export async function addIncome(input: IncomeType): Promise<IIncome>{
     try{
         const currentDate = new Date();
         const incomeDate = new Date(input.dateReceived);

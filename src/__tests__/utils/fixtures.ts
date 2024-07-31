@@ -42,7 +42,7 @@ export const addIncomePayload = {
     accountId: accountId,
     amount: 400.50,
     category: "salary",
-    dateReceived: "25-07-2024"
+    dateReceived: "2024-07-20"
 }
 
 export const incomeReturnPayload  = new IncomeModel({
@@ -51,7 +51,7 @@ export const incomeReturnPayload  = new IncomeModel({
     amount: 400.50,
     category: "salary",
     description: "",
-    dateReceived: '25-07-2024'
+    dateReceived: '2024-07-20'
 })
 
 export const addExpensePayload = {
