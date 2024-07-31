@@ -52,8 +52,8 @@ export const incomeReturnPayload  = new IncomeModel({
     dateReceived: '25-07-2024'
 })
 
-export const financialGoalPayload = {
-    account: accountId,
+export const addGoalPayload = {
+    accountId: accountId,
     title: 'New Car Purchase',
     description: "",
     targetAmount: 400.50,

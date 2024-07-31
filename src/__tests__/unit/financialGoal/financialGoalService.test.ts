@@ -1,7 +1,7 @@
 import * as FinancialGoalService from '../../../modules/financialGoal/service/financialGoal.service'
 import { accountExists } from "../../../modules/account/service/account.service";
 import FinancialGoalModel from "../../../modules/financialGoal/model/financialGoal.model";
-import { financialGoalPayload, financialGoalReturnPayload } from "../../utils/fixtures";
+import { addGoalPayload, financialGoalReturnPayload } from "../../utils/fixtures";
 
 jest.mock('../../../modules/account/service/account.service')
 jest.mock('../../../modules/financialGoal/model/financialGoal.model')
@@ -12,11 +12,22 @@ describe('FinancialGoalService - addGoal', () => {
             (accountExists as jest.Mock).mockResolvedValue(true);
             (FinancialGoalModel.create as jest.Mock).mockResolvedValue(financialGoalReturnPayload);
 
-            const result = await FinancialGoalService.addGoal(financialGoalPayload);
+            const result = await FinancialGoalService.addGoal(addGoalPayload);
 
-            expect(accountExists).toHaveBeenCalledWith(financialGoalPayload.account);
+            expect(accountExists).toHaveBeenCalledWith(addGoalPayload.accountId);
             expect(result).toStrictEqual(financialGoalReturnPayload);
-            expect(FinancialGoalModel.create).toHaveBeenCalledWith(financialGoalPayload);
+            expect(FinancialGoalModel.create).toHaveBeenCalledWith(addGoalPayload);
+        })
+    })
+
+    describe('given that the account does not exists', () => {
+        it('should throw an error - Not Found', async () => {
+            (accountExists as jest.Mock).mockResolvedValue(false);
+
+            await expect(FinancialGoalService.addGoal(addGoalPayload))
+                .rejects.toThrow('Account not found');
+            expect(accountExists).toHaveBeenCalledWith(addGoalPayload.accountId);
+            expect(FinancialGoalModel.create).not.toHaveBeenCalled();
         })
     })
 })

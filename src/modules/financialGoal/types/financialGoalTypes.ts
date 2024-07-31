@@ -1,5 +1,5 @@
 export interface FinancialGoalInput{
-    account: string,
+    accountId: string,
     title: string,
     description: string,
     targetAmount: number,

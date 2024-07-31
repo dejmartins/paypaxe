@@ -5,7 +5,7 @@ import { FinancialGoalInput } from "../types/financialGoalTypes";
 
 export async function addGoal(input: FinancialGoalInput){
     try{
-        const accountExist = await accountExists(input.account);
+        const accountExist = await accountExists(input.accountId);
     
         if(!accountExist){
             throw new AppError('Account not found', 404);
