@@ -4,10 +4,12 @@ import SessionModel from "../../modules/session/model/session.model";
 import AccountModel from "../../modules/account/model/account.model";
 import IncomeModel from "../../modules/income/model/income.model";
 import FinancialGoalModel from "../../modules/financialGoal/model/financialGoal.model";
+import ExpenseModel from "../../modules/expense/model/expense.model";
 
 export const userId = new mongoose.Types.ObjectId().toString();
 export const accountId = new mongoose.Types.ObjectId().toString();
 export const incomeId = new mongoose.Types.ObjectId().toString();
+export const expenseId = new mongoose.Types.ObjectId().toString();
 export const financialGoalId = new mongoose.Types.ObjectId().toString();
 
 export const createUserPayload = {
@@ -52,6 +54,23 @@ export const incomeReturnPayload  = new IncomeModel({
     dateReceived: '25-07-2024'
 })
 
+export const addExpensePayload = {
+    accountId: accountId,
+    amount: 400.50,
+    category: "salary",
+    description: "",
+    date: "25-07-2024"
+}
+
+export const expenseReturnPayload  = new ExpenseModel({
+    _id: expenseId,
+    account: accountId,
+    amount: 400.50,
+    category: "salary",
+    description: "",
+    date: '25-07-2024'
+})
+
 export const addGoalPayload = {
     accountId: accountId,
     title: 'New Car Purchase',
@@ -64,6 +83,7 @@ export const addGoalPayload = {
 export const financialGoalReturnPayload = new FinancialGoalModel({
     _id: financialGoalId,
     account: accountId,
+    tyoe: 'savings',
     title: 'New Car Purchase',
     targetAmount: 400.50,
     currentProgress: 100.50,

@@ -8,7 +8,7 @@ jest.mock('../../../modules/financialGoal/model/financialGoal.model')
 
 describe('FinancialGoalService - addGoal', () => {
     describe('given the savings goal details are valid', () => {
-        it('should create financial goal linked to an account', async () => {
+        it('should create financial goal - savings linked to an account', async () => {
             (accountExists as jest.Mock).mockResolvedValue(true);
             (FinancialGoalModel.create as jest.Mock).mockResolvedValue(financialGoalReturnPayload);
 
