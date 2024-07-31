@@ -11,6 +11,7 @@ export async function addIncome(input: IncomeType): Promise<IIncome>{
         if(incomeDate > currentDate){
             throw new AppError('Invalid Date - date cannot be in the future', 400);
         }
+        
         const accountExist = await accountExists(input.accountId);
 
         if(!accountExist){

@@ -7,7 +7,6 @@ const app = createServer()
 
 describe('Account', () => {
     describe('Account Creation', () => {
-
         describe('given that the userId is valid and account details valid', () => {
             it('should return account payload', async () => {
                 const createAccountServiceMock = jest
