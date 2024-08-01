@@ -10,7 +10,10 @@ export const addIncomeSchema = object({
         .refine(value => !isNaN(parseFloat(value as string)), {
           message: 'Must be a valid decimal number',
         })
-        .transform(value => parseFloat(value as string)),
+        .transform(value => parseFloat(value as string))
+        .refine(value => value > 0, {
+            message: 'Amount must be greater than zero'
+        }),
         category: string({
             required_error: 'Income category is required'
         }),

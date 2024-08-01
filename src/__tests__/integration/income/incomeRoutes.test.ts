@@ -53,5 +53,27 @@ describe('Income', () => {
                 }));
             })
         })
+
+        describe('given the income amount is zero', () => {
+            it('should return error 400', async () => {
+                const futureDatePayload = {
+                    ...addIncomePayload,
+                    amount: 0.0
+                };
+
+                const { body, statusCode } = await supertest(app)
+                    .post(`/api/accounts/${accountId}/incomes`)
+                    .send(futureDatePayload)
+
+                expect(statusCode).toBe(400);
+                expect(body).toEqual(expect.objectContaining({
+                    errors: expect.arrayContaining([
+                        expect.objectContaining({
+                            message: 'Amount must be greater than zero',
+                        })
+                    ])
+                }));
+            })
+        })
      })
 })
