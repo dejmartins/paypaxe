@@ -1,4 +1,4 @@
-import { number, object, string, TypeOf, union } from "zod";
+import { literal, number, object, optional, string, TypeOf, union } from "zod";
 import { objectIdValidator } from "../../../shared/utils/validator";
 
 export const addIncomeSchema = object({
@@ -28,5 +28,27 @@ export const addIncomeSchema = object({
         }) 
     })
 })
+
+export const getTotalIncomeSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    query: object({
+        timePeriod: union([
+            literal("thisWeek"),
+            literal("lastWeek"),
+            literal("thisMonth"),
+            literal("lastMonth"),
+            literal("lastTwoMonths"),
+            literal("custom"),
+        ]),
+        startDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
+            message: "Invalid start date format",
+        })),
+        endDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
+            message: "Invalid end date format",
+        })),
+    })
+});
 
 export type AddIncomeInput = TypeOf<typeof addIncomeSchema>;

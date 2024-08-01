@@ -39,7 +39,7 @@ export const accountReturnPayload = new AccountModel({
 })
 
 export const addIncomePayload = {
-    accountId: accountId,
+    account: accountId,
     amount: 400.50,
     category: "salary",
     dateReceived: "2024-07-20"
@@ -53,6 +53,15 @@ export const incomeReturnPayload  = new IncomeModel({
     description: "",
     dateReceived: '2024-07-20'
 })
+
+const mockIncomeDocs = [
+    { amount: 40050 },
+    { amount: 20050 },
+    { amount: 30050 },
+]
+
+export const expectedTotalIncome = mockIncomeDocs
+    .reduce((sum, doc) => sum + doc.amount, 0);
 
 export const addExpensePayload = {
     accountId: accountId,

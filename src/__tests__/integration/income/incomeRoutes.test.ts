@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import * as IncomeService from '../../../modules/income/service/income.service';
 import createServer from '../../../shared/utils/server';
-import { accountId, addIncomePayload, incomeReturnPayload } from '../../utils/fixtures';
+import { accountId, addIncomePayload, expectedTotalIncome, incomeReturnPayload } from '../../utils/fixtures';
 
 const app = createServer();
 
@@ -74,6 +74,30 @@ describe('Income', () => {
                     ])
                 }));
             })
+        })
+     })
+
+
+     describe('Get Total Income', () => {
+        describe('given the timePeriod - thisMonth', () => {
+            it('should return total income for this month', async () => {
+                const getTotalIncomeMock = jest
+                    .spyOn(IncomeService, 'getTotalIncome')
+                    .mockResolvedValue(expectedTotalIncome);
+    
+                const { body, statusCode } = await supertest(app)
+                    .get(`/api/accounts/${accountId}/incomes/total`)
+                    .query({ timePeriod: 'thisMonth' });
+    
+                expect(statusCode).toBe(200);
+                expect(body.data.totalIncome).toBe(expectedTotalIncome);
+                expect(getTotalIncomeMock).toHaveBeenCalledWith({
+                    accountId, 
+                    timePeriod: 'thisMonth', 
+                    startDate: undefined, 
+                    endDate: undefined
+                });
+            });
         })
      })
 })

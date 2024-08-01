@@ -1,6 +1,6 @@
 import * as IncomeService from '../../../modules/income/service/income.service'
 import IncomeModel from "../../../modules/income/model/income.model"
-import { addIncomePayload, incomeReturnPayload } from "../../utils/fixtures"
+import { accountId, addIncomePayload, expectedTotalIncome, incomeReturnPayload } from "../../utils/fixtures"
 import { accountExists } from '../../../modules/account/service/account.service'
 
 jest.mock('../../../modules/income/model/income.model')
@@ -17,7 +17,7 @@ describe('IncomeService - addIncome', () => {
 
             expect(result).toStrictEqual(incomeReturnPayload);
             expect(IncomeModel.create).toHaveBeenCalledWith(addIncomePayload);
-            expect(accountExists).toHaveBeenCalledWith(addIncomePayload.accountId);
+            expect(accountExists).toHaveBeenCalledWith(addIncomePayload.account);
         })
     })
 
@@ -27,8 +27,29 @@ describe('IncomeService - addIncome', () => {
 
             await expect(IncomeService.addIncome(addIncomePayload))
                 .rejects.toThrow('Account not found');
-            expect(accountExists).toHaveBeenCalledWith(addIncomePayload.accountId);
+            expect(accountExists).toHaveBeenCalledWith(addIncomePayload.account);
             expect(IncomeModel.create).not.toHaveBeenCalled();
+        })
+    })
+})
+
+describe('IncomeService - getTotalIncomeByDate', () => {
+    describe('given the different time period', () => {
+        it('should return sum total of income if month-specific', async () => {
+            (accountExists as jest.Mock).mockResolvedValue(true);
+            (IncomeModel.aggregate as jest.Mock).mockReturnValue([{ totalAmount: expectedTotalIncome }]);
+
+            const totalIncome = await IncomeService.getTotalIncome({ accountId, timePeriod: 'thisMonth' });
+
+            expect(totalIncome).toBe(expectedTotalIncome / 100);
+        })
+
+        it('should return sum total of income if custom-specific', async () => {
+            (accountExists as jest.Mock).mockResolvedValue(true);
+            (IncomeModel.aggregate as jest.Mock).mockResolvedValue([{ totalAmount: expectedTotalIncome }]);
+
+            const totalIncome = await IncomeService.getTotalIncome({ accountId, timePeriod: 'custom', startDate: '2024-02-24', endDate: '2024-05-20' });
+            expect(totalIncome).toBe(expectedTotalIncome / 100);
         })
     })
 })
