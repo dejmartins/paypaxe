@@ -67,7 +67,12 @@ describe('IncomeService - getRecentIncomes', () => {
 
             const recentIncomes = await IncomeService.getRecentIncomes({ accountId, limit: 5 });
 
-            expect(recentIncomes).toEqual(recentIncomesReturnPayload);
+            expect(recentIncomes).toEqual(recentIncomesReturnPayload
+                .map(income => ({
+                    ...income,
+                    amount: parseFloat((income.amount / 100).toFixed(2))
+                }))
+            );
             expect(accountExists).toHaveBeenCalledWith(accountId);
             expect(IncomeModel.find).toHaveBeenCalledWith({ account: accountId });
         })

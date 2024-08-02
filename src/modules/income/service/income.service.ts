@@ -72,7 +72,10 @@ export async function getRecentIncomes(input: GetRecentIncome): Promise<IIncome[
             .limit(input.limit)
             .lean();
 
-        return recentIncomes as IIncome[];
+        return recentIncomes.map(income => ({
+            ...income,
+            amount: parseFloat((income.amount / 100).toFixed(2)),
+        })) as IIncome[];
 
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode)

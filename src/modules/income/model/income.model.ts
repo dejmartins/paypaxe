@@ -6,7 +6,7 @@ export interface IIncome extends Document {
     amount: number;
     category: string;
     description: string;
-    dateReceived: Date;
+    dateReceived: Date | string;
     createdAt: Date;
     updatedAt: Date;
 }
