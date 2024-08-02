@@ -1,6 +1,6 @@
 import * as IncomeService from '../../../modules/income/service/income.service'
 import IncomeModel from "../../../modules/income/model/income.model"
-import { accountId, addIncomePayload, expectedTotalIncome, incomeReturnPayload } from "../../utils/fixtures"
+import { accountId, addIncomePayload, expectedTotalIncome, incomeReturnPayload, recentIncomesReturnPayload } from "../../utils/fixtures"
 import { accountExists } from '../../../modules/account/service/account.service'
 
 jest.mock('../../../modules/income/model/income.model')
@@ -50,6 +50,26 @@ describe('IncomeService - getTotalIncomeByDate', () => {
 
             const totalIncome = await IncomeService.getTotalIncome({ accountId, timePeriod: 'custom', startDate: '2024-02-24', endDate: '2024-05-20' });
             expect(totalIncome).toBe(expectedTotalIncome / 100);
+        })
+    })
+})
+
+describe('IncomeService - getRecentIncomes', () => {
+    describe('given there are incomes already inputted', () => {
+        it('should return limited recent incomes', async () => {
+            (accountExists as jest.Mock).mockResolvedValue(true);
+            (IncomeModel.find as jest.Mock).mockReturnValue({
+                sort: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockReturnValue({
+                    lean: jest.fn().mockResolvedValue(recentIncomesReturnPayload),
+                }),
+            });
+
+            const recentIncomes = await IncomeService.getRecentIncomes({ accountId, limit: 5 });
+
+            expect(recentIncomes).toEqual(recentIncomesReturnPayload);
+            expect(accountExists).toHaveBeenCalledWith(accountId);
+            expect(IncomeModel.find).toHaveBeenCalledWith({ account: accountId });
         })
     })
 })

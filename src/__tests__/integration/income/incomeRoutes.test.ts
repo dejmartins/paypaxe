@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import * as IncomeService from '../../../modules/income/service/income.service';
 import createServer from '../../../shared/utils/server';
-import { accountId, addIncomePayload, expectedTotalIncome, incomeReturnPayload } from '../../utils/fixtures';
+import { accountId, addIncomePayload, expectedTotalIncome, incomeReturnPayload, recentIncomesReturnPayload } from '../../utils/fixtures';
 
 const app = createServer();
 
@@ -100,4 +100,21 @@ describe('Income', () => {
             });
         })
      })
+
+     describe('Get Recent Incomes', () => {
+        it('should return recent incomes', async () => {
+            const getRecentIncomesMock = jest
+                .spyOn(IncomeService, 'getRecentIncomes')
+                // @ts-ignore
+                .mockResolvedValue(recentIncomesReturnPayload);
+
+            const { body, statusCode } = await supertest(app)
+                .get(`/api/accounts/${accountId}/incomes/recent`)
+                .query({ limit: 5 });
+
+            expect(statusCode).toBe(200);
+            expect(body.data).toStrictEqual(recentIncomesReturnPayload);
+            expect(getRecentIncomesMock).toHaveBeenCalledWith({ accountId, limit: '5' });
+        });
+    });
 })

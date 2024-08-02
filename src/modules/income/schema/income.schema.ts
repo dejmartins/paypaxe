@@ -51,4 +51,17 @@ export const getTotalIncomeSchema = object({
     })
 });
 
+export const getRecentIncomesSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    query: object({
+        limit: string({
+            required_error: "Limit is required"
+        }).refine(value => !isNaN(parseInt(value, 10)), {
+            message: 'Limit must be a number',
+        })
+    })
+});
+
 export type AddIncomeInput = TypeOf<typeof addIncomeSchema>;

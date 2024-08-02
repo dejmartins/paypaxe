@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import UserModel from "../../modules/user/model/user.model";
 import SessionModel from "../../modules/session/model/session.model";
 import AccountModel from "../../modules/account/model/account.model";
-import IncomeModel from "../../modules/income/model/income.model";
+import IncomeModel, { IIncome } from "../../modules/income/model/income.model";
 import FinancialGoalModel from "../../modules/financialGoal/model/financialGoal.model";
 import ExpenseModel from "../../modules/expense/model/expense.model";
 
@@ -62,6 +62,40 @@ const mockIncomeDocs = [
 
 export const expectedTotalIncome = mockIncomeDocs
     .reduce((sum, doc) => sum + doc.amount, 0);
+
+
+export const recentIncomesReturnPayload = [
+    {
+        _id: "60f7c4d7b4b8e72a9d06e432",
+        account: accountId,
+        amount: 500.00,
+        category: "Salary",
+        description: "Monthly Salary",
+        dateReceived: "2024-07-25",
+        createdAt: "2024-07-25T00:00:00.000Z",
+        updatedAt: "2024-07-25T00:00:00.000Z"
+    },
+    {
+        _id: "60f7c4d7b4b8e72a9d06e433",
+        account: accountId,
+        amount: 250.00,
+        category: "Freelance",
+        description: "Freelance Project",
+        dateReceived: "2024-07-24",
+        createdAt: "2024-07-24T00:00:00.000Z",
+        updatedAt: "2024-07-24T00:00:00.000Z"
+    },
+    {
+        _id: "60f7c4d7b4b8e72a9d06e434",
+        account: accountId,
+        amount: 100.00,
+        category: "Gift",
+        description: "Birthday Gift",
+        dateReceived: "2024-07-23",
+        createdAt: "2024-07-23T00:00:00.000Z",
+        updatedAt: "2024-07-23T00:00:00.000Z"
+    },
+];
 
 export const addExpensePayload = {
     accountId: accountId,

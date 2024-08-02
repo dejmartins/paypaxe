@@ -11,3 +11,8 @@ export type GetTotalIncome = {
     startDate?: string,
     endDate?: string
 }
+
+export type GetRecentIncome = {
+    accountId: string,
+    limit: number
+}

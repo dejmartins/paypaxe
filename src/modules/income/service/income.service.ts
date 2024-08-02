@@ -3,7 +3,7 @@ import { AppError } from "../../../shared/utils/customErrors";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { accountExists } from "../../account/service/account.service";
 import IncomeModel, { IIncome } from "../model/income.model";
-import { AddIncome, GetTotalIncome } from "../types/incomeTypes";
+import { AddIncome, GetRecentIncome, GetTotalIncome } from "../types/incomeTypes";
 
 export async function addIncome(input: AddIncome): Promise<IIncome>{
     try{
@@ -54,6 +54,26 @@ export async function getTotalIncome(input: GetTotalIncome){
     
         const totalIncome = incomes.length > 0 ? incomes[0].totalAmount : 0;
         return totalIncome / 100;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode)
+    }
+}
+
+export async function getRecentIncomes(input: GetRecentIncome) {
+    try {
+        const accountExist = await accountExists(input.accountId);
+
+        if(!accountExist){
+            throw new AppError('Account not found', 404);
+        }
+
+        const recentIncomes = await IncomeModel.find({ account: input.accountId })
+            .sort({ dateReceived: -1 })
+            .limit(input.limit)
+            .lean();
+
+        return recentIncomes;
+
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode)
     }
