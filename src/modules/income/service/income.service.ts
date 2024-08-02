@@ -59,7 +59,7 @@ export async function getTotalIncome(input: GetTotalIncome){
     }
 }
 
-export async function getRecentIncomes(input: GetRecentIncome) {
+export async function getRecentIncomes(input: GetRecentIncome): Promise<IIncome[]> {
     try {
         const accountExist = await accountExists(input.accountId);
 
@@ -72,7 +72,7 @@ export async function getRecentIncomes(input: GetRecentIncome) {
             .limit(input.limit)
             .lean();
 
-        return recentIncomes;
+        return recentIncomes as IIncome[];
 
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode)
