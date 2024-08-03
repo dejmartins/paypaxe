@@ -158,7 +158,7 @@ export const recentExpensesReturnPayload = [
 ];
 
 export const addGoalPayload = {
-    accountId: accountId,
+    account: accountId,
     title: 'New Car Purchase',
     description: "",
     targetAmount: 400.50,
@@ -169,13 +169,76 @@ export const addGoalPayload = {
 export const financialGoalReturnPayload = new FinancialGoalModel({
     _id: financialGoalId,
     account: accountId,
-    tyoe: 'savings',
+    type: 'savings',
     title: 'New Car Purchase',
     targetAmount: 400.50,
     currentProgress: 100.50,
     description: "",
     deadline: '25-07-2024'
 })
+
+export const financialGoalsList = [
+    {
+        _id: financialGoalId,
+        account: accountId,
+        type: "savings",
+        title: "Emergency Fund",
+        targetAmount: 5000.00,
+        currentProgress: 2000.00,
+        deadline: "2024-12-31",
+        description: "Save money for emergencies.",
+        createdAt: "2024-07-01T00:00:00.000Z",
+        updatedAt: "2024-07-20T00:00:00.000Z"
+    },
+    {
+        _id: financialGoalId,
+        account: accountId,
+        type: "savings",
+        title: "Vacation Fund",
+        targetAmount: 3000.00,
+        currentProgress: 1500.00,
+        deadline: "2024-08-31",
+        description: "Save for a vacation trip.",
+        createdAt: "2024-05-15T00:00:00.000Z",
+        updatedAt: "2024-07-20T00:00:00.000Z"
+    },
+    {
+        _id: financialGoalId,
+        account: accountId,
+        type: "savings",
+        title: "New Car",
+        targetAmount: 20000.00,
+        currentProgress: 5000.00,
+        deadline: "2025-06-30",
+        description: "Save for a new car purchase.",
+        createdAt: "2024-06-01T00:00:00.000Z",
+        updatedAt: "2024-07-20T00:00:00.000Z"
+    },
+    {
+        _id: financialGoalId,
+        account: accountId,
+        type: "savings",
+        title: "Home Renovation",
+        targetAmount: 10000.00,
+        currentProgress: 2500.00,
+        deadline: "2024-11-30",
+        description: "Save for home renovation projects.",
+        createdAt: "2024-04-01T00:00:00.000Z",
+        updatedAt: "2024-07-20T00:00:00.000Z"
+    },
+    {
+        _id: financialGoalId,
+        account: accountId,
+        type: "savings",
+        title: "Retirement Fund",
+        targetAmount: 100000.00,
+        currentProgress: 40000.00,
+        deadline: "2040-01-01",
+        description: "Save for retirement.",
+        createdAt: "2024-01-01T00:00:00.000Z",
+        updatedAt: "2024-07-20T00:00:00.000Z"
+    }
+];
 
 export const sessionPayload = new SessionModel({
     _id: new mongoose.Types.ObjectId().toString(),
