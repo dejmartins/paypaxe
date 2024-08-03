@@ -1,4 +1,5 @@
 import { AppError } from "../../../shared/utils/customErrors";
+import log from "../../../shared/utils/logger";
 import { accountExists } from "../../account/service/account.service";
 import ExpenseModel from "../model/expense.model";
 import { AddExpense } from "../types/expenseTypes";
@@ -12,6 +13,7 @@ export async function addExpense(input: AddExpense){
         }
 
         const expense = await ExpenseModel.create(input);
+        log.info(`Expense added for account ID: ${input.accountId}`);
         return expense;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);

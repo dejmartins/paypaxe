@@ -41,7 +41,7 @@ const expenseSchema = new Schema<IExpense>(
         toJSON: {
             getters: true,
             transform: (doc, ret) => {
-                ret.dateReceived = ret.dateReceived.toISOString().split('T')[0];
+                ret.date = ret.date.toISOString().split('T')[0];
                 return ret;
             }
         }
