@@ -22,8 +22,8 @@ function createServer() {
     app.use('/api', userRoutes)
     app.use('/api', sessionRoutes)
     app.use('/api', accountRoutes)
-    app.use('/api', incomeRoutes)
     app.use('/api', expenseRoutes)
+    app.use('/api', incomeRoutes)
     app.use('/api/auth', authRoutes)
 
     return app;

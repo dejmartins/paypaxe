@@ -98,21 +98,64 @@ export const recentIncomesReturnPayload = [
 ];
 
 export const addExpensePayload = {
-    accountId: accountId,
+    account: accountId,
     amount: 400.50,
     category: "salary",
     description: "",
-    date: "25-07-2024"
+    date: "2024-07-23"
 }
 
 export const expenseReturnPayload  = new ExpenseModel({
     _id: expenseId,
     account: accountId,
     amount: 400.50,
-    category: "salary",
-    description: "",
-    date: '25-07-2024'
+    category: "food",
+    description: "Food for family and friends",
+    date: "2024-07-23"
 })
+
+const mockExpenseDocs = [
+    { amount: 40050 },
+    { amount: 20050 },
+    { amount: 30050 },
+]
+
+export const expectedTotalExpense = mockExpenseDocs
+    .reduce((sum, doc) => sum + doc.amount, 0);
+
+
+export const recentExpensesReturnPayload = [
+    {
+        _id: "60f7c4d7b4b8e72a9d06e432",
+        account: accountId,
+        amount: 500.00,
+        category: "Salary",
+        description: "Monthly Salary",
+        date: "2024-07-25",
+        createdAt: "2024-07-25T00:00:00.000Z",
+        updatedAt: "2024-07-25T00:00:00.000Z"
+    },
+    {
+        _id: "60f7c4d7b4b8e72a9d06e433",
+        account: accountId,
+        amount: 250.00,
+        category: "Freelance",
+        description: "Freelance Project",
+        date: "2024-07-24",
+        createdAt: "2024-07-24T00:00:00.000Z",
+        updatedAt: "2024-07-24T00:00:00.000Z"
+    },
+    {
+        _id: "60f7c4d7b4b8e72a9d06e434",
+        account: accountId,
+        amount: 100.00,
+        category: "Gift",
+        description: "Birthday Gift",
+        date: "2024-07-23",
+        createdAt: "2024-07-23T00:00:00.000Z",
+        updatedAt: "2024-07-23T00:00:00.000Z"
+    },
+];
 
 export const addGoalPayload = {
     accountId: accountId,

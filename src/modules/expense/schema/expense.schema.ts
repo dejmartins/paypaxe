@@ -32,4 +32,39 @@ export const addExpenseSchema = object({
     })
 })
 
+export const getTotalExpenseSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    query: object({
+        timePeriod: union([
+            literal("thisWeek"),
+            literal("lastWeek"),
+            literal("thisMonth"),
+            literal("lastMonth"),
+            literal("lastTwoMonths"),
+            literal("custom"),
+        ]),
+        startDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
+            message: "Invalid start date format",
+        })),
+        endDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
+            message: "Invalid end date format",
+        })),
+    })
+});
+
+export const getRecentExpensesSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    query: object({
+        limit: string({
+            required_error: "Limit is required"
+        }).refine(value => !isNaN(parseInt(value, 10)), {
+            message: 'Limit must be a number',
+        })
+    })
+});
+
 export type AddExpenseInput = TypeOf<typeof addExpenseSchema>;

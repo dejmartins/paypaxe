@@ -6,14 +6,7 @@ import IncomeModel, { IIncome } from "../model/income.model";
 import { AddIncome, GetRecentIncome, GetTotalIncome } from "../types/incomeTypes";
 
 export async function addIncome(input: AddIncome): Promise<IIncome>{
-    try{
-        const currentDate = new Date();
-        const incomeDate = new Date(input.dateReceived);
-
-        if(incomeDate > currentDate){
-            throw new AppError('Invalid Date - date cannot be in the future', 400);
-        }
-        
+    try{    
         const accountExist = await accountExists(input.account);
 
         if(!accountExist){
@@ -74,7 +67,7 @@ export async function getRecentIncomes(input: GetRecentIncome): Promise<IIncome[
 
         return recentIncomes.map(income => ({
             ...income,
-            amount: parseFloat((income.amount / 100).toFixed(2)),
+            amount: parseFloat((income.amount / 100).toFixed(2))
         })) as IIncome[];
 
     } catch (e: any) {

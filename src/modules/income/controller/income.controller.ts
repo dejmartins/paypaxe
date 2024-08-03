@@ -3,7 +3,6 @@ import asyncHandler from "../../../shared/utils/asyncHandler";
 import { successResponse } from "../../../shared/utils/response";
 import { addIncome, getRecentIncomes, getTotalIncome } from "../service/income.service";
 import { AddIncomeInput } from "../schema/income.schema";
-import { number, string } from "zod";
 import { AppError } from "../../../shared/utils/customErrors";
 
 export const addIncomeHandler = asyncHandler(async (req: Request<{}, {}, AddIncomeInput['body']>, res: Response) => {
