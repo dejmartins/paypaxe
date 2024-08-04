@@ -54,7 +54,7 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
         toJSON: {
             getters: true,
             transform: (doc, ret) => {
-                ret.dateReceived = ret.dateReceived.toISOString().split('T')[0];
+                ret.deadline = ret.deadline.toISOString().split('T')[0];
                 return ret;
             }
         }

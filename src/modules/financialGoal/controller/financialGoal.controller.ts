@@ -7,6 +7,6 @@ import { successResponse } from "../../../shared/utils/response";
 export const addGoalHandler = asyncHandler(async (req: Request<{}, {}, AddGoalInput['body']>, res: Response) => {
     // @ts-ignore
     const { accountId } = req.params;
-    const expense = await addGoal({ account: accountId, ...req.body});
-    return res.json(successResponse(expense, 'Expense added successfully'));
+    const goal = await addGoal({ account: accountId, ...req.body});
+    return res.json(successResponse(goal, 'Financial Goal added successfully'));
 });

@@ -1,4 +1,5 @@
 import { AppError } from "../../../shared/utils/customErrors";
+import log from "../../../shared/utils/logger";
 import { accountExists } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
 import { FinancialGoalInput, GetFinancialGoals } from "../types/financialGoalTypes";
@@ -12,8 +13,10 @@ export async function addGoal(input: FinancialGoalInput): Promise<IFinancialGoal
         }
 
         const goal = await FinancialGoalModel.create(input);
+
         return goal;
     } catch (e: any) {
+        console.error('Error in addGoal:', e);
         throw new AppError(e.message, e.statusCode);
     }
 }
