@@ -36,7 +36,8 @@ export const addFinancialGoalSchema = object({
             return parsedDate >= currentDate;
         }, {
             message: 'Deadline cannot be in the past'
-        })
+        }),
+        type: string().optional()
     })
 });
 

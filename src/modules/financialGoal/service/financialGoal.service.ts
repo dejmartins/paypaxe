@@ -1,9 +1,9 @@
 import { AppError } from "../../../shared/utils/customErrors";
 import { accountExists } from "../../account/service/account.service";
-import FinancialGoalModel from "../model/financialGoal.model";
+import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
 import { FinancialGoalInput, GetFinancialGoals } from "../types/financialGoalTypes";
 
-export async function addGoal(input: FinancialGoalInput){
+export async function addGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try{
         const accountExist = await accountExists(input.account);
     

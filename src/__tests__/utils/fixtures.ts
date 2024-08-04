@@ -160,10 +160,10 @@ export const recentExpensesReturnPayload = [
 export const addGoalPayload = {
     account: accountId,
     title: 'New Car Purchase',
-    description: "",
+    description: "Family car",
     targetAmount: 400.50,
     currentProgress: 100.50,
-    deadline: '25-07-2024'
+    deadline: '2024-08-06'
 }
 
 export const financialGoalReturnPayload = new FinancialGoalModel({
@@ -174,7 +174,7 @@ export const financialGoalReturnPayload = new FinancialGoalModel({
     targetAmount: 400.50,
     currentProgress: 100.50,
     description: "",
-    deadline: '25-07-2024'
+    deadline: '2024-08-06'
 })
 
 export const financialGoalsList = [
