@@ -2,7 +2,7 @@ import { omit } from "lodash";
 import UserModel, { IUser } from "../model/user.model";
 import { UserInput } from "../types/userTypes";
 import { generatePasswordResetToken, generateVerificationToken, verifyJwt } from "../../../shared/utils/jwt.utils";
-import { sendPasswordResetEmail, sendVerificationEmail } from "../../email/services/email.service";
+import { sendPasswordResetEmail, sendVerificationEmail } from "../../notification/email/services/email.service";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
 import { FilterQuery } from "mongoose";

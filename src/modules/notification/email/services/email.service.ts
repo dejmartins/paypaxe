@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import config from '../../../../config/default';
+import config from '../../../../../config/default';
 import { verificationEmailTemplate } from '../templates/verificationEmail';
 import { passwordResetEmailTemplate } from '../templates/passwordResetEmail';
 
@@ -28,6 +28,17 @@ export async function sendPasswordResetEmail(email: string, token: string) {
         to: email,
         subject: 'Password Reset',
         html: passwordResetEmailTemplate({token, clientUrl: config.clientUrl})
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+
+export async function sendEmailNotification(to: string, subject: string, message: string) {
+    const mailOptions = {
+        from: config.emailUser,
+        to,
+        subject,
+        text: message
     };
 
     await transporter.sendMail(mailOptions);

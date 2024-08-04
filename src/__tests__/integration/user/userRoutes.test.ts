@@ -1,5 +1,5 @@
 import * as UserService from '../../../modules/user/service/user.service'
-import * as EmailService from '../../../modules/email/services/email.service'
+import * as EmailService from '../../../modules/notification/email/services/email.service'
  import * as jwtUtils from '../../../shared/utils/jwt.utils';
 import supertest from 'supertest'
 import { createUserPayload, userReturnPayload } from '../../utils/fixtures'

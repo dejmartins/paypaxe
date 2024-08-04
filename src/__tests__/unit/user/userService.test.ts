@@ -1,12 +1,12 @@
 import * as UserService from '../../../modules/user/service/user.service';
 import UserModel from '../../../modules/user/model/user.model';
-import * as EmailService from '../../../modules/email/services/email.service';
+import * as EmailService from '../../../modules/notification/email/services/email.service';
 import * as jwtUtils from '../../../shared/utils/jwt.utils';
 import { createUserPayload, userId, userReturnPayload } from '../../utils/fixtures';
 import { AppError } from '../../../shared/utils/customErrors';
 
 jest.mock('../../../modules/user/model/user.model');
-jest.mock('../../../modules/email/services/email.service');
+jest.mock('../../../modules/notification/email/services/email.service');
 jest.mock('../../../shared/utils/jwt.utils');
 
 describe('UserService - createUser', () => {
