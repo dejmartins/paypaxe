@@ -41,4 +41,18 @@ export const addFinancialGoalSchema = object({
     })
 });
 
+export const getGoalsSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    query: object({
+        limit: string().refine(value => !isNaN(parseInt(value)), {
+            message: 'Limit must be a valid number',
+        }).transform(value => parseInt(value)),
+        page: string().refine(value => !isNaN(parseInt(value)), {
+            message: 'Page must be a valid number',
+        }).transform(value => parseInt(value)),
+    })
+});
+
 export type AddGoalInput = TypeOf<typeof addFinancialGoalSchema>;
