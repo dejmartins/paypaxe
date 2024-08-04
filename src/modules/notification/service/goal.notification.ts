@@ -1,4 +1,5 @@
 import FinancialGoalModel from "../../financialGoal/model/financialGoal.model";
+import { updateGoalNotificationStatus } from "../../financialGoal/service/financialGoal.service";
 import { sendEmailNotification } from "../email/services/email.service";
 
 export async function checkGoalsForNotifications() {
@@ -23,8 +24,10 @@ export async function checkGoalsForNotifications() {
         goalDeadline.setHours(0, 0, 0, 0);
         if (goalDeadline.getTime() === today.getTime()) {
             await sendGoalDeadlineNotification(goal);
+            await updateGoalNotificationStatus(goal._id.toString(), { deadlineNotificationSent: true });
         } else if (goal.currentProgress >= goal.targetAmount) {
             await sendGoalAchievedNotification(goal);
+            await updateGoalNotificationStatus(goal._id.toString(), { goalAchievedNotificationSent: true });
         }
     }
 }

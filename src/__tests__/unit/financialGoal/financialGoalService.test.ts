@@ -10,7 +10,15 @@ jest.mock('../../../modules/financialGoal/model/financialGoal.model')
 jest.mock('../../../modules/notification/email/services/email.service');
 
 describe('FinancialGoalService - addGoal', () => {
+    beforeEach(() => {
+        jest.clearAllMocks()
+    })
+
     describe('given the savings goal details are valid', () => {
+        beforeEach(() => {
+            jest.clearAllMocks()
+        })
+
         it('should create financial goal - savings linked to an account', async () => {
             (accountExists as jest.Mock).mockResolvedValue(true);
             (FinancialGoalModel.create as jest.Mock).mockResolvedValue(financialGoalReturnPayload);
@@ -78,6 +86,7 @@ describe('FinancialGoalService - getFinancialGoals', () => {
                     deadline: new Date(),
                     currentProgress: 1000,
                     targetAmount: 2000,
+                    deadlineNotificationSent: false,
                 }
             ];
 
@@ -87,6 +96,7 @@ describe('FinancialGoalService - getFinancialGoals', () => {
             };
     
             (FinancialGoalModel.find as jest.Mock).mockReturnValue(mockQuery);
+            (FinancialGoalModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ deadlineNotificationSent: true, ...mockQuery });
     
             await checkGoalsForNotifications();
     
@@ -114,6 +124,8 @@ describe('FinancialGoalService - getFinancialGoals', () => {
                     deadline: new Date('2024-12-31'),
                     currentProgress: 3000,
                     targetAmount: 3000,
+                    deadlineNotificationSent: false,
+                    goalAchievedNotificationSent: false,
                 }
             ];
 
@@ -123,6 +135,7 @@ describe('FinancialGoalService - getFinancialGoals', () => {
             };
 
             (FinancialGoalModel.find as jest.Mock).mockReturnValue(mockQuery);
+            (FinancialGoalModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ goalAchievedNotificationSent: true, ...mockQuery });
 
             await checkGoalsForNotifications();
 
@@ -132,6 +145,41 @@ describe('FinancialGoalService - getFinancialGoals', () => {
                 'Congratulations! You have achieved your goal "Vacation Fund". Keep up the great work!'
             );
             expect(sendEmailNotification).toHaveBeenCalledTimes(1);
+        });
+
+        it('should update the goalAchievedNotificationSent attribute to true', async () => {
+            const mockGoals = [
+                {
+                    _id: financialGoalId,
+                    title: 'Vacation Fund',
+                    account: {
+                        user: {
+                            email: 'dej@gmail.com'
+                        }
+                    },
+                    deadline: new Date('2024-12-31'),
+                    currentProgress: 3000,
+                    targetAmount: 3000,
+                    deadlineNotificationSent: false,
+                    goalAchievedNotificationSent: false,
+                }
+            ];
+
+            const mockQuery = {
+                populate: jest.fn().mockReturnThis(),
+                lean: jest.fn().mockResolvedValue(mockGoals),
+            };
+
+            (FinancialGoalModel.find as jest.Mock).mockReturnValue(mockQuery);
+            (FinancialGoalModel.findByIdAndUpdate as jest.Mock).mockReturnValue({ goalAchievedNotificationSent: true, ...mockQuery });
+
+            await checkGoalsForNotifications();
+
+            expect(FinancialGoalModel.findByIdAndUpdate).toHaveBeenCalledWith(
+                financialGoalId,
+                { goalAchievedNotificationSent: true },
+                {"new": true}
+            );
         });
     });
 
