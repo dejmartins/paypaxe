@@ -7,7 +7,7 @@ export async function checkGoalsForNotifications() {
 
     const goals = await FinancialGoalModel.find({
         $or: [
-            { deadline: { $gte: today } },
+            { deadline: { $lte: today } },
             { $expr: { $gte: ['$currentProgress', '$targetAmount'] } }
         ]
     }).populate({
