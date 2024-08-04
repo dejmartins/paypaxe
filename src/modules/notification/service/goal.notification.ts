@@ -8,8 +8,8 @@ export async function checkGoalsForNotifications() {
 
     const goals = await FinancialGoalModel.find({
         $or: [
-            { deadline: { $lte: today } },
-            { $expr: { $gte: ['$currentProgress', '$targetAmount'] } }
+            { deadline: { $lte: today }, deadlineNotificationSent: false },
+            { $expr: { $gte: ['$currentProgress', '$targetAmount'] }, goalAchievedNotificationSent: false }
         ]
     }).populate({
         path: 'account',
@@ -22,10 +22,10 @@ export async function checkGoalsForNotifications() {
     for (const goal of goals) {
         const goalDeadline = new Date(goal.deadline);
         goalDeadline.setHours(0, 0, 0, 0);
-        if (goalDeadline.getTime() === today.getTime()) {
+        if (goalDeadline.getTime() === today.getTime() && !goal.deadlineNotificationSent) {
             await sendGoalDeadlineNotification(goal);
             await updateGoalNotificationStatus(goal._id.toString(), { deadlineNotificationSent: true });
-        } else if (goal.currentProgress >= goal.targetAmount) {
+        } else if (goal.currentProgress >= goal.targetAmount && !goal.goalAchievedNotificationSent) {
             await sendGoalAchievedNotification(goal);
             await updateGoalNotificationStatus(goal._id.toString(), { goalAchievedNotificationSent: true });
         }
