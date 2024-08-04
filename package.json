@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/express-rate-limit": "^6.0.0",
+    "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.15",
     "@types/passport": "^1.0.16",
     "@types/passport-google-oauth20": "^2.0.16",
@@ -26,6 +27,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^8.4.5",
     "nanoid": "^5.0.7",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.14",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
