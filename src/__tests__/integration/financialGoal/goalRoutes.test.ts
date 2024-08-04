@@ -13,7 +13,7 @@ describe('FinancialGoal', () => {
     describe('Goal Creation', () => { 
         describe('given the accountId and financial goal details are valid', () => {
             it('should return goal payload', async () => {
-                // jest.useFakeTimers().setSystemTime(new Date('2024-07-20'));
+                jest.useFakeTimers().setSystemTime(new Date('2024-07-20'));
 
                 const addGoalMock = jest
                     .spyOn(GoalService, 'addGoal')
