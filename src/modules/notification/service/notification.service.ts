@@ -3,7 +3,7 @@ import { sendEmailNotification } from "../email/services/email.service";
 
 export async function checkGoalsForNotifications() {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time part for comparison
+    today.setHours(0, 0, 0, 0);
 
     const goals = await FinancialGoalModel.find({
         $or: [
@@ -20,7 +20,7 @@ export async function checkGoalsForNotifications() {
 
     for (const goal of goals) {
         const goalDeadline = new Date(goal.deadline);
-        goalDeadline.setHours(0, 0, 0, 0); // Reset time part for comparison
+        goalDeadline.setHours(0, 0, 0, 0);
         if (goalDeadline.getTime() === today.getTime()) {
             await sendGoalDeadlineNotification(goal);
         } else if (goal.currentProgress >= goal.targetAmount) {
