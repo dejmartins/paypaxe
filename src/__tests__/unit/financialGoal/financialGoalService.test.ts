@@ -2,7 +2,7 @@ import * as FinancialGoalService from '../../../modules/financialGoal/service/fi
 import { accountExists } from "../../../modules/account/service/account.service";
 import FinancialGoalModel from "../../../modules/financialGoal/model/financialGoal.model";
 import { accountId, addGoalPayload, financialGoalId, financialGoalReturnPayload, financialGoalsList } from "../../utils/fixtures";
-import { checkGoalsForNotifications } from '../../../modules/notification/service/notification.service';
+import { checkGoalsForNotifications } from '../../../modules/notification/service/goal.notification';
 import { sendEmailNotification } from '../../../modules/notification/email/services/email.service';
 
 jest.mock('../../../modules/account/service/account.service')
