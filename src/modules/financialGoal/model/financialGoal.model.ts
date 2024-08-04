@@ -9,6 +9,8 @@ export interface IFinancialGoal extends Document {
     deadline: Date;
     currentProgress: number;
     description?: string;
+    deadlineNotificationSent: boolean;
+    goalAchievedNotificationSent: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -47,6 +49,14 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
         },
         description: {
             type: String,
+        },
+        deadlineNotificationSent: {
+            type: Boolean,
+            default: false,
+        },
+        goalAchievedNotificationSent: {
+            type: Boolean,
+            default: false,
         },
     },
     {
