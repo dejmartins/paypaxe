@@ -5,6 +5,7 @@ import accountRoutes from '../../modules/account/routes/accountRoutes';
 import sessionRoutes from '../../modules/session/routes/sessionRoutes';
 import incomeRoutes from '../../modules/income/routes/incomeRoutes';
 import expenseRoutes from '../../modules/expense/route/expenseRoutes';
+import goalRoutes from '../../modules/financialGoal/routes/goalRoutes';
 import authRoutes from '../../modules/auth/routes/authRoutes';
 import passport from '../../modules/auth/strategy/google.strategy';
 import { generalLimiter } from '../middlewares/rateLimiter';
@@ -24,6 +25,7 @@ function createServer() {
     app.use('/api', accountRoutes)
     app.use('/api', expenseRoutes)
     app.use('/api', incomeRoutes)
+    app.use('/api', goalRoutes)
     app.use('/api/auth', authRoutes)
 
     return app;
