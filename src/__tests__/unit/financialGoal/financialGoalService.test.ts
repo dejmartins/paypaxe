@@ -213,3 +213,11 @@ describe('FinancialGoalService - getFinancialGoals', () => {
         });
     });
 })
+
+describe('FinancialGoalService - updateFinancialGoal', () => {
+    describe('given new values for financial goal attributes', () => { 
+        it('should update the already existing financial goal', () => {
+            
+        })
+     })
+});
