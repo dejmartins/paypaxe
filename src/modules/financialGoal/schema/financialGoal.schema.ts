@@ -1,4 +1,4 @@
-import { number, object, string, TypeOf, union } from "zod";
+import { number, object, optional, string, TypeOf, union } from "zod";
 import { objectIdValidator } from "../../../shared/utils/validator";
 
 export const addFinancialGoalSchema = object({
@@ -79,13 +79,12 @@ export const updateFinancialGoalSchema = object({
             .refine(value => value >= 0, {
                 message: 'Current progress must be greater than or equal to zero'
             }).optional(),
-        deadline: string().optional().refine(date => {
-            // @ts-ignore
+        deadline: optional(string().refine(date => {
             const parsedDate = new Date(date);
             return !isNaN(parsedDate.getDate());
         }, {
             message: 'Invalid date format'
-        }),
+        })),
         type: string().optional(),
     })
 });
