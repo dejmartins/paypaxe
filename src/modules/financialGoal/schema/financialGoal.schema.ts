@@ -55,4 +55,40 @@ export const getGoalsSchema = object({
     })
 });
 
+export const updateFinancialGoalSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        goalId: objectIdValidator,
+    }),
+    body: object({
+        title: string().optional(),
+        description: string().optional(),
+        targetAmount: union([number(), string()])
+            .refine(value => !isNaN(parseFloat(value as string)), {
+                message: 'Must be a valid decimal number',
+            })
+            .transform(value => parseFloat(value as string))
+            .refine(value => value > 0, {
+                message: 'Target amount must be greater than zero'
+            }).optional(),
+        currentProgress: union([number(), string()])
+            .refine(value => !isNaN(parseFloat(value as string)), {
+                message: 'Must be a valid decimal number',
+            })
+            .transform(value => parseFloat(value as string))
+            .refine(value => value >= 0, {
+                message: 'Current progress must be greater than or equal to zero'
+            }).optional(),
+        deadline: string().optional().refine(date => {
+            // @ts-ignore
+            const parsedDate = new Date(date);
+            return !isNaN(parsedDate.getDate());
+        }, {
+            message: 'Invalid date format'
+        }),
+        type: string().optional(),
+    })
+});
+
+
 export type AddGoalInput = TypeOf<typeof addFinancialGoalSchema>;

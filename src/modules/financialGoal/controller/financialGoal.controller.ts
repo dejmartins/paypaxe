@@ -30,5 +30,3 @@ export const updateGoalHandler = asyncHandler(async (req: Request, res: Response
 
     return res.json(successResponse(goal, 'Financial Goal updated successfully'));
 })
-
-// * PUT /accounts/{account_id}/assets/{asset_id}
