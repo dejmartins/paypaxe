@@ -55,13 +55,20 @@ export async function updateFinancialGoal(input: UpdateFinancialGoal){
             throw new AppError('Account not found', 404);
         }
 
-        const goal = await FinancialGoalModel.findByIdAndUpdate(input.goal, input.updateFields, { new: true });
+        const goal = await FinancialGoalModel.findById(input.goal);
 
         if (!goal) {
             throw new AppError('Financial goal not found', 404);
         }
-        
-        return goal;
+
+        // @ts-ignore
+        if (goal.account.toString() !== input.account) {
+            throw new AppError('Financial goal does not belong to the specified account', 403);
+        }
+
+        const updatedGoal = await FinancialGoalModel.findByIdAndUpdate(input.goal, input.updateFields, { new: true });
+
+        return updatedGoal;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
     }

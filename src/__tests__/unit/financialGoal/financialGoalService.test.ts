@@ -223,6 +223,10 @@ describe('FinancialGoalService - updateFinancialGoal', () => {
             };
 
             (accountExists as jest.Mock).mockResolvedValue(true);
+            (FinancialGoalModel.findById as jest.Mock).mockReturnValue({
+                _id: financialGoalId,
+                account: accountId
+            });
             (FinancialGoalModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(updatedFinancialGoal);
 
             const result = await FinancialGoalService.updateFinancialGoal({ account: accountId, goal: financialGoalId, updateFields: updateFinancialGoalFields});
@@ -230,6 +234,7 @@ describe('FinancialGoalService - updateFinancialGoal', () => {
             expect(result).toEqual(updatedFinancialGoal);
             expect(accountExists).toHaveBeenCalledWith(accountId);
             expect(FinancialGoalModel.findByIdAndUpdate).toHaveBeenCalledWith(financialGoalId, updateFinancialGoalFields, {new: true})
+            expect(FinancialGoalModel.findById).toHaveBeenCalledWith(financialGoalId)
         })
      })
 });
