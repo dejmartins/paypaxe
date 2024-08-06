@@ -29,7 +29,8 @@ const expenseSchema = new Schema<IExpense>(
         },
         description: {
             type: String,
-            required: true
+            required: true,
+            default: ""
         },
         date: {
             type: Date,
