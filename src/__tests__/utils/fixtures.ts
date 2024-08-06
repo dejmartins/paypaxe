@@ -177,6 +177,17 @@ export const financialGoalReturnPayload = new FinancialGoalModel({
     deadline: '2024-08-06'
 })
 
+export const updatedFinancialGoalPayload = new FinancialGoalModel({
+    _id: financialGoalId,
+    account: accountId,
+    type: 'savings',
+    title: 'Vacation Fund',
+    targetAmount: 400.50,
+    currentProgress: 100.50,
+    description: "",
+    deadline: '2024-08-06'
+})
+
 export const financialGoalsList = [
     {
         _id: financialGoalId,

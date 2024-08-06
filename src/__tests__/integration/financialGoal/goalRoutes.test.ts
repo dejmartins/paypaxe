@@ -1,6 +1,6 @@
 import createServer from "../../../shared/utils/server";
 import * as GoalService from '../../../modules/financialGoal/service/financialGoal.service';
-import { accountId, addGoalPayload, financialGoalReturnPayload, financialGoalsList } from "../../utils/fixtures";
+import { accountId, addGoalPayload, financialGoalId, financialGoalReturnPayload, financialGoalsList, updatedFinancialGoalPayload, updateFinancialGoalFields } from "../../utils/fixtures";
 import supertest from "supertest";
 
 const app = createServer();
@@ -60,6 +60,26 @@ describe('FinancialGoal', () => {
                 expect(body.data.totalPages).toBe(1);
                 expect(body.data.currentPage).toBe(1);
                 expect(getGoalsMock).toHaveBeenCalledWith({ account: accountId, limit: '3', page: '1' });
+            });
+         })
+    });
+
+    describe('Update Financial Goals', () => {
+        describe('given new values for goal attributes', () => { 
+            it('should return updated goals', async () => {
+                const updateGoalsMock = jest
+                    .spyOn(GoalService, 'updateFinancialGoal')
+                    .mockResolvedValue(updatedFinancialGoalPayload);
+    
+                const { body, statusCode } = await supertest(app)
+                    .put(`/api/accounts/${accountId}/goals/${financialGoalId}`)
+                    .send({
+                        title: 'Vacation Fund'
+                    })
+    
+                expect(statusCode).toBe(200);
+                expect(body.data.title).toStrictEqual(updatedFinancialGoalPayload.toJSON().title);
+                expect(updateGoalsMock).toHaveBeenCalledWith({ account: accountId, goal: financialGoalId, updateFields: { title: 'Vacation Fund' } });
             });
          })
     });
