@@ -240,6 +240,11 @@ export const financialGoalsList = [
     }
 ];
 
+export const updateFinancialGoalFields = {
+    title: 'Updated Title',
+    currentProgress: 2000.40,
+};
+
 export const sessionPayload = new SessionModel({
     _id: new mongoose.Types.ObjectId().toString(),
     user: userId,

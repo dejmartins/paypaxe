@@ -1,7 +1,7 @@
 import * as FinancialGoalService from '../../../modules/financialGoal/service/financialGoal.service'
 import { accountExists } from "../../../modules/account/service/account.service";
 import FinancialGoalModel from "../../../modules/financialGoal/model/financialGoal.model";
-import { accountId, addGoalPayload, financialGoalId, financialGoalReturnPayload, financialGoalsList } from "../../utils/fixtures";
+import { accountId, addGoalPayload, financialGoalId, financialGoalReturnPayload, financialGoalsList, updateFinancialGoalFields } from "../../utils/fixtures";
 import { checkGoalsForNotifications } from '../../../modules/notification/service/goal.notification';
 import { sendEmailNotification } from '../../../modules/notification/email/services/email.service';
 
@@ -216,8 +216,18 @@ describe('FinancialGoalService - getFinancialGoals', () => {
 
 describe('FinancialGoalService - updateFinancialGoal', () => {
     describe('given new values for financial goal attributes', () => { 
-        it('should update the already existing financial goal', () => {
-            
+        it('should update the already existing financial goal', async () => {
+            const updatedFinancialGoal = {
+                ...financialGoalReturnPayload,
+                updateFinancialGoalFields
+            };
+
+            (FinancialGoalModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(updatedFinancialGoal);
+
+            const result = await FinancialGoalService.updateFinancialGoal(financialGoalId, updateFinancialGoalFields);
+
+            expect(result).toEqual(updatedFinancialGoal);
+            expect(FinancialGoalModel.findByIdAndUpdate).toHaveBeenCalledWith(financialGoalId, updateFinancialGoalFields, {new: true})
         })
      })
 });

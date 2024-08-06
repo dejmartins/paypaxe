@@ -48,7 +48,7 @@ export async function getFinancialGoals(input: GetFinancialGoals){
 }
 
 
-export async function updateGoalNotificationStatus(goalId: string, updateFields: Partial<IFinancialGoal>) {
+export async function updateFinancialGoal(goalId: string, updateFields: Partial<IFinancialGoal>) {
     try {
         const goal = await FinancialGoalModel.findByIdAndUpdate(goalId, updateFields, { new: true });
         if (!goal) {

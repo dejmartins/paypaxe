@@ -28,7 +28,7 @@ export const addExpenseSchema = object({
         }) ,
         description: string({
             required_error: 'Expense description is required'
-        }).optional()
+        })
     })
 })
 
