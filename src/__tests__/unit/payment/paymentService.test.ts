@@ -38,5 +38,14 @@ describe('PaymentService - initiatePayment', () => {
             expect(authorizationUrl).toBe('https://checkout.paystack.com/0peioxfhpn');
             expect(TransactionModel.create).toHaveBeenCalledWith(createTransactionPayload);
         })
+
+        it('should throw an error for invalid plan', async () => {
+            await expect(PaymentService.initiatePayment({
+                user: 'dej@gmail.com',
+                account: accountId,
+                plan: 'invalid',
+                numberOfMonths: 1
+            })).rejects.toThrow('Invalid plan selected');
+        });
     })
 })
