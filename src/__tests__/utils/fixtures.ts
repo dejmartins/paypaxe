@@ -271,7 +271,7 @@ export const sessionPayload = new SessionModel({
 export const createTransactionPayload = {
     user: 'dej@gmail.com',
     account: accountId,
-    amount: 400.50,
+    amount: 1000.00,
     status: "pending",
     reference: "7PVGX8MEk85tgeEpVDtD"
 }

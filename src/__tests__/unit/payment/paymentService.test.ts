@@ -18,7 +18,7 @@ describe('PaymentService - initiatePayment', () => {
             const paystackInitiateMockResponse = {
                 data: {
                     authorization_url: 'https://checkout.paystack.com/0peioxfhpn',
-                    reference: 'mock_reference',
+                    reference: '7PVGX8MEk85tgeEpVDtD',
                 },
             };
 

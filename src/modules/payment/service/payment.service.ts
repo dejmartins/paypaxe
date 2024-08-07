@@ -2,6 +2,7 @@ import axios from "axios";
 import { AppError } from "../../../shared/utils/customErrors";
 import { InitiatePayment } from "../types/paymentTypes";
 import config from "../../../../config/default";
+import { createTransaction } from "../../transaction/service/transaction.service";
 
 export async function initiatePayment(input: InitiatePayment){
     try {
@@ -25,7 +26,13 @@ export async function initiatePayment(input: InitiatePayment){
             }
         })
 
-        console.log(response.data.data)
+        await createTransaction({
+            user: input.user,
+            account: input.account,
+            amount: amount,
+            status: 'pending',
+            reference: response.data.data.reference
+        })
 
         return response.data.data.authorization_url;
 
