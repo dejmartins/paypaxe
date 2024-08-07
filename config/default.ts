@@ -108,7 +108,21 @@ const constants = loadVariables(
 
         PAYSTACK_INITIALIZE_URL: {
             required: !currentDeployment.isTest,
-        }
+            default: ""
+        },
+
+        BASIC_PLAN_FEE: {
+            required: !currentDeployment.isTest,
+            default: '0',
+            parser: (value: string) => (parseFloat(value || '0'))
+        },
+
+        PREMIUM_PLAN_FEE: {
+            required: !currentDeployment.isTest,
+            default: '0',
+            parser: (value: string) => (parseFloat(value || '0'))
+        },
+
     }
 )
 
@@ -131,7 +145,9 @@ export const config = {
     clientUrl: constants.CLIENT_URL,
     googleClientID: constants.GOOGLE_CLIENT_ID,
     googleClientSecret: constants.GOOGLE_CLIENT_SECRET,
-    initiatePayment: constants.PAYSTACK_INITIALIZE_URL
+    paystackInitiatePayment: constants.PAYSTACK_INITIALIZE_URL,
+    basicPlanFee: constants.BASIC_PLAN_FEE,
+    premiumPlanFee: constants.PREMIUM_PLAN_FEE,
 }
 
 export default config;
