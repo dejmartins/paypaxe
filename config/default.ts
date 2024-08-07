@@ -113,15 +113,20 @@ const constants = loadVariables(
 
         BASIC_PLAN_FEE: {
             required: !currentDeployment.isTest,
-            default: '0',
-            parser: (value: string) => (parseFloat(value || '0'))
+            default: 0,
+            parser: (value: any) => (parseFloat(value || 0))
         },
 
         PREMIUM_PLAN_FEE: {
             required: !currentDeployment.isTest,
-            default: '0',
-            parser: (value: string) => (parseFloat(value || '0'))
+            default: 0,
+            parser: (value: any) => (parseFloat(value || '0'))
         },
+
+        PAYSTACK_SECRET_KEY: {
+            required: !currentDeployment.isProduction,
+            default: '',
+        }
 
     }
 )
@@ -148,6 +153,7 @@ export const config = {
     paystackInitiatePayment: constants.PAYSTACK_INITIALIZE_URL,
     basicPlanFee: constants.BASIC_PLAN_FEE,
     premiumPlanFee: constants.PREMIUM_PLAN_FEE,
+    paystackSecretKey: constants.PAYSTACK_SECRET_KEY
 }
 
 export default config;
