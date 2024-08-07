@@ -105,6 +105,10 @@ const constants = loadVariables(
             required: !currentDeployment.isTest,
             default: ""
         },
+
+        PAYSTACK_INITIALIZE_URL: {
+            required: !currentDeployment.isTest,
+        }
     }
 )
 
@@ -126,7 +130,8 @@ export const config = {
     emailPass: constants.EMAIL_PASS,
     clientUrl: constants.CLIENT_URL,
     googleClientID: constants.GOOGLE_CLIENT_ID,
-    googleClientSecret: constants.GOOGLE_CLIENT_SECRET
+    googleClientSecret: constants.GOOGLE_CLIENT_SECRET,
+    initiatePayment: constants.PAYSTACK_INITIALIZE_URL
 }
 
 export default config;
