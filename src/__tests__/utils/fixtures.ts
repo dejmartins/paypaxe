@@ -5,12 +5,14 @@ import AccountModel from "../../modules/account/model/account.model";
 import IncomeModel, { IIncome } from "../../modules/income/model/income.model";
 import FinancialGoalModel from "../../modules/financialGoal/model/financialGoal.model";
 import ExpenseModel from "../../modules/expense/model/expense.model";
+import TransactionModel from "../../modules/transaction/model/transaction.model";
 
 export const userId = new mongoose.Types.ObjectId().toString();
 export const accountId = new mongoose.Types.ObjectId().toString();
 export const incomeId = new mongoose.Types.ObjectId().toString();
 export const expenseId = new mongoose.Types.ObjectId().toString();
 export const financialGoalId = new mongoose.Types.ObjectId().toString();
+export const transactionId = new mongoose.Types.ObjectId().toString();
 
 export const createUserPayload = {
     email: "dej@gmail.com",
@@ -264,4 +266,21 @@ export const sessionPayload = new SessionModel({
     createdAt: new Date("2021-09-30T13:31:07.674Z"),
     updatedAt: new Date("2021-09-30T13:31:07.674Z"),
     __v: 0,
-  })
+})
+
+export const createTransactionPayload = {
+    user: 'dej@gmail.com',
+    account: accountId,
+    amount: 400.50,
+    status: "pending",
+    reference: "7PVGX8MEk85tgeEpVDtD"
+}
+
+export const transactionReturnPayload  = new TransactionModel({
+    _id: transactionId,
+    user: 'dej@gmail.com',
+    account: accountId,
+    amount: 400.50,
+    status: "pending",
+    reference: "7PVGX8MEk85tgeEpVDtD"
+})
