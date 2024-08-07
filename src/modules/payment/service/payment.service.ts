@@ -25,6 +25,8 @@ export async function initiatePayment(input: InitiatePayment){
             }
         })
 
+        console.log(response.data.data)
+
         return response.data.data.authorization_url;
 
     } catch (e: any) {
