@@ -4,7 +4,6 @@ import { InitiatePayment } from "../types/paymentTypes";
 import config from "../../../../config/default";
 import { createTransaction, findTransactionByReference } from "../../transaction/service/transaction.service";
 import { findAccount } from "../../account/service/account.service";
-import log from "../../../shared/utils/logger";
 
 export async function initiatePayment(input: InitiatePayment){
     try {
@@ -40,7 +39,6 @@ export async function initiatePayment(input: InitiatePayment){
             reference: response.data.data.reference
         })
 
-        log.info("Response data", response.data);
         return response.data.data.authorization_url;
 
     } catch (e: any) {
