@@ -5,7 +5,7 @@ export interface IAccount extends Document {
     user: IUser['_id'];
     accountType: 'individual' | 'family' | 'trader' | 'business';
     subscriptionPlan: 'basic' | 'premium';
-    trialEndDate: Date;
+    subscriptionEndDate: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -27,7 +27,7 @@ const accountSchema = new Schema<IAccount>(
             required: true,
             enum: ['basic', 'premium']
         },
-        trialEndDate: {
+        subscriptionEndDate: {
             type: Date
         }
     }, 
@@ -38,7 +38,7 @@ const accountSchema = new Schema<IAccount>(
 
 accountSchema.pre<IAccount>('save', function(next) {
     if (this.isNew && this.subscriptionPlan === 'basic') {
-        this.trialEndDate = new Date(this.createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+        this.subscriptionEndDate = new Date(this.createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
     }
     next();
 });
