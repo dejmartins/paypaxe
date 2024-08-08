@@ -2,7 +2,9 @@ import axios from "axios";
 import { AppError } from "../../../shared/utils/customErrors";
 import { InitiatePayment } from "../types/paymentTypes";
 import config from "../../../../config/default";
-import { createTransaction } from "../../transaction/service/transaction.service";
+import { createTransaction, findTransactionByReference } from "../../transaction/service/transaction.service";
+import { ITransaction } from "../../transaction/model/transaction.model";
+import { findAccount } from "../../account/service/account.service";
 
 export async function initiatePayment(input: InitiatePayment){
     try {
@@ -19,7 +21,11 @@ export async function initiatePayment(input: InitiatePayment){
         const response = await axios.post(config.paystackInitiatePayment, {
             email: input.user,
             amount: amount * 100,
-            metadata: { accountId: input.account }
+            metadata: { 
+                accountId: input.account,
+                plan: input.plan,
+                numberOfMonths: input.numberOfMonths
+            }
         }, {
             headers: {
                 Authorization: config.paystackSecretKey
@@ -39,4 +45,33 @@ export async function initiatePayment(input: InitiatePayment){
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode)
     }
+}
+
+export async function handleWebhookEvent(event: any) {
+    const { reference, status, metadata } = event.data;
+
+    const transaction = await findTransactionByReference({ reference });
+
+    if (!transaction) {
+        throw new AppError('Transaction not found', 404);
+    }
+
+    transaction.status = status === 'success' ? 'success' : 'failed';
+    await transaction.save();
+
+    if (transaction.status === 'success') {
+        const { plan, numberOfMonths } = metadata;
+
+        // @ts-ignore
+        await updateSubscription(transaction.account.toString(), plan, numberOfMonths);
+    }
+}
+
+async function updateSubscription(accountId: string, plan: string, numberOfMonths: number) {
+    const account = await findAccount(accountId);
+
+    if (!account) {
+        throw new AppError('Account not found', 404);
+    }
+    
 }

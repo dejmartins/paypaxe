@@ -36,3 +36,12 @@ export async function accountExists(accountId: string): Promise<boolean> {
         throw new AppError(e.message, e.statusCode);
     }
 }
+
+export async function findAccount(accountId: string): Promise<IAccount> {
+    try {
+        const account = await AccountModel.findById(accountId).lean();
+        return account as IAccount;
+    } catch (e: any){
+        throw new AppError(e.message, e.statusCode);
+    }
+}

@@ -11,10 +11,10 @@ export async function createTransaction(input: CreateTransaction){
     }
 }
 
-export async function findTransactionByReference(reference: Partial<ITransaction>) {
+export async function findTransactionByReference(reference: Partial<ITransaction>): Promise<ITransaction> {
     try {
-        const transaction = await TransactionModel.findOne({ reference });
-        return transaction;
+        const transaction = await TransactionModel.findOne({ reference }).lean();
+        return transaction as ITransaction;
     } catch(e: any) {
         throw new AppError(e.message, e.statusCode);
     }
