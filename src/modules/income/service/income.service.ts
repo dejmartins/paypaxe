@@ -1,17 +1,13 @@
 import { Types } from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import { getTimeFrame } from "../../../shared/utils/time";
-import { accountExists } from "../../account/service/account.service";
+import { validateAccount } from "../../account/service/account.service";
 import IncomeModel, { IIncome } from "../model/income.model";
 import { AddIncome, GetRecentIncome, GetTotalIncome } from "../types/incomeTypes";
 
 export async function addIncome(input: AddIncome): Promise<IIncome>{
     try{    
-        const accountExist = await accountExists(input.account);
-
-        if(!accountExist){
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.account);
 
         const income = await IncomeModel.create(input);
         return income;
@@ -22,11 +18,7 @@ export async function addIncome(input: AddIncome): Promise<IIncome>{
 
 export async function getTotalIncome(input: GetTotalIncome){
     try {
-        const accountExist = await accountExists(input.accountId);
-
-        if(!accountExist){
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.accountId);
         
         const { startDate: start, endDate: end } = getTimeFrame(input.timePeriod, input.startDate, input.endDate);
     
@@ -54,11 +46,7 @@ export async function getTotalIncome(input: GetTotalIncome){
 
 export async function getRecentIncomes(input: GetRecentIncome): Promise<IIncome[]> {
     try {
-        const accountExist = await accountExists(input.accountId);
-
-        if(!accountExist){
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.accountId);
 
         const recentIncomes = await IncomeModel.find({ account: input.accountId })
             .sort({ dateReceived: -1 })
@@ -74,4 +62,3 @@ export async function getRecentIncomes(input: GetRecentIncome): Promise<IIncome[
         throw new AppError(e.message, e.statusCode)
     }
 }
-

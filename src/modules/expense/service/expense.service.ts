@@ -2,17 +2,13 @@ import { Types } from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
-import { accountExists } from "../../account/service/account.service";
+import { validateAccount } from "../../account/service/account.service";
 import ExpenseModel, { IExpense } from "../model/expense.model";
 import { AddExpense, GetRecentExpense, GetTotalExpense } from "../types/expenseTypes";
 
 export async function addExpense(input: AddExpense){
     try{
-        const accountExist = await accountExists(input.account);
-    
-        if(!accountExist){
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.account);
 
         const expense = await ExpenseModel.create(input);
 
@@ -26,11 +22,7 @@ export async function addExpense(input: AddExpense){
 
 export async function getTotalExpense(input: GetTotalExpense){
     try {
-        const accountExist = await accountExists(input.accountId);
-
-        if(!accountExist){
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.accountId);
         
         const { startDate: start, endDate: end } = getTimeFrame(input.timePeriod, input.startDate, input.endDate);
     
@@ -58,11 +50,7 @@ export async function getTotalExpense(input: GetTotalExpense){
 
 export async function getRecentExpenses(input: GetRecentExpense): Promise<IExpense[]> {
     try {
-        const accountExist = await accountExists(input.accountId);
-
-        if(!accountExist){
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.accountId);
 
         const recentExpenses = await ExpenseModel.find({ account: input.accountId })
             .sort({ date: -1 })

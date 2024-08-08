@@ -1,16 +1,12 @@
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
-import { accountExists } from "../../account/service/account.service";
+import { validateAccount } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
 import { FinancialGoalInput, GetFinancialGoals, UpdateFinancialGoal } from "../types/financialGoalTypes";
 
 export async function addGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try {
-        const accountExist = await accountExists(input.account);
-
-        if (!accountExist) {
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.account);
 
         const goal = await FinancialGoalModel.create(input);
         return goal;
@@ -21,11 +17,7 @@ export async function addGoal(input: FinancialGoalInput): Promise<IFinancialGoal
 
 export async function getFinancialGoals(input: GetFinancialGoals){
     try{
-        const accountExist = await accountExists(input.account);
-    
-        if(!accountExist){
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.account);
 
         const goals = await FinancialGoalModel.find({ account: input.account })
             .skip((input.page - 1) * input.limit)
@@ -49,11 +41,7 @@ export async function getFinancialGoals(input: GetFinancialGoals){
 
 export async function updateFinancialGoal(input: UpdateFinancialGoal){
     try {
-        const accountExist = await accountExists(input.account);
-    
-        if(!accountExist){
-            throw new AppError('Account not found', 404);
-        }
+        validateAccount(input.account);
 
         const goal = await FinancialGoalModel.findById(input.goal);
 

@@ -1,6 +1,6 @@
 import createServer from "../../../shared/utils/server";
 import * as GoalService from '../../../modules/financialGoal/service/financialGoal.service';
-import { accountId, addGoalPayload, financialGoalId, financialGoalReturnPayload, financialGoalsList, updatedFinancialGoalPayload, updateFinancialGoalFields } from "../../utils/fixtures";
+import { accountId, addGoalPayload, financialGoalId, financialGoalReturnPayload, financialGoalsList, updatedFinancialGoalPayload } from "../../utils/fixtures";
 import supertest from "supertest";
 
 const app = createServer();

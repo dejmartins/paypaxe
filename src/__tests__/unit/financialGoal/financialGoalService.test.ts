@@ -1,9 +1,10 @@
 import * as FinancialGoalService from '../../../modules/financialGoal/service/financialGoal.service'
-import { accountExists } from "../../../modules/account/service/account.service";
+import { validateAccount } from "../../../modules/account/service/account.service";
 import FinancialGoalModel from "../../../modules/financialGoal/model/financialGoal.model";
 import { accountId, addGoalPayload, financialGoalId, financialGoalReturnPayload, financialGoalsList, updateFinancialGoalFields } from "../../utils/fixtures";
 import { checkGoalsForNotifications } from '../../../modules/notification/service/goal.notification';
 import { sendEmailNotification } from '../../../modules/notification/email/services/email.service';
+import { AppError } from '../../../shared/utils/customErrors';
 
 jest.mock('../../../modules/account/service/account.service')
 jest.mock('../../../modules/financialGoal/model/financialGoal.model')
@@ -20,12 +21,11 @@ describe('FinancialGoalService - addGoal', () => {
         })
 
         it('should create financial goal - savings linked to an account', async () => {
-            (accountExists as jest.Mock).mockResolvedValue(true);
             (FinancialGoalModel.create as jest.Mock).mockResolvedValue(financialGoalReturnPayload);
 
             const result = await FinancialGoalService.addGoal(addGoalPayload);
 
-            expect(accountExists).toHaveBeenCalledWith(addGoalPayload.account);
+            expect(validateAccount).toHaveBeenCalledWith(addGoalPayload.account);
             expect(result).toStrictEqual(financialGoalReturnPayload);
             expect(FinancialGoalModel.create).toHaveBeenCalledWith(addGoalPayload);
         })
@@ -33,11 +33,13 @@ describe('FinancialGoalService - addGoal', () => {
 
     describe('given that the account does not exists', () => {
         it('should throw an error - Not Found', async () => {
-            (accountExists as jest.Mock).mockResolvedValue(false);
+            (validateAccount as jest.Mock).mockImplementation(() => {
+                throw new AppError('Account not found', 404);
+            });
 
             await expect(FinancialGoalService.addGoal(addGoalPayload))
                 .rejects.toThrow('Account not found');
-            expect(accountExists).toHaveBeenCalledWith(addGoalPayload.account);
+            expect(validateAccount).toHaveBeenCalledWith(addGoalPayload.account);
             expect(FinancialGoalModel.create).not.toHaveBeenCalled();
         })
     })
@@ -48,7 +50,6 @@ describe('FinancialGoalService - getFinancialGoals', () => {
         it('should fetch all financial goals paginated', async () => {
             const page = 1;
             const limit = 10;
-            (accountExists as jest.Mock).mockResolvedValue(true);
             const mockFind = {
                 skip: jest.fn().mockReturnThis(),
                 limit: jest.fn().mockReturnThis(),
@@ -60,7 +61,7 @@ describe('FinancialGoalService - getFinancialGoals', () => {
 
             const result = await FinancialGoalService.getFinancialGoals({ account: accountId, page, limit });
 
-            expect(accountExists).toHaveBeenCalledWith(accountId);
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
             expect(FinancialGoalModel.find).toHaveBeenCalledWith({ account: accountId });
             expect(mockFind.skip).toHaveBeenCalledWith((page - 1) * limit);
             expect(mockFind.limit).toHaveBeenCalledWith(limit);
@@ -222,7 +223,6 @@ describe('FinancialGoalService - updateFinancialGoal', () => {
                 updateFinancialGoalFields
             };
 
-            (accountExists as jest.Mock).mockResolvedValue(true);
             (FinancialGoalModel.findById as jest.Mock).mockReturnValue({
                 _id: financialGoalId,
                 account: accountId
@@ -232,7 +232,7 @@ describe('FinancialGoalService - updateFinancialGoal', () => {
             const result = await FinancialGoalService.updateFinancialGoal({ account: accountId, goal: financialGoalId, updateFields: updateFinancialGoalFields});
 
             expect(result).toEqual(updatedFinancialGoal);
-            expect(accountExists).toHaveBeenCalledWith(accountId);
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
             expect(FinancialGoalModel.findByIdAndUpdate).toHaveBeenCalledWith(financialGoalId, updateFinancialGoalFields, {new: true})
             expect(FinancialGoalModel.findById).toHaveBeenCalledWith(financialGoalId)
         })

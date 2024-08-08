@@ -28,19 +28,27 @@ export async function createAccount(input: AccountInput): Promise<IAccount> {
     }
 }
 
-export async function accountExists(accountId: string): Promise<boolean> {
+export async function findAccount(accountId: string): Promise<IAccount | null> {
     try {
         const account = await AccountModel.findById(accountId);
-        return !!account;
+        return account;
     } catch (e: any){
         throw new AppError(e.message, e.statusCode);
     }
 }
 
-export async function findAccount(accountId: string): Promise<IAccount | null> {
+export async function validateAccount(accountId: string) {
+    const accountExist = await accountExists(accountId);
+    
+    if(!accountExist){
+        throw new AppError('Account not found', 404);
+    }
+}
+
+async function accountExists(accountId: string): Promise<boolean> {
     try {
         const account = await AccountModel.findById(accountId);
-        return account;
+        return !!account;
     } catch (e: any){
         throw new AppError(e.message, e.statusCode);
     }
