@@ -5,6 +5,7 @@ import config from "../../../../config/default";
 import { createTransaction, findTransactionByReference } from "../../transaction/service/transaction.service";
 import { ITransaction } from "../../transaction/model/transaction.model";
 import { findAccount } from "../../account/service/account.service";
+import { IAccount } from "../../account/model/account.model";
 
 export async function initiatePayment(input: InitiatePayment){
     try {
@@ -67,11 +68,27 @@ export async function handleWebhookEvent(event: any) {
     }
 }
 
-async function updateSubscription(accountId: string, plan: string, numberOfMonths: number) {
+async function updateSubscription(accountId: string, plan: 'basic' | 'premium', numberOfMonths: number) {
     const account = await findAccount(accountId);
 
     if (!account) {
         throw new AppError('Account not found', 404);
     }
-    
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let currentEndDate = account.subscriptionEndDate;
+
+    if (currentEndDate < today) {
+        currentEndDate = today;
+    }
+
+    let additionalMonths = numberOfMonths;
+
+    currentEndDate.setMonth(currentEndDate.getMonth() + additionalMonths);
+    account.subscriptionEndDate = currentEndDate;
+    account.subscriptionPlan = plan;
+
+    await account.save();
 }
