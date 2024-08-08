@@ -3,9 +3,7 @@ import { AppError } from "../../../shared/utils/customErrors";
 import { InitiatePayment } from "../types/paymentTypes";
 import config from "../../../../config/default";
 import { createTransaction, findTransactionByReference } from "../../transaction/service/transaction.service";
-import { ITransaction } from "../../transaction/model/transaction.model";
 import { findAccount } from "../../account/service/account.service";
-import { IAccount } from "../../account/model/account.model";
 
 export async function initiatePayment(input: InitiatePayment){
     try {
