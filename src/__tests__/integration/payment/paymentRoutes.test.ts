@@ -26,7 +26,7 @@ describe('Payment', () => {
 
         expect(statusCode).toBe(200);
         expect(body.data).toBe(authorizationUrl);
-        expect(PaymentService.initiatePayment).toHaveBeenCalledWith({
+        expect(initiatePaymentMock).toHaveBeenCalledWith({
             user: 'dej@gmail.com',
             account: accountId,
             plan: 'basic',

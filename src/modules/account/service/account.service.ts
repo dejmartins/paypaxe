@@ -37,10 +37,10 @@ export async function accountExists(accountId: string): Promise<boolean> {
     }
 }
 
-export async function findAccount(accountId: string): Promise<IAccount> {
+export async function findAccount(accountId: string): Promise<IAccount | null> {
     try {
-        const account = await AccountModel.findById(accountId).lean();
-        return account as IAccount;
+        const account = await AccountModel.findById(accountId);
+        return account;
     } catch (e: any){
         throw new AppError(e.message, e.statusCode);
     }

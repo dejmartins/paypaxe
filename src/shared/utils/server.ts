@@ -10,9 +10,14 @@ import authRoutes from '../../modules/auth/routes/authRoutes';
 import paymentRoutes from '../../modules/payment/routes/paymentRoutes';
 import passport from '../../modules/auth/strategy/google.strategy';
 import { generalLimiter } from '../middlewares/rateLimiter';
+import bodyParser from 'body-parser';
 
 function createServer() {
     const app = express();
+
+    app.set('trust proxy', 1);
+
+    app.use(bodyParser.json()); 
     
     app.use(express.json());
     

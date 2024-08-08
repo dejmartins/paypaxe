@@ -4,6 +4,7 @@ import { InitiatePayment } from "../types/paymentTypes";
 import config from "../../../../config/default";
 import { createTransaction, findTransactionByReference } from "../../transaction/service/transaction.service";
 import { findAccount } from "../../account/service/account.service";
+import log from "../../../shared/utils/logger";
 
 export async function initiatePayment(input: InitiatePayment){
     try {
@@ -27,7 +28,7 @@ export async function initiatePayment(input: InitiatePayment){
             }
         }, {
             headers: {
-                Authorization: config.paystackSecretKey
+                Authorization: `Bearer ${config.paystackSecretKey}`
             }
         })
 
@@ -39,30 +40,35 @@ export async function initiatePayment(input: InitiatePayment){
             reference: response.data.data.reference
         })
 
+        log.info("Response data", response.data);
         return response.data.data.authorization_url;
 
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode)
+        throw new AppError(e.message, 500)
     }
 }
 
 export async function handleWebhookEvent(event: any) {
-    const { reference, status, metadata } = event.data;
-
-    const transaction = await findTransactionByReference({ reference });
-
-    if (!transaction) {
-        throw new AppError('Transaction not found', 404);
-    }
-
-    transaction.status = status === 'success' ? 'success' : 'failed';
-    await transaction.save();
-
-    if (transaction.status === 'success') {
-        const { plan, numberOfMonths } = metadata;
-
-        // @ts-ignore
-        await updateSubscription(transaction.account.toString(), plan, numberOfMonths);
+    try {
+        const { reference, status, metadata } = event.data;
+    
+        const transaction = await findTransactionByReference(reference);
+    
+        if (!transaction) {
+            throw new AppError('Transaction not found', 404);
+        }
+    
+        transaction.status = status === 'success' ? 'success' : 'failed';
+        await transaction.save();
+    
+        if (transaction.status === 'success') {
+            const { plan, numberOfMonths } = metadata;
+    
+            // @ts-ignore
+            await updateSubscription(transaction.account.toString(), plan, numberOfMonths);
+        }
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode)
     }
 }
 
@@ -76,15 +82,19 @@ async function updateSubscription(accountId: string, plan: 'basic' | 'premium', 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    let currentEndDate = account.subscriptionEndDate;
+    let currentEndDate = new Date(account.subscriptionEndDate);
+
+    if (isNaN(currentEndDate.getTime())) {
+        currentEndDate = today;
+    }
 
     if (currentEndDate < today) {
         currentEndDate = today;
     }
 
-    let additionalMonths = numberOfMonths;
+    const additionalMilliseconds = numberOfMonths * 30 * 24 * 60 * 60 * 1000; 
+    currentEndDate = new Date(currentEndDate.getTime() + additionalMilliseconds);
 
-    currentEndDate.setMonth(currentEndDate.getMonth() + additionalMonths);
     account.subscriptionEndDate = currentEndDate;
     account.subscriptionPlan = plan;
 
