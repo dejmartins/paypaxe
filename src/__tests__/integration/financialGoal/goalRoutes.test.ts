@@ -2,6 +2,11 @@ import createServer from "../../../shared/utils/server";
 import * as GoalService from '../../../modules/financialGoal/service/financialGoal.service';
 import { accountId, addGoalPayload, financialGoalId, financialGoalReturnPayload, financialGoalsList, updatedFinancialGoalPayload } from "../../utils/fixtures";
 import supertest from "supertest";
+import { NextFunction, Request, Response } from "express";
+
+jest.mock('../../../shared/middlewares/validateAccount', () => ({
+    validateAccountTypeAndPlan: () => (req: Request, res: Response, next: NextFunction) => next()
+}));
 
 const app = createServer();
 
