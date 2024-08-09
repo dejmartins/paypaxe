@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { validateAccountTypeAndPlan } from '../../../shared/middlewares/validateAccount';
+import { validateAccountTypeAndPlan, validateSubscription } from '../../../shared/middlewares/validateAccount';
 import { findAccount } from '../../../modules/account/service/account.service';
 import { accountId } from '../../utils/fixtures';
 
@@ -90,5 +90,66 @@ describe('validateAccountTypeAndPlan Middleware', () => {
 
         expect(findAccount).toHaveBeenCalledWith(accountId);
         expect(next).not.toHaveBeenCalled();
+    });
+});
+
+
+describe('validateSubscription Middleware', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let next: Partial<NextFunction>;
+
+    beforeEach(() => {
+        req = {
+            params: {
+                accountId: accountId
+            }
+        };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn().mockReturnThis()
+        };
+        next = jest.fn();
+    });
+
+    it('should return 404 if account is not found', async () => {
+        (findAccount as jest.Mock).mockResolvedValue(null);
+
+        await validateSubscription(req as Request, res as Response, next as NextFunction);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'fail',
+            error: 'Validation error',
+            message: 'Account not found.'
+        });
+    });
+
+    it('should return 403 if the subscription has expired', async () => {
+        (findAccount as jest.Mock).mockResolvedValue({
+            subscriptionEndDate: new Date('2022-01-01'),
+        });
+
+        await validateSubscription(req as Request, res as Response, next as NextFunction);
+
+        expect(res.status).toHaveBeenCalledWith(403);
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'fail',
+            error: 'Validation error',
+            message: 'Subscription has expired.'
+        });
+    });
+
+    it('should call next if the subscription is active', async () => {
+        const futureDate = new Date();
+        futureDate.setFullYear(futureDate.getFullYear() + 1);
+
+        (findAccount as jest.Mock).mockResolvedValue({
+            subscriptionEndDate: futureDate,
+        });
+
+        await validateSubscription(req as Request, res as Response, next as NextFunction);
+
+        expect(next).toHaveBeenCalled();
     });
 });
