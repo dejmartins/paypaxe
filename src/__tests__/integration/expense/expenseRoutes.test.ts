@@ -2,6 +2,11 @@ import supertest from 'supertest';
 import * as ExpenseService from '../../../modules/expense/service/expense.service';
 import createServer from '../../../shared/utils/server';
 import { accountId, addExpensePayload, expectedTotalExpense, expenseReturnPayload, recentExpensesReturnPayload } from '../../utils/fixtures';
+import { NextFunction, Request, Response } from 'express';
+
+jest.mock('../../../shared/middlewares/validateAccount', () => ({
+    validateAccountTypeAndPlan: () => (req: Request, res: Response, next: NextFunction) => next()
+}));
 
 const app = createServer();
 
