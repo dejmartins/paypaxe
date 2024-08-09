@@ -50,7 +50,7 @@
    
 3. **Set Up Environment Variables:**
 
-    Create a .env file in the root directory and add the following environment variables:
+    Create a `.env` file in the root directory and add the following environment variables:
 
    ```bash
     PORT=
@@ -83,7 +83,7 @@
 
 ## Installation
 
-    The application includes unit and integration tests. To run the tests:
+The application includes unit and integration tests. To run the tests:
 
     ```bash
     npm test
