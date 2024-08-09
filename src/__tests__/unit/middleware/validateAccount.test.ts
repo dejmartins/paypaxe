@@ -37,8 +37,14 @@ describe('validateAccountTypeAndPlan Middleware', () => {
         (findAccount as jest.Mock).mockResolvedValue(null);
 
         const middleware = validateAccountTypeAndPlan(['individual', 'trader'], 'premium');
+        await middleware(req as Request, res as Response, next);
 
-        await expect(middleware(req as Request, res as Response, next)).rejects.toThrow('Account not found.');
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'fail',
+            error: 'Validation error',
+            message: 'Account not found.'
+        });
 
         expect(findAccount).toHaveBeenCalledWith(accountId);
         expect(next).not.toHaveBeenCalled();
@@ -52,9 +58,14 @@ describe('validateAccountTypeAndPlan Middleware', () => {
 
         const middleware = validateAccountTypeAndPlan(['individual', 'trader'], 'premium');
 
-        await expect(middleware(req as Request, res as Response, next)).rejects.toThrow(
-            'This endpoint is only accessible by individual, trader accounts.'
-        );
+        await middleware(req as Request, res as Response, next);
+        
+        expect(res.status).toHaveBeenCalledWith(403);
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'fail',
+            error: 'Validation error',
+            message: 'This endpoint is only accessible by individual, trader accounts.'
+        });
 
         expect(findAccount).toHaveBeenCalledWith(accountId);
         expect(next).not.toHaveBeenCalled();
@@ -68,9 +79,14 @@ describe('validateAccountTypeAndPlan Middleware', () => {
 
         const middleware = validateAccountTypeAndPlan(['individual', 'trader'], 'premium');
 
-        await expect(middleware(req as Request, res as Response, next)).rejects.toThrow(
-            'This endpoint requires a premium plan.'
-        );
+        await middleware(req as Request, res as Response, next);
+        
+        expect(res.status).toHaveBeenCalledWith(403);
+        expect(res.json).toHaveBeenCalledWith({
+            status: 'fail',
+            error: 'Validation error',
+            message: 'This endpoint requires a premium plan.'
+        });
 
         expect(findAccount).toHaveBeenCalledWith(accountId);
         expect(next).not.toHaveBeenCalled();
