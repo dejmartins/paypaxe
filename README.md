@@ -81,10 +81,9 @@
    npm run dev
 
 
-## Installation
+## Testing
 
-The application includes unit and integration tests. To run the tests:
+**Paypaxe** includes unit and integration tests. To run the tests:
 
     ```bash
     npm test
-
