@@ -9,11 +9,14 @@ import goalRoutes from '../../modules/financialGoal/routes/goalRoutes';
 import authRoutes from '../../modules/auth/routes/authRoutes';
 import paymentRoutes from '../../modules/payment/routes/paymentRoutes';
 import passport from '../../modules/auth/strategy/google.strategy';
+import cors from 'cors';
 import { generalLimiter } from '../middlewares/rateLimiter';
 import bodyParser from 'body-parser';
 
 function createServer() {
     const app = express();
+
+    app.use(cors());
 
     app.set('trust proxy', 1);
     
