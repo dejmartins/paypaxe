@@ -40,3 +40,27 @@ export function generatePasswordResetToken(user: PasswordTokenInput){
     const payload = { ...user };
     return signJwt(payload, { expiresIn: '15m' })
 }
+
+export async function generateSessionTokens(user: any, sessionId: any) {
+    const accessToken = signJwt(
+        {
+            ...user,
+            session: sessionId
+        },
+        {
+            expiresIn: config.accessTokenTtl,
+        }
+    );
+
+    const refreshToken = signJwt(
+        {
+            ...user,
+            session: sessionId
+        },
+        {
+            expiresIn: config.refreshTokenTtl,
+        }
+    );
+
+    return { accessToken, refreshToken };
+}

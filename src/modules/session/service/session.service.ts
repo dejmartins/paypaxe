@@ -5,11 +5,24 @@ import { signJwt, verifyJwt } from "../../../shared/utils/jwt.utils";
 import { get } from "lodash";
 import { findUser } from "../../user/service/user.service";
 import config from "../../../../config/default";
+import { findAllUserAccounts } from "../../account/service/account.service";
+import log from "../../../shared/utils/logger";
 
-export async function createSession(userId: string, userAgent: string): Promise<ISession>{
+export async function createSession(userId: string, userAgent: string){
     try {
         const session = await SessionModel.create({user: userId, userAgent});
-        return session.toJSON();
+        const accounts = await findAllUserAccounts('66b5a92c32e73c369ab3453f');
+
+        const accountDetails = accounts?.map(account => ({
+            accountType: account.accountType,
+            subscriptionPlan: account.subscriptionPlan,
+            accountId: account._id
+        }));
+
+        return {
+            session: session.toJSON(),
+            accounts: accountDetails || []
+        };
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
     }

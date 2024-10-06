@@ -15,3 +15,16 @@ describe('AccountService - createAccount', () => {
         })
     })
 })
+
+describe('AccountService - createAccount', () => {
+    describe('given userId', () => {
+        it('should fetch all account owned by the user', async () => {
+            (AccountModel.create as jest.Mock).mockResolvedValue(accountReturnPayload);
+
+            const result = await AccountModel.create(createAccountPayload);
+
+            expect(result).toEqual(accountReturnPayload);
+            expect(AccountModel.create).toHaveBeenCalledWith(createAccountPayload);
+        })
+    })
+})
