@@ -11,7 +11,7 @@ import log from "../../../shared/utils/logger";
 export async function createSession(userId: string, userAgent: string){
     try {
         const session = await SessionModel.create({user: userId, userAgent});
-        const accounts = await findAllUserAccounts('66b5a92c32e73c369ab3453f');
+        const accounts = await findAllUserAccounts(userId);
 
         const accountDetails = accounts?.map(account => ({
             accountType: account.accountType,
