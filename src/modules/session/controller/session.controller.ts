@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { validatePassword } from "../../user/service/user.service";
 import { createSession, findSessions, updateSession } from "../service/session.service";
-import { signJwt } from "../../../shared/utils/jwt.utils";
+import { generateSessionTokens, signJwt } from "../../../shared/utils/jwt.utils";
 import config from "../../../../config/default";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { successResponse } from "../../../shared/utils/response";
@@ -12,27 +12,9 @@ export const createUserSessionHandler =  asyncHandler(async (req: Request, res: 
     // @ts-ignore
     const session = await createSession(user._id, req.get("user-agent") || "");
 
-    const accessToken = signJwt(
-        {
-            ...user,
-            session: session._id
-        },
-        { 
-            expiresIn: config.accessTokenTtl 
-        }
-    );
+    const { accessToken, refreshToken } = await generateSessionTokens(user, session.session._id);
 
-    const refreshToken = signJwt(
-        {
-            ...user,
-            session: session._id
-        },
-        { 
-            expiresIn: config.refreshTokenTtl 
-        }
-    );
-
-    return res.send(successResponse({ accessToken, refreshToken }, "Session created successfully"))
+    return res.send(successResponse({ accessToken, refreshToken, accounts: session.accounts }, "Session created successfully"))
 })
 
 export const getUserSessionsHandler = asyncHandler(async (req: Request, res: Response) => {

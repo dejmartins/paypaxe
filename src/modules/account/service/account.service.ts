@@ -37,6 +37,19 @@ export async function findAccount(accountId: string): Promise<IAccount | null> {
     }
 }
 
+export async function findAllUserAccounts(userId: string) {
+    try {
+        const accounts = await AccountModel.find({ user: userId });
+        if (!accounts || accounts.length === 0) {
+            log.info('No accounts found for user:', userId);
+            return null;
+        }
+        return accounts;
+    } catch (e: any){
+        throw new AppError(e.message, e.statusCode);
+    }
+}
+
 export async function validateAccount(accountId: string) {
     const accountExist = await accountExists(accountId);
     
