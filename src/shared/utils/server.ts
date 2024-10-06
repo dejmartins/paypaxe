@@ -8,10 +8,9 @@ import expenseRoutes from '../../modules/expense/route/expenseRoutes';
 import goalRoutes from '../../modules/financialGoal/routes/goalRoutes';
 import authRoutes from '../../modules/auth/routes/authRoutes';
 import paymentRoutes from '../../modules/payment/routes/paymentRoutes';
-import passport from '../../modules/auth/strategy/google.strategy';
+import passport from '../../modules/auth/strategy/google.strategy'; 
 import cors from 'cors';
 import { generalLimiter } from '../middlewares/rateLimiter';
-import bodyParser from 'body-parser';
 
 function createServer() {
     const app = express();
