@@ -6,7 +6,6 @@ import { get } from "lodash";
 import { findUser } from "../../user/service/user.service";
 import config from "../../../../config/default";
 import { findAllUserAccounts } from "../../account/service/account.service";
-import log from "../../../shared/utils/logger";
 
 export async function createSession(userId: string, userAgent: string){
     try {
