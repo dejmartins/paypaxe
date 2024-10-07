@@ -75,3 +75,27 @@ describe('ExpenseService - getRecentExpenses', () => {
         })
     })
 })
+
+// describe('ExpenseService - softDeleteExpenses', () => {
+//     describe('given there are expenses already inputted', () => {
+//         it('should return limited recent expenses', async () => {
+//             (ExpenseModel.find as jest.Mock).mockReturnValue({
+//                 sort: jest.fn().mockReturnThis(),
+//                 limit: jest.fn().mockReturnValue({
+//                     lean: jest.fn().mockResolvedValue(recentExpensesReturnPayload),
+//                 }),
+//             });
+
+//             const recentExpenses = await ExpenseService.getRecentExpenses({ accountId, limit: 5 });
+
+//             expect(recentExpenses).toEqual(recentExpensesReturnPayload
+//                 .map(expense => ({
+//                     ...expense,
+//                     amount: parseFloat((expense.amount / 100).toFixed(2))
+//                 }))
+//             );
+//             expect(validateAccount).toHaveBeenCalledWith(accountId);
+//             expect(ExpenseModel.find).toHaveBeenCalledWith({ account: accountId });
+//         })
+//     })
+// })
