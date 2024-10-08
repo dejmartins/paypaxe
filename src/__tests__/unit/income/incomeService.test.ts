@@ -14,8 +14,6 @@ describe('IncomeService - addIncome', () => {
             (IncomeModel.create as jest.Mock).mockResolvedValue(incomeReturnPayload);
             const result = await IncomeService.addIncome(addIncomePayload);
 
-            console.log(incomeReturnPayload)
-
             expect(result).toStrictEqual(incomeReturnPayload);
             expect(IncomeModel.create).toHaveBeenCalledWith(addIncomePayload);
             expect(validateAccount).toHaveBeenCalledWith(addIncomePayload.account);

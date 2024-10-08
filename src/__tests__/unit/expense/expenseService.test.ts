@@ -1,6 +1,6 @@
 import * as ExpenseService from '../../../modules/expense/service/expense.service'
 import ExpenseModel from "../../../modules/expense/model/expense.model"
-import { accountId, addExpensePayload, expectedTotalExpense, expenseReturnPayload, recentExpensesReturnPayload } from "../../utils/fixtures"
+import { accountId, addExpensePayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from "../../utils/fixtures"
 import { validateAccount } from '../../../modules/account/service/account.service'
 import { AppError } from '../../../shared/utils/customErrors'
 
@@ -72,6 +72,20 @@ describe('ExpenseService - getRecentExpenses', () => {
             );
             expect(validateAccount).toHaveBeenCalledWith(accountId);
             expect(ExpenseModel.find).toHaveBeenCalledWith({ account: accountId });
+        })
+    })
+})
+
+describe('ExpenseService - softDeleteExpenses', () => {
+    describe('given there is an active expense', () => {
+        it('should return a deleted expense', async () => {
+            (ExpenseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({...expenseReturnPayload, status: 'deleted'});
+
+            const deletedExpense = await ExpenseService.softDeleteExpense({ accountId: accountId, expenseId: expenseId });
+
+            expect(deletedExpense).toEqual({...expenseReturnPayload, status: 'deleted'});
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
+            expect(ExpenseModel.findByIdAndUpdate).toHaveBeenCalledWith(expenseId, {status: "deleted"});
         })
     })
 })

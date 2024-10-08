@@ -17,3 +17,8 @@ export type GetRecentExpense = {
     accountId: string,
     limit: number
 }
+
+export type SoftDeleteExpense = {
+    accountId: string,
+    expenseId: string
+}

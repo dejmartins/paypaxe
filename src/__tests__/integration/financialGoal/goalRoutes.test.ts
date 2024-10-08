@@ -5,7 +5,8 @@ import supertest from "supertest";
 import { NextFunction, Request, Response } from "express";
 
 jest.mock('../../../shared/middlewares/validateAccount', () => ({
-    validateAccountTypeAndPlan: () => (req: Request, res: Response, next: NextFunction) => next()
+    validateAccountTypeAndPlan: () => (req: Request, res: Response, next: NextFunction) => next(),
+    validateSubscription: (req: Request, res: Response, next: NextFunction) => next()
 }));
 
 const app = createServer();

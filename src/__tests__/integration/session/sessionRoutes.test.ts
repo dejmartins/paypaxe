@@ -12,6 +12,7 @@ describe('User', () => {
                     .mockResolvedValue(userReturnPayload)
 
                 jest.spyOn(SessionService, 'createSession')
+                    // @ts-ignore
                     .mockResolvedValue(sessionPayload)
 
                 const req = {

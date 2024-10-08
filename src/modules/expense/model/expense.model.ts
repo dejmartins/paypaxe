@@ -7,6 +7,9 @@ export interface IExpense extends Document {
     category: string;
     description: string;
     date: Date;
+    isRecurring: boolean;
+    frequency?: string;
+    status: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -34,6 +37,24 @@ const expenseSchema = new Schema<IExpense>(
         },
         date: {
             type: Date,
+            required: true
+        },
+        isRecurring: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        frequency: {
+            type: String,
+            enum: ['daily', 'weekly', 'monthly', 'yearly'],
+            required: function () {
+                return this.isRecurring;
+            }
+        },
+        status: {
+            type: String,
+            enum: ['active', 'deleted'],
+            default: 'active',
             required: true
         }
     },

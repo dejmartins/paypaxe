@@ -10,7 +10,10 @@ export const createUserSchema = object({
         }).email("Not a valid email address"),
         password: string({
             required_error: 'Password is required'
-        }).min(8, "Password too short")
+        }).min(8, "Password too short"),
+        country: string({
+            required_error: 'Country is required'
+        })
     })
 })
 
