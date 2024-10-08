@@ -1,6 +1,6 @@
 import * as ExpenseService from '../../../modules/expense/service/expense.service'
 import ExpenseModel from "../../../modules/expense/model/expense.model"
-import { accountId, addExpensePayload, expectedTotalExpense, expenseReturnPayload, recentExpensesReturnPayload } from "../../utils/fixtures"
+import { accountId, addExpensePayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from "../../utils/fixtures"
 import { validateAccount } from '../../../modules/account/service/account.service'
 import { AppError } from '../../../shared/utils/customErrors'
 
@@ -76,26 +76,16 @@ describe('ExpenseService - getRecentExpenses', () => {
     })
 })
 
-// describe('ExpenseService - softDeleteExpenses', () => {
-//     describe('given there are expenses already inputted', () => {
-//         it('should return limited recent expenses', async () => {
-//             (ExpenseModel.find as jest.Mock).mockReturnValue({
-//                 sort: jest.fn().mockReturnThis(),
-//                 limit: jest.fn().mockReturnValue({
-//                     lean: jest.fn().mockResolvedValue(recentExpensesReturnPayload),
-//                 }),
-//             });
+describe('ExpenseService - softDeleteExpenses', () => {
+    describe('given there is an active expense', () => {
+        it('should return a deleted expense', async () => {
+            (ExpenseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({...expenseReturnPayload, status: 'deleted'});
 
-//             const recentExpenses = await ExpenseService.getRecentExpenses({ accountId, limit: 5 });
+            const deletedExpense = await ExpenseService.softDeleteExpense({ accountId: accountId, expenseId: expenseId });
 
-//             expect(recentExpenses).toEqual(recentExpensesReturnPayload
-//                 .map(expense => ({
-//                     ...expense,
-//                     amount: parseFloat((expense.amount / 100).toFixed(2))
-//                 }))
-//             );
-//             expect(validateAccount).toHaveBeenCalledWith(accountId);
-//             expect(ExpenseModel.find).toHaveBeenCalledWith({ account: accountId });
-//         })
-//     })
-// })
+            expect(deletedExpense).toEqual({...expenseReturnPayload, status: 'deleted'});
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
+            expect(ExpenseModel.findByIdAndUpdate).toHaveBeenCalledWith(expenseId, {status: "deleted"});
+        })
+    })
+})

@@ -258,15 +258,18 @@ export const updateFinancialGoalFields = {
     currentProgress: 2000.40,
 };
 
-export const sessionPayload = new SessionModel({
-    _id: new mongoose.Types.ObjectId().toString(),
-    user: userId,
-    valid: true,
-    userAgent: "PostmanRuntime/7.28.4",
-    createdAt: new Date("2021-09-30T13:31:07.674Z"),
-    updatedAt: new Date("2021-09-30T13:31:07.674Z"),
-    __v: 0,
-})
+export const sessionPayload = {
+    session: {
+        _id: new mongoose.Types.ObjectId().toString(),
+        user: userId,
+        valid: true,
+        userAgent: "PostmanRuntime/7.28.4",
+        createdAt: new Date("2021-09-30T13:31:07.674Z"),
+        updatedAt: new Date("2021-09-30T13:31:07.674Z"),
+        __v: 0,
+    },
+    accounts: []
+}
 
 export const createTransactionPayload = {
     user: 'dej@gmail.com',

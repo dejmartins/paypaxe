@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { createSession } from '../../session/service/session.service';
-import { signJwt } from '../../../shared/utils/jwt.utils';
+import { generateSessionTokens, signJwt } from '../../../shared/utils/jwt.utils';
 import config from '../../../../config/default';
 
 export async function googleOAuthCallbackHandler(req: Request, res: Response) {
@@ -13,25 +13,7 @@ export async function googleOAuthCallbackHandler(req: Request, res: Response) {
 
     const session = await createSession(user._id, req.get('user-agent') || '');
 
-    const accessToken = signJwt(
-        {
-            ...user,
-            session: session._id
-        },
-        { 
-            expiresIn: config.accessTokenTtl 
-        }
-    );
-
-    const refreshToken = signJwt(
-        {
-            ...user,
-            session: session._id
-        },
-        { 
-            expiresIn: config.refreshTokenTtl 
-        }
-    );
+    const { accessToken, refreshToken } = await generateSessionTokens(user, session.session._id);
 
     return res.json({ accessToken, refreshToken });
 }

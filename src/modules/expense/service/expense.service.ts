@@ -4,7 +4,7 @@ import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { validateAccount } from "../../account/service/account.service";
 import ExpenseModel, { IExpense } from "../model/expense.model";
-import { AddExpense, GetRecentExpense, GetTotalExpense } from "../types/expenseTypes";
+import { AddExpense, GetRecentExpense, GetTotalExpense, SoftDeleteExpense } from "../types/expenseTypes";
 
 export async function addExpense(input: AddExpense){
     try{
@@ -64,5 +64,17 @@ export async function getRecentExpenses(input: GetRecentExpense): Promise<IExpen
 
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode)
+    }
+}
+
+export async function softDeleteExpense(input: SoftDeleteExpense) {
+    try{
+        validateAccount(input.accountId);
+    
+        const expense = ExpenseModel.findByIdAndUpdate(input.expenseId, { status: 'deleted' })
+    
+        return expense;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode);
     }
 }
