@@ -17,14 +17,16 @@ export const transactionId = new mongoose.Types.ObjectId().toString();
 export const createUserPayload = {
     email: "dej@gmail.com",
     name: "Dej Lok",
-    password: "pass12345678"
+    password: "pass12345678",
+    country: 'Nigeria'
 }
 
 export const userReturnPayload = new UserModel({
     _id: userId,
     name: "Dej Lok",
     verified: false,
-    email: "dej@gmail.com"
+    email: "dej@gmail.com",
+    country: 'Nigeria'
 })
 
 export const createAccountPayload = {
@@ -51,7 +53,7 @@ export const incomeReturnPayload  = new IncomeModel({
     _id: incomeId,
     account: accountId,
     amount: 400.50,
-    category: "salary",
+    // category: "salary",
     description: "",
     dateReceived: '2024-07-20'
 })

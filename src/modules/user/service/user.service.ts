@@ -9,6 +9,12 @@ import { FilterQuery } from "mongoose";
 
 export async function createUser(input: UserInput): Promise<IUser> {
     try {
+        const existingUser = await UserModel.findOne({ email: input.email });
+
+        if (existingUser) {
+            throw new AppError("User with this email already exists.", 409);
+        }
+
         const user = await UserModel.create(input);
         const token = generateVerificationToken({
             _id: user._id as string,
