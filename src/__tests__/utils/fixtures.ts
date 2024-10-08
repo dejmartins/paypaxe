@@ -1,6 +1,5 @@
 import mongoose, { Types } from "mongoose";
 import UserModel from "../../modules/user/model/user.model";
-import SessionModel from "../../modules/session/model/session.model";
 import AccountModel from "../../modules/account/model/account.model";
 import IncomeModel, { IIncome } from "../../modules/income/model/income.model";
 import FinancialGoalModel from "../../modules/financialGoal/model/financialGoal.model";
@@ -115,7 +114,18 @@ export const expenseReturnPayload  = new ExpenseModel({
     amount: 400.50,
     category: "food",
     description: "Food for family and friends",
-    date: "2024-07-23"
+    date: "2024-07-23",
+    status: 'active'
+})
+
+export const deletedExpenseReturnPayload  = new ExpenseModel({
+    _id: expenseId,
+    account: accountId,
+    amount: 400.50,
+    category: "food",
+    description: "Food for family and friends",
+    date: "2024-07-23",
+    status: 'deleted'
 })
 
 const mockExpenseDocs = [

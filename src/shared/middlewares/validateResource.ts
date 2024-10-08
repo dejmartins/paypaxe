@@ -10,7 +10,6 @@ const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: N
         });
         next();
     } catch (e: any) {
-        console.log(e.errors);
         return res.status(400).json({
             status: 'fail',
             message: 'Validation error',
