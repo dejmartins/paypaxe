@@ -1,6 +1,6 @@
 import * as ExpenseService from '../../../modules/expense/service/expense.service'
 import ExpenseModel from "../../../modules/expense/model/expense.model"
-import { accountId, addExpensePayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from "../../utils/fixtures"
+import { accountId, addExpensePayload, deletedExpenseReturnPayload, deletedExpensesReturnPayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from "../../utils/fixtures"
 import { validateAccount } from '../../../modules/account/service/account.service'
 import { AppError } from '../../../shared/utils/customErrors'
 
@@ -53,7 +53,7 @@ describe('ExpenseService - getTotalExpenseByDate', () => {
 })
 
 describe('ExpenseService - getRecentExpenses', () => {
-    describe('given there are expenses already inputted', () => {
+    describe('given there are expenses already inputed', () => {
         it('should return limited recent expenses', async () => {
             (ExpenseModel.find as jest.Mock).mockReturnValue({
                 sort: jest.fn().mockReturnThis(),
@@ -71,7 +71,7 @@ describe('ExpenseService - getRecentExpenses', () => {
                 }))
             );
             expect(validateAccount).toHaveBeenCalledWith(accountId);
-            expect(ExpenseModel.find).toHaveBeenCalledWith({ account: accountId });
+            expect(ExpenseModel.find).toHaveBeenCalledWith({ account: accountId,  status: 'active' });
         })
     })
 })
@@ -86,6 +86,30 @@ describe('ExpenseService - softDeleteExpenses', () => {
             expect(deletedExpense).toEqual({...expenseReturnPayload, status: 'deleted'});
             expect(validateAccount).toHaveBeenCalledWith(accountId);
             expect(ExpenseModel.findByIdAndUpdate).toHaveBeenCalledWith(expenseId, {status: "deleted"});
+        })
+    })
+})
+
+describe('ExpenseService - getDeletedExpenses', () => {
+    describe('given there are expenses already soft-deleted', () => {
+        it('should return limited deleted expenses', async () => {
+            (ExpenseModel.find as jest.Mock).mockReturnValue({
+                sort: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockReturnValue({
+                    lean: jest.fn().mockResolvedValue(deletedExpensesReturnPayload),
+                }),
+            });
+
+            const deletedExpenses = await ExpenseService.getDeletedExpenses({ accountId, limit: 5 });
+
+            expect(deletedExpenses).toEqual(deletedExpensesReturnPayload
+                .map(expense => ({
+                    ...expense,
+                    amount: parseFloat((expense.amount / 100).toFixed(2))
+                }))
+            );
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
+            expect(ExpenseModel.find).toHaveBeenCalledWith({ account: accountId,  status: 'deleted' });
         })
     })
 })

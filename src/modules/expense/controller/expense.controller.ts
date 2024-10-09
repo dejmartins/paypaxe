@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { successResponse } from "../../../shared/utils/response";
 import { AddExpenseInput } from "../schema/expense.schema";
-import { addExpense, getRecentExpenses, getTotalExpense, softDeleteExpense } from "../service/expense.service";
+import { addExpense, getDeletedExpenses, getRecentExpenses, getTotalExpense, softDeleteExpense } from "../service/expense.service";
 import { AppError } from "../../../shared/utils/customErrors";
 
 export const addExpenseHandler = asyncHandler(async (req: Request<{}, {}, AddExpenseInput['body']>, res: Response) => {
@@ -41,3 +41,13 @@ export const softDeleteExpenseHandler = asyncHandler(async (req: Request, res: R
 
     return res.json(successResponse(deletedExpense, 'Expense Deleted Successfully'));
 })
+
+export const getDeletedExpensesHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId } = req.params;
+    const { limit } = req.query;
+
+    // @ts-ignore
+    const recentExpenses = await getDeletedExpenses({ accountId, limit });
+
+    return res.json(successResponse(recentExpenses, 'Deleted Expenses Retrieved Successfully'));
+});

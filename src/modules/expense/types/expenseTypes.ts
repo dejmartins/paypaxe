@@ -13,7 +13,7 @@ export type GetTotalExpense = {
     endDate?: string
 }
 
-export type GetRecentExpense = {
+export type GetExpense = {
     accountId: string,
     limit: number
 }

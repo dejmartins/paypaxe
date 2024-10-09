@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import * as ExpenseService from '../../../modules/expense/service/expense.service';
 import createServer from '../../../shared/utils/server';
-import { accountId, addExpensePayload, deletedExpenseReturnPayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from '../../utils/fixtures';
+import { accountId, addExpensePayload, deletedExpenseReturnPayload, deletedExpensesReturnPayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from '../../utils/fixtures';
 import { NextFunction, Request, Response } from 'express';
 
 jest.mock('../../../shared/middlewares/validateAccount', () => ({
@@ -141,6 +141,23 @@ describe('Expense', () => {
 
             expect(body.data.status).toStrictEqual(deletedExpenseReturnPayload.toJSON().status);
             expect(getDeletedExpenseMock).toHaveBeenCalledWith({ accountId, expenseId });
+        });
+    });
+
+    describe('Get Deleted Expenses', () => {
+        it('should return deleted expenses', async () => {
+            const getDeletedExpensesMock = jest
+                .spyOn(ExpenseService, 'getRecentExpenses')
+                // @ts-ignore
+                .mockResolvedValue(deletedExpensesReturnPayload);
+
+            const { body, statusCode } = await supertest(app)
+                .get(`/api/accounts/${accountId}/expenses/deleted`)
+                .query({ limit: 5 });
+
+            expect(statusCode).toBe(200);
+            expect(body.data).toStrictEqual(deletedExpensesReturnPayload);
+            expect(getDeletedExpensesMock).toHaveBeenCalledWith({ accountId, limit: '5' });
         });
     });
 })

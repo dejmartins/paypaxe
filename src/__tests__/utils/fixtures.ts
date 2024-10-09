@@ -172,6 +172,31 @@ export const recentExpensesReturnPayload = [
     },
 ];
 
+export const deletedExpensesReturnPayload = [
+    {
+        _id: "60f7c4d7b4b8e72a9d06e432",
+        account: accountId,
+        amount: 500.00,
+        category: "Salary",
+        description: "Monthly Salary",
+        date: "2024-07-25",
+        status: 'deleted',
+        createdAt: "2024-07-25T00:00:00.000Z",
+        updatedAt: "2024-07-25T00:00:00.000Z"
+    },
+    {
+        _id: "60f7c4d7b4b8e72a9d06e433",
+        account: accountId,
+        amount: 250.00,
+        category: "Freelance",
+        description: "Freelance Project",
+        date: "2024-07-24",
+        status: 'deleted',
+        createdAt: "2024-07-24T00:00:00.000Z",
+        updatedAt: "2024-07-24T00:00:00.000Z"
+    }
+];
+
 export const addGoalPayload = {
     account: accountId,
     title: 'New Car Purchase',

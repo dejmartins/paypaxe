@@ -4,7 +4,7 @@ import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { validateAccount } from "../../account/service/account.service";
 import ExpenseModel, { IExpense } from "../model/expense.model";
-import { AddExpense, GetRecentExpense, GetTotalExpense, SoftDeleteExpense } from "../types/expenseTypes";
+import { AddExpense, GetExpense, GetTotalExpense, SoftDeleteExpense } from "../types/expenseTypes";
 
 export async function addExpense(input: AddExpense){
     try{
@@ -49,7 +49,7 @@ export async function getTotalExpense(input: GetTotalExpense){
     }
 }
 
-export async function getRecentExpenses(input: GetRecentExpense): Promise<IExpense[]> {
+export async function getRecentExpenses(input: GetExpense): Promise<IExpense[]> {
     try {
         validateAccount(input.accountId);
 
@@ -77,5 +77,24 @@ export async function softDeleteExpense(input: SoftDeleteExpense) {
         return expense;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
+    }
+}
+
+export async function getDeletedExpenses(input: GetExpense): Promise<IExpense[]> {
+    try {
+        validateAccount(input.accountId);
+
+        const deletedExpenses = await ExpenseModel.find({ account: input.accountId, status: 'deleted' })
+            .sort({ date: -1 })
+            .limit(input.limit)
+            .lean();
+
+        return deletedExpenses.map(expense => ({
+            ...expense,
+            amount: parseFloat((expense.amount / 100).toFixed(2))
+        })) as IExpense[];
+
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode)
     }
 }
