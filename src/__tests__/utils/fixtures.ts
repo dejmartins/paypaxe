@@ -1,6 +1,5 @@
 import mongoose, { Types } from "mongoose";
 import UserModel from "../../modules/user/model/user.model";
-import SessionModel from "../../modules/session/model/session.model";
 import AccountModel from "../../modules/account/model/account.model";
 import IncomeModel, { IIncome } from "../../modules/income/model/income.model";
 import FinancialGoalModel from "../../modules/financialGoal/model/financialGoal.model";
@@ -106,7 +105,8 @@ export const addExpensePayload = {
     amount: 400.50,
     category: "salary",
     description: "",
-    date: "2024-07-23"
+    date: "2024-07-23",
+    isRecurring: false
 }
 
 export const expenseReturnPayload  = new ExpenseModel({
@@ -115,7 +115,18 @@ export const expenseReturnPayload  = new ExpenseModel({
     amount: 400.50,
     category: "food",
     description: "Food for family and friends",
-    date: "2024-07-23"
+    date: "2024-07-23",
+    status: 'active'
+})
+
+export const deletedExpenseReturnPayload  = new ExpenseModel({
+    _id: expenseId,
+    account: accountId,
+    amount: 400.50,
+    category: "food",
+    description: "Food for family and friends",
+    date: "2024-07-23",
+    status: 'deleted'
 })
 
 const mockExpenseDocs = [
@@ -159,6 +170,31 @@ export const recentExpensesReturnPayload = [
         createdAt: "2024-07-23T00:00:00.000Z",
         updatedAt: "2024-07-23T00:00:00.000Z"
     },
+];
+
+export const deletedExpensesReturnPayload = [
+    {
+        _id: "60f7c4d7b4b8e72a9d06e432",
+        account: accountId,
+        amount: 500.00,
+        category: "Salary",
+        description: "Monthly Salary",
+        date: "2024-07-25",
+        status: 'deleted',
+        createdAt: "2024-07-25T00:00:00.000Z",
+        updatedAt: "2024-07-25T00:00:00.000Z"
+    },
+    {
+        _id: "60f7c4d7b4b8e72a9d06e433",
+        account: accountId,
+        amount: 250.00,
+        category: "Freelance",
+        description: "Freelance Project",
+        date: "2024-07-24",
+        status: 'deleted',
+        createdAt: "2024-07-24T00:00:00.000Z",
+        updatedAt: "2024-07-24T00:00:00.000Z"
+    }
 ];
 
 export const addGoalPayload = {

@@ -2,13 +2,13 @@ import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { successResponse } from "../../../shared/utils/response";
 import { AddExpenseInput } from "../schema/expense.schema";
-import { addExpense, getRecentExpenses, getTotalExpense } from "../service/expense.service";
+import { addExpense, getDeletedExpenses, getRecentExpenses, getTotalExpense, softDeleteExpense } from "../service/expense.service";
 import { AppError } from "../../../shared/utils/customErrors";
 
 export const addExpenseHandler = asyncHandler(async (req: Request<{}, {}, AddExpenseInput['body']>, res: Response) => {
     // @ts-ignore
     const { accountId } = req.params;
-    const expense = await addExpense({ account: accountId, ...req.body});
+    const expense = await addExpense({ account: accountId, ...req.body });
     return res.json(successResponse(expense, 'Expense added successfully'));
 });
 
@@ -32,4 +32,22 @@ export const getRecentExpensesHandler = asyncHandler(async (req: Request, res: R
     const recentExpenses = await getRecentExpenses({ accountId, limit });
 
     return res.json(successResponse(recentExpenses, 'Recent Expenses Retrieved Successfully'));
+});
+
+export const softDeleteExpenseHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId, expenseId } = req.params;
+
+    const deletedExpense = await softDeleteExpense({ accountId: accountId, expenseId: expenseId })
+
+    return res.json(successResponse(deletedExpense, 'Expense Deleted Successfully'));
+})
+
+export const getDeletedExpensesHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId } = req.params;
+    const { limit } = req.query;
+
+    // @ts-ignore
+    const recentExpenses = await getDeletedExpenses({ accountId, limit });
+
+    return res.json(successResponse(recentExpenses, 'Deleted Expenses Retrieved Successfully'));
 });

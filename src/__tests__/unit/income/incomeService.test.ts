@@ -1,6 +1,6 @@
 import * as IncomeService from '../../../modules/income/service/income.service'
 import IncomeModel from "../../../modules/income/model/income.model"
-import { accountId, addIncomePayload, expectedTotalIncome, incomeReturnPayload, recentIncomesReturnPayload } from "../../utils/fixtures"
+import { accountId, addIncomePayload, expectedTotalIncome, incomeId, incomeReturnPayload, recentIncomesReturnPayload } from "../../utils/fixtures"
 import {  validateAccount } from '../../../modules/account/service/account.service'
 import { AppError } from '../../../shared/utils/customErrors'
 
@@ -76,6 +76,20 @@ describe('IncomeService - getRecentIncomes', () => {
             );
             expect(validateAccount).toHaveBeenCalledWith(accountId);
             expect(IncomeModel.find).toHaveBeenCalledWith({ account: accountId });
+        })
+    })
+})
+
+describe('ExpenseService - softDeleteExpenses', () => {
+    describe('given there is an active expense', () => {
+        it('should return a deleted expense', async () => {
+            (IncomeModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({...incomeReturnPayload, status: 'deleted'});
+
+            const deletedExpense = await IncomeService.softDeleteIncome({ accountId: accountId, incomeId: incomeId });
+
+            expect(deletedExpense).toEqual({...incomeReturnPayload, status: 'deleted'});
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
+            expect(IncomeModel.findByIdAndUpdate).toHaveBeenCalledWith(incomeId, {status: "deleted"});
         })
     })
 })

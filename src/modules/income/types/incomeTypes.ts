@@ -16,3 +16,8 @@ export type GetRecentIncome = {
     accountId: string,
     limit: number
 }
+
+export type SoftDeleteIncome = {
+    accountId: string,
+    incomeId: string
+}

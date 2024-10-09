@@ -1,4 +1,4 @@
-import { literal, number, object, optional, string, TypeOf, union } from "zod";
+import { boolean, literal, number, object, optional, string, TypeOf, union } from "zod";
 import { objectIdValidator } from "../../../shared/utils/validator";
 
 export const addExpenseSchema = object({
@@ -25,11 +25,28 @@ export const addExpenseSchema = object({
             return parsedDate <= currentDate;
         }, {
             message: 'Date cannot be in the future'
-        }) ,
+        }),
         description: string({
             required_error: 'Expense description is required'
-        })
-    })
+        }),
+        isRecurring: boolean({
+            required_error: 'isRecurring flag is required'
+        }),
+        frequency: optional(string().refine((val) => {
+            const allowedFrequencies = ['daily', 'weekly', 'monthly', 'yearly'];
+            return allowedFrequencies.includes(val);
+        }, {
+            message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'"
+        }))
+    }).superRefine((data, ctx) => {
+        if (data.isRecurring && !data.frequency) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'Frequency is required for recurring expenses',
+                path: ['frequency'],
+            });
+        }
+    }),
 })
 
 export const getTotalExpenseSchema = object({

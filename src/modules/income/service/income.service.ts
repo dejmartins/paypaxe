@@ -3,7 +3,7 @@ import { AppError } from "../../../shared/utils/customErrors";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { validateAccount } from "../../account/service/account.service";
 import IncomeModel, { IIncome } from "../model/income.model";
-import { AddIncome, GetRecentIncome, GetTotalIncome } from "../types/incomeTypes";
+import { AddIncome, GetRecentIncome, GetTotalIncome, SoftDeleteIncome } from "../types/incomeTypes";
 
 export async function addIncome(input: AddIncome): Promise<IIncome>{
     try{    
@@ -60,5 +60,17 @@ export async function getRecentIncomes(input: GetRecentIncome): Promise<IIncome[
 
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode)
+    }
+}
+
+export async function softDeleteIncome(input: SoftDeleteIncome) {
+    try{
+        validateAccount(input.accountId);
+    
+        const expense = IncomeModel.findByIdAndUpdate(input.incomeId, { status: 'deleted' })
+    
+        return expense;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode);
     }
 }
