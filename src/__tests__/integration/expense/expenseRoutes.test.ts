@@ -135,7 +135,7 @@ describe('Expense', () => {
                 .mockResolvedValue(deletedExpenseReturnPayload);
 
             const { body, statusCode } = await supertest(app)
-                .patch(`/api/accounts/${accountId}/expenses/${expenseId}`)
+                .patch(`/api/accounts/${accountId}/expenses/${expenseId}/soft-delete`)
 
             expect(statusCode).toBe(200);
 
@@ -147,7 +147,7 @@ describe('Expense', () => {
     describe('Get Deleted Expenses', () => {
         it('should return deleted expenses', async () => {
             const getDeletedExpensesMock = jest
-                .spyOn(ExpenseService, 'getRecentExpenses')
+                .spyOn(ExpenseService, 'getDeletedExpenses')
                 // @ts-ignore
                 .mockResolvedValue(deletedExpensesReturnPayload);
 
@@ -158,6 +158,23 @@ describe('Expense', () => {
             expect(statusCode).toBe(200);
             expect(body.data).toStrictEqual(deletedExpensesReturnPayload);
             expect(getDeletedExpensesMock).toHaveBeenCalledWith({ accountId, limit: '5' });
+        });
+    });
+
+    describe('Update Expense', () => {
+        it('should return deleted expenses', async () => {
+            const getUpdatedExpensesMock = jest
+                .spyOn(ExpenseService, 'updateExpense')
+                // @ts-ignore
+                .mockResolvedValue(expenseReturnPayload);
+
+            const { body, statusCode } = await supertest(app)
+                .patch(`/api/accounts/${accountId}/expenses/${expenseId}`)
+                .send({ category: "food" })
+
+            expect(statusCode).toBe(200);
+            expect(body.data.category).toStrictEqual(expenseReturnPayload.toJSON().category);
+            expect(getUpdatedExpensesMock).toHaveBeenCalledWith({ accountId, expenseId, updateFields: { category: "food" } });
         });
     });
 })

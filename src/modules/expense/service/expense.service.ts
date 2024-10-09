@@ -4,7 +4,7 @@ import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { validateAccount } from "../../account/service/account.service";
 import ExpenseModel, { IExpense } from "../model/expense.model";
-import { AddExpense, GetExpense, GetTotalExpense, SoftDeleteExpense } from "../types/expenseTypes";
+import { AddExpense, GetExpense, GetTotalExpense, SoftDeleteExpense, UpdateExpense } from "../types/expenseTypes";
 
 export async function addExpense(input: AddExpense){
     try{
@@ -96,5 +96,25 @@ export async function getDeletedExpenses(input: GetExpense): Promise<IExpense[]>
 
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode)
+    }
+}
+
+export async function updateExpense(input: UpdateExpense) {
+    try {
+        validateAccount(input.accountId);
+        
+        const updatedExpense = await ExpenseModel.findByIdAndUpdate(
+            input.expenseId, 
+            { $set: input.updateFields }, 
+            { new: true }
+        );
+
+        if (!updatedExpense) {
+            throw new AppError("Expense not found.", 404);
+        }
+
+        return updatedExpense;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode);
     }
 }

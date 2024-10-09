@@ -1,6 +1,6 @@
 import * as ExpenseService from '../../../modules/expense/service/expense.service'
 import ExpenseModel from "../../../modules/expense/model/expense.model"
-import { accountId, addExpensePayload, deletedExpenseReturnPayload, deletedExpensesReturnPayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from "../../utils/fixtures"
+import { accountId, addExpensePayload, deletedExpensesReturnPayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from "../../utils/fixtures"
 import { validateAccount } from '../../../modules/account/service/account.service'
 import { AppError } from '../../../shared/utils/customErrors'
 
@@ -110,6 +110,26 @@ describe('ExpenseService - getDeletedExpenses', () => {
             );
             expect(validateAccount).toHaveBeenCalledWith(accountId);
             expect(ExpenseModel.find).toHaveBeenCalledWith({ account: accountId,  status: 'deleted' });
+        })
+    })
+})
+
+describe('ExpenseService - updateExpense', () => {
+    describe('given that an expense was already added', () => {
+        it('should update and return the updated Expense', async () => {
+            (ExpenseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(expenseReturnPayload);
+
+            const updateFields = { category: "food" };
+            const updatedExpense = await ExpenseService.updateExpense({accountId, expenseId, updateFields});
+
+            expect(updatedExpense).toEqual(expenseReturnPayload)
+            
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
+            expect(ExpenseModel.findByIdAndUpdate).toHaveBeenCalledWith(
+                expenseId, 
+                { $set: updateFields }, 
+                { new: true }
+            );
         })
     })
 })

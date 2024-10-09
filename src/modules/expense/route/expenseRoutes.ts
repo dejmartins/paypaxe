@@ -1,7 +1,7 @@
 import { Router } from "express";
 import validate from "../../../shared/middlewares/validateResource";
 import { addExpenseSchema, getRecentExpensesSchema, getTotalExpenseSchema } from "../schema/expense.schema";
-import { addExpenseHandler, getDeletedExpensesHandler, getRecentExpensesHandler, getTotalExpenseHandler, softDeleteExpenseHandler } from "../controller/expense.controller";
+import { addExpenseHandler, getDeletedExpensesHandler, getRecentExpensesHandler, getTotalExpenseHandler, softDeleteExpenseHandler, updateExpenseHandler } from "../controller/expense.controller";
 import { validateAccountTypeAndPlan, validateSubscription } from "../../../shared/middlewares/validateAccount";
 
 const router = Router();
@@ -31,7 +31,7 @@ router.get(
 );
 
 router.patch(
-    '/accounts/:accountId/expenses/:expenseId',
+    '/accounts/:accountId/expenses/:expenseId/soft-delete',
     validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'),
     // validate(getRecentExpensesSchema), 
@@ -44,6 +44,14 @@ router.get(
     validateAccountTypeAndPlan(['individual'], 'basic'),
     // validate(getRecentExpensesSchema), 
     getDeletedExpensesHandler
+);
+
+router.patch(
+    '/accounts/:accountId/expenses/:expenseId',
+    validateSubscription,
+    validateAccountTypeAndPlan(['individual'], 'basic'),
+    // validate(getRecentExpensesSchema), 
+    updateExpenseHandler
 );
 
 export default router;
