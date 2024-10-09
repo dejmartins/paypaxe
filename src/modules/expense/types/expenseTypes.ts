@@ -1,3 +1,5 @@
+import { IExpense } from "../model/expense.model";
+
 export interface AddExpense {
     account: string;
     amount: number;
@@ -21,4 +23,10 @@ export type GetExpense = {
 export type SoftDeleteExpense = {
     accountId: string,
     expenseId: string
+}
+
+export type UpdateExpense = {
+    accountId: string,
+    expenseId: string,
+    updateFields: Partial<IExpense>
 }

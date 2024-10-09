@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { successResponse } from "../../../shared/utils/response";
 import { AddExpenseInput } from "../schema/expense.schema";
-import { addExpense, getDeletedExpenses, getRecentExpenses, getTotalExpense, softDeleteExpense } from "../service/expense.service";
+import { addExpense, getDeletedExpenses, getRecentExpenses, getTotalExpense, softDeleteExpense, updateExpense } from "../service/expense.service";
 import { AppError } from "../../../shared/utils/customErrors";
 
 export const addExpenseHandler = asyncHandler(async (req: Request<{}, {}, AddExpenseInput['body']>, res: Response) => {
@@ -50,4 +50,12 @@ export const getDeletedExpensesHandler = asyncHandler(async (req: Request, res: 
     const recentExpenses = await getDeletedExpenses({ accountId, limit });
 
     return res.json(successResponse(recentExpenses, 'Deleted Expenses Retrieved Successfully'));
+});
+
+export const updateExpenseHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId, expenseId } = req.params;
+
+    const updatedExpense = await updateExpense({ accountId, expenseId, updateFields: {...req.body} });
+
+    return res.json(successResponse(updatedExpense, 'Expenses Updated Successfully'));
 });
