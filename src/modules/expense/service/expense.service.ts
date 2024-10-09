@@ -30,7 +30,8 @@ export async function getTotalExpense(input: GetTotalExpense){
             {
                 $match: {
                     account: new Types.ObjectId(input.accountId),
-                    date: { $gte: new Date(start), $lte: new Date(end) }
+                    date: { $gte: new Date(start), $lte: new Date(end) },
+                    status: 'active'
                 }
             },
             {
@@ -52,7 +53,7 @@ export async function getRecentExpenses(input: GetRecentExpense): Promise<IExpen
     try {
         validateAccount(input.accountId);
 
-        const recentExpenses = await ExpenseModel.find({ account: input.accountId })
+        const recentExpenses = await ExpenseModel.find({ account: input.accountId, status: 'active' })
             .sort({ date: -1 })
             .limit(input.limit)
             .lean();

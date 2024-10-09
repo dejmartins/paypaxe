@@ -105,7 +105,8 @@ export const addExpensePayload = {
     amount: 400.50,
     category: "salary",
     description: "",
-    date: "2024-07-23"
+    date: "2024-07-23",
+    isRecurring: false
 }
 
 export const expenseReturnPayload  = new ExpenseModel({

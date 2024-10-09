@@ -8,7 +8,7 @@ import { AppError } from "../../../shared/utils/customErrors";
 export const addExpenseHandler = asyncHandler(async (req: Request<{}, {}, AddExpenseInput['body']>, res: Response) => {
     // @ts-ignore
     const { accountId } = req.params;
-    const expense = await addExpense({ account: accountId, ...req.body});
+    const expense = await addExpense({ account: accountId, ...req.body });
     return res.json(successResponse(expense, 'Expense added successfully'));
 });
 
