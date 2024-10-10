@@ -133,3 +133,15 @@ describe('ExpenseService - updateExpense', () => {
         })
     })
 })
+
+describe('ExpenseService - handleRecurringExpense', () => {
+    describe('given that an expense is recurring and not deleted', () => {
+        it('should create new expense at intervals based on frequency', async () => {
+            (ExpenseModel.find as jest.Mock).mockResolvedValue(recentExpensesReturnPayload);
+
+            await ExpenseService.handleRecurringExpenses();
+            
+            expect(ExpenseModel.create).toHaveBeenCalledTimes(2);
+        })
+    })
+})

@@ -147,6 +147,8 @@ export const recentExpensesReturnPayload = [
         category: "Salary",
         description: "Monthly Salary",
         date: "2024-07-25",
+        isRecurring: true,
+        frequency: 'daily',
         createdAt: "2024-07-25T00:00:00.000Z",
         updatedAt: "2024-07-25T00:00:00.000Z"
     },
@@ -157,6 +159,8 @@ export const recentExpensesReturnPayload = [
         category: "Freelance",
         description: "Freelance Project",
         date: "2024-07-24",
+        isRecurring: true,
+        frequency: 'daily',
         createdAt: "2024-07-24T00:00:00.000Z",
         updatedAt: "2024-07-24T00:00:00.000Z"
     },
@@ -167,6 +171,7 @@ export const recentExpensesReturnPayload = [
         category: "Gift",
         description: "Birthday Gift",
         date: "2024-07-23",
+        isRecurring: false,
         createdAt: "2024-07-23T00:00:00.000Z",
         updatedAt: "2024-07-23T00:00:00.000Z"
     },

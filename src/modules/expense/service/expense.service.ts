@@ -118,3 +118,53 @@ export async function updateExpense(input: UpdateExpense) {
         throw new AppError(e.message, e.statusCode);
     }
 }
+
+export async function handleRecurringExpenses() {
+    try {
+        const recurringExpenses = await ExpenseModel.find({
+            isRecurring: true,
+            status: 'active'
+        });
+
+        const now = new Date();
+
+        for (const expense of recurringExpenses) {
+            if (shouldAddRecurringExpense(expense, now)) {
+                const newExpenseData = {
+                    amount: expense.amount,
+                    category: expense.category,
+                    description: expense.description,
+                    isRecurring: expense.isRecurring,
+                    frequency: expense.frequency,
+                    _id: undefined,
+                    createdAt: undefined,
+                    updatedAt: undefined,
+                    date: now
+                };
+
+                await ExpenseModel.create(newExpenseData);
+                log.info(`Recurring expense added for account ID: ${expense.account}`);
+            }
+        }
+    } catch (error: any) {
+        log.error(`Error handling recurring expenses: ${error.message}`);
+    }
+}
+
+function shouldAddRecurringExpense(expense: IExpense, now: Date): boolean {
+    const lastAddedDate = new Date(expense.date);
+    const frequency = expense.frequency;
+
+    switch (frequency) {
+        case 'daily':
+            return lastAddedDate < new Date(now.setDate(now.getDate() - 1));
+        case 'weekly':
+            return lastAddedDate < new Date(now.setDate(now.getDate() - 7));
+        case 'monthly':
+            return lastAddedDate < new Date(now.setMonth(now.getMonth() - 1));
+        case 'yearly':
+            return lastAddedDate < new Date(now.setFullYear(now.getFullYear() - 1));
+        default:
+            return false;
+    }
+}
