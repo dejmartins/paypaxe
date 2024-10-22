@@ -1,5 +1,5 @@
 import Tesseract from "tesseract.js";
-import OCRLogModel from "../model/ocrLog.model";
+// import OCRLogModel from "../model/ocrLog.model";
 
 export async function processOCRImage(imageUrl: string): Promise<{ amount: string, description: string }> {
     try {
