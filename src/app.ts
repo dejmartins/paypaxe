@@ -5,7 +5,8 @@ import errorHandler from './shared/middlewares/errorHandler';
 import createServer from './shared/utils/server';
 import '../src/shared/tasks/scheduler'
 
-const port: number = config.port;
+// const port: number = config.port;
+const port = process.env.PORT || 3000;
 
 const app = createServer();
 
