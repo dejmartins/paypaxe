@@ -8,7 +8,7 @@ const router = Router();
 
 router.post(
     '/accounts/:accountId/incomes', 
-    // validateSubscription,
+    validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(addIncomeSchema), 
     addIncomeHandler
@@ -16,7 +16,7 @@ router.post(
 
 router.get(
     '/accounts/:accountId/incomes/total',
-    // validateSubscription,
+    validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'), 
     validate(getTotalIncomeSchema), 
     getTotalIncomeHandler
@@ -24,7 +24,7 @@ router.get(
 
 router.get(
     '/accounts/:accountId/incomes/recent',
-    // validateSubscription,
+    validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'), 
     validate(getRecentIncomesSchema), 
     getRecentIncomesHandler
@@ -32,7 +32,7 @@ router.get(
 
 router.patch(
     '/accounts/:accountId/incomes/:incomeId/soft-delete',
-    // validateSubscription,
+    validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(softDeleteIncomeSchema), 
     softDeleteIncomeHandler
@@ -40,7 +40,7 @@ router.patch(
 
 router.get(
     '/accounts/:accountId/incomes/deleted',
-    // validateSubscription,
+    validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(getDeletedIncomesSchema),
     getDeletedIncomesHandler
@@ -48,7 +48,7 @@ router.get(
 
 router.patch(
     '/accounts/:accountId/incomes/:incomeId',
-    // validateSubscription,
+    validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(updateIncomeSchema), 
     updateIncomeHandler
@@ -56,7 +56,7 @@ router.patch(
 
 router.get(
     '/accounts/:accountId/incomes/export',
-    // validateSubscription,
+    validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(exportIncomeSchema),
     exportIncomeHandler
