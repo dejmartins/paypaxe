@@ -4,7 +4,7 @@ import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { validateAccount } from "../../account/service/account.service";
 import ExpenseModel, { IExpense } from "../model/expense.model";
-import { AddExpense, GetExpense, GetTotalExpense, SoftDeleteExpense, UpdateExpense } from "../types/expenseTypes";
+import { AddExpense, GetExpense, GetExpenseByTimeFrame, GetTotalExpense, SoftDeleteExpense, UpdateExpense } from "../types/expenseTypes";
 
 export async function addExpense(input: AddExpense){
     try{
@@ -148,6 +148,30 @@ export async function handleRecurringExpenses() {
         }
     } catch (error: any) {
         log.error(`Error handling recurring expenses: ${error.message}`);
+    }
+}
+
+export async function getExpenseByTimeFrame(input: GetExpenseByTimeFrame) {
+    try {
+        validateAccount(input.accountId);
+        
+        const { startDate: start, endDate: end } = getTimeFrame(input.timePeriod, input.startDate, input.endDate);
+    
+        const expenses = await ExpenseModel.aggregate([
+            {
+                $match: {
+                    account: new Types.ObjectId(input.accountId),
+                    date: { $gte: new Date(start), $lte: new Date(end) },
+                    status: 'active'
+                }
+            }
+        ]);
+
+        return expenses;
+        
+    } catch (error: any) {
+        log.error(`Error getting expense by time frame: ${error.message}`);
+        throw new AppError(error.message, error.statusCode)
     }
 }
 

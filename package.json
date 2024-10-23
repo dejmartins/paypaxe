@@ -9,12 +9,12 @@
     "build": "tsc",
     "start": "npm run build && node --max-old-space-size=1024 build/index.js",
     "watch": "tsc --watch"
-
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fast-csv/format": "^5.0.2",
     "@types/axios": "^0.14.0",
     "@types/axios-mock-adapter": "^1.10.0",
     "@types/express-rate-limit": "^6.0.0",

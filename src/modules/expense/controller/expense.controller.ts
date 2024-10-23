@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { successResponse } from "../../../shared/utils/response";
 import { AddExpenseInput } from "../schema/expense.schema";
-import { addExpense, getDeletedExpenses, getRecentExpenses, getTotalExpense, softDeleteExpense, updateExpense } from "../service/expense.service";
+import { addExpense, getDeletedExpenses, getExpenseByTimeFrame, getRecentExpenses, getTotalExpense, softDeleteExpense, updateExpense } from "../service/expense.service";
 import { AppError } from "../../../shared/utils/customErrors";
+import { format } from '@fast-csv/format'
+import { IExpense } from "../model/expense.model";
 
 export const addExpenseHandler = asyncHandler(async (req: Request<{}, {}, AddExpenseInput['body']>, res: Response) => {
     // @ts-ignore
@@ -59,3 +61,49 @@ export const updateExpenseHandler = asyncHandler(async (req: Request, res: Respo
 
     return res.json(successResponse(updatedExpense, 'Expenses Updated Successfully'));
 });
+
+export const exportExpenseHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId } = req.params;
+    const { timePeriod, startDate, endDate, type } = req.query;
+
+    if (typeof timePeriod !== 'string' || (startDate && typeof startDate !== 'string') || (endDate && typeof endDate !== 'string')) {
+        throw new AppError('Invalid query parameters', 400);
+    }
+
+    const expenses = await getExpenseByTimeFrame({ accountId: accountId, timePeriod, startDate, endDate });
+
+    if (!expenses || expenses.length === 0) {
+        throw new AppError('No expenses found for the given time frame', 404);
+    }
+
+    if(type === 'csv') {
+        await exportToCsv(res, expenses);
+    } else {
+        // return 'Error'
+        return res.json(successResponse({ totalExpense: expenses }, 'Expense Report Successfully Exported'));
+    }
+
+
+});
+
+async function exportToCsv(res: Response, expenses: IExpense[]) {
+    res.setHeader('Content-Disposition', 'attachment; filename=expenses.csv');
+    res.setHeader('Content-Type', 'text/csv');
+
+    // Initialize CSV stream
+    const csvStream = format({ headers: true });
+    csvStream.pipe(res);
+
+    // Writing expense data to CSV
+    expenses.forEach((expense) => {
+        csvStream.write({
+            Category: expense.category,
+            Amount: expense.amount,
+            Date: expense.date,
+            Description: expense.description,
+            Status: expense.status,
+        });
+    });
+
+    csvStream.end();
+}

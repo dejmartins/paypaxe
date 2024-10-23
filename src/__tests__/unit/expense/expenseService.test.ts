@@ -35,7 +35,7 @@ describe('ExpenseService - addExpense', () => {
 
 describe('ExpenseService - getTotalExpenseByDate', () => {
     describe('given the different time period', () => {
-        it('should return sum total of expense if month-specific', async () => {
+        it('should return sum total of expense of month-specific', async () => {
             (ExpenseModel.aggregate as jest.Mock).mockReturnValue([{ totalAmount: expectedTotalExpense }]);
 
             const totalExpense = await ExpenseService.getTotalExpense({ accountId, timePeriod: 'thisMonth' });
@@ -142,6 +142,20 @@ describe('ExpenseService - handleRecurringExpense', () => {
             await ExpenseService.handleRecurringExpenses();
             
             expect(ExpenseModel.create).toHaveBeenCalledTimes(2);
+        })
+    })
+})
+
+describe('ExpenseService - getExpenseByTimeFrame', () => {
+    describe('given the time frame/period', () => {
+        it('should return all expense in that time frame', async () => {
+            (ExpenseModel.aggregate as jest.Mock).mockReturnValue(expenseReturnPayload);
+
+            const filteredExpense = await ExpenseService.getExpenseByTimeFrame({ accountId, timePeriod: 'thisMonth' });
+
+            expect(filteredExpense).toBe(expenseReturnPayload);
+
+            expect(ExpenseModel.aggregate).toHaveBeenCalledTimes(1);
         })
     })
 })

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import validate from "../../../shared/middlewares/validateResource";
 import { addExpenseSchema, getRecentExpensesSchema, getTotalExpenseSchema } from "../schema/expense.schema";
-import { addExpenseHandler, getDeletedExpensesHandler, getRecentExpensesHandler, getTotalExpenseHandler, softDeleteExpenseHandler, updateExpenseHandler } from "../controller/expense.controller";
+import { addExpenseHandler, exportExpenseHandler, getDeletedExpensesHandler, getRecentExpensesHandler, getTotalExpenseHandler, softDeleteExpenseHandler, updateExpenseHandler } from "../controller/expense.controller";
 import { validateAccountTypeAndPlan, validateSubscription } from "../../../shared/middlewares/validateAccount";
 
 const router = Router();
@@ -52,6 +52,14 @@ router.patch(
     validateAccountTypeAndPlan(['individual'], 'basic'),
     // validate(getRecentExpensesSchema), 
     updateExpenseHandler
+);
+
+router.get(
+    '/accounts/:accountId/expenses/export',
+    // validateSubscription,
+    validateAccountTypeAndPlan(['individual'], 'basic'),
+    // validate(getRecentExpensesSchema), 
+    exportExpenseHandler
 );
 
 export default router;

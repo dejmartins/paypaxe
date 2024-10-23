@@ -30,3 +30,10 @@ export type UpdateExpense = {
     expenseId: string,
     updateFields: Partial<IExpense>
 }
+
+export type GetExpenseByTimeFrame = {
+    accountId: string,
+    timePeriod: string,
+    startDate?: string,
+    endDate?: string
+}
