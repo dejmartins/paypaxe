@@ -3,7 +3,8 @@ import { AppError } from "../../../shared/utils/customErrors";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { validateAccount } from "../../account/service/account.service";
 import IncomeModel, { IIncome } from "../model/income.model";
-import { AddIncome, GetRecentIncome, GetTotalIncome, SoftDeleteIncome } from "../types/incomeTypes";
+import { AddIncome, GetIncome, GetIncomeByTimeFrame, GetTotalIncome, SoftDeleteIncome, UpdateIncome } from "../types/incomeTypes";
+import log from "../../../shared/utils/logger";
 
 export async function addIncome(input: AddIncome): Promise<IIncome>{
     try{    
@@ -44,7 +45,7 @@ export async function getTotalIncome(input: GetTotalIncome){
     }
 }
 
-export async function getRecentIncomes(input: GetRecentIncome): Promise<IIncome[]> {
+export async function getRecentIncomes(input: GetIncome): Promise<IIncome[]> {
     try {
         validateAccount(input.accountId);
 
@@ -72,5 +73,68 @@ export async function softDeleteIncome(input: SoftDeleteIncome) {
         return expense;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
+    }
+}
+
+export async function getDeletedIncomes(input: GetIncome): Promise<IIncome[]> {
+    try {
+        validateAccount(input.accountId);
+
+        const deletedIncomes = await IncomeModel.find({ account: input.accountId, status: 'deleted' })
+            .sort({ date: -1 })
+            .limit(input.limit)
+            .lean();
+
+        return deletedIncomes.map(income => ({
+            ...income,
+            amount: parseFloat((income.amount / 100).toFixed(2))
+        })) as IIncome[];
+
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode)
+    }
+}
+
+export async function updateIncome(input: UpdateIncome) {
+    try {
+        validateAccount(input.accountId);
+        
+        const updatedIncome = await IncomeModel.findByIdAndUpdate(
+            input.incomeId, 
+            { $set: input.updateFields }, 
+            { new: true }
+        );
+
+        if (!updatedIncome) {
+            throw new AppError("Income not found.", 404);
+        }
+
+        return updatedIncome;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode);
+    }
+}
+
+export async function getIncomeByTimeFrame(input: GetIncomeByTimeFrame) {
+    try {
+        validateAccount(input.accountId);
+        
+        const { startDate: start, endDate: end } = getTimeFrame(input.timePeriod, input.startDate, input.endDate);
+    
+        const incomes = await IncomeModel.aggregate([
+            {
+                $match: {
+                    account: new Types.ObjectId(input.accountId),
+                    dateReceived: { $gte: new Date(start), $lte: new Date(end) },
+                    status: 'active'
+                }
+            }
+        ]);
+
+        return incomes;
+        
+    } catch (error: any) {
+        log.error(`Error getting income by time frame: ${error.message}`);
+        throw new AppError(error.message, error.statusCode)
     }
 }

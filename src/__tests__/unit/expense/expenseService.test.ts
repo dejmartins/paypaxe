@@ -76,7 +76,7 @@ describe('ExpenseService - getRecentExpenses', () => {
     })
 })
 
-describe('ExpenseService - softDeleteExpenses', () => {
+describe('ExpenseService - softDeleteExpense', () => {
     describe('given there is an active expense', () => {
         it('should return a deleted expense', async () => {
             (ExpenseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({...expenseReturnPayload, status: 'deleted'});

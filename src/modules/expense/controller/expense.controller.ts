@@ -50,9 +50,9 @@ export const getDeletedExpensesHandler = asyncHandler(async (req: Request, res: 
     const { limit } = req.query;
 
     // @ts-ignore
-    const recentExpenses = await getDeletedExpenses({ accountId, limit });
+    const deletedExpenses = await getDeletedExpenses({ accountId, limit });
 
-    return res.json(successResponse(recentExpenses, 'Deleted Expenses Retrieved Successfully'));
+    return res.json(successResponse(deletedExpenses, 'Deleted Expenses Retrieved Successfully'));
 });
 
 export const updateExpenseHandler = asyncHandler(async (req: Request, res: Response) => {
@@ -82,8 +82,6 @@ export const exportExpenseHandler = asyncHandler(async (req: Request, res: Respo
     } else if (type === 'pdf'){
         exportToPdf(res, expenses);
     }
-
-
 });
 
 async function exportToCsv(res: Response, expenses: IExpense[]) {

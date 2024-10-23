@@ -1,6 +1,6 @@
 import * as IncomeService from '../../../modules/income/service/income.service'
 import IncomeModel from "../../../modules/income/model/income.model"
-import { accountId, addIncomePayload, expectedTotalIncome, incomeId, incomeReturnPayload, recentIncomesReturnPayload } from "../../utils/fixtures"
+import { accountId, addIncomePayload, deletedIncomesReturnPayload, expectedTotalIncome, incomeId, incomeReturnPayload, recentIncomesReturnPayload } from "../../utils/fixtures"
 import {  validateAccount } from '../../../modules/account/service/account.service'
 import { AppError } from '../../../shared/utils/customErrors'
 
@@ -80,16 +80,74 @@ describe('IncomeService - getRecentIncomes', () => {
     })
 })
 
-describe('ExpenseService - softDeleteExpenses', () => {
-    describe('given there is an active expense', () => {
-        it('should return a deleted expense', async () => {
+describe('IncomeService - softDeleteIncome', () => {
+    describe('given there is an active income', () => {
+        it('should return a deleted income', async () => {
             (IncomeModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({...incomeReturnPayload, status: 'deleted'});
 
-            const deletedExpense = await IncomeService.softDeleteIncome({ accountId: accountId, incomeId: incomeId });
+            const deletedIncome = await IncomeService.softDeleteIncome({ accountId: accountId, incomeId: incomeId });
 
-            expect(deletedExpense).toEqual({...incomeReturnPayload, status: 'deleted'});
+            expect(deletedIncome).toEqual({...incomeReturnPayload, status: 'deleted'});
             expect(validateAccount).toHaveBeenCalledWith(accountId);
             expect(IncomeModel.findByIdAndUpdate).toHaveBeenCalledWith(incomeId, {status: "deleted"});
+        })
+    })
+})
+
+describe('IncomeService - getDeletedIncomes', () => {
+    describe('given there are incomes already soft-deleted', () => {
+        it('should return limited deleted incomes', async () => {
+            (IncomeModel.find as jest.Mock).mockReturnValue({
+                sort: jest.fn().mockReturnThis(),
+                limit: jest.fn().mockReturnValue({
+                    lean: jest.fn().mockResolvedValue(deletedIncomesReturnPayload),
+                }),
+            });
+
+            const deletedIncomes = await IncomeService.getDeletedIncomes({ accountId, limit: 5 });
+
+            expect(deletedIncomes).toEqual(deletedIncomesReturnPayload
+                .map(income => ({
+                    ...income,
+                    amount: parseFloat((income.amount / 100).toFixed(2))
+                }))
+            );
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
+            expect(IncomeModel.find).toHaveBeenCalledWith({ account: accountId,  status: 'deleted' });
+        })
+    })
+})
+
+describe('IncomeService - updateIncome', () => {
+    describe('given that an income was already added', () => {
+        it('should update and return the updated Income', async () => {
+            (IncomeModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(incomeReturnPayload);
+
+            const updateFields = { category: "salary" };
+            const updatedIncome = await IncomeService.updateIncome({accountId, incomeId, updateFields});
+
+            expect(updatedIncome).toEqual(incomeReturnPayload)
+            
+            expect(validateAccount).toHaveBeenCalledWith(accountId);
+            expect(IncomeModel.findByIdAndUpdate).toHaveBeenCalledWith(
+                incomeId, 
+                { $set: updateFields }, 
+                { new: true }
+            );
+        })
+    })
+})
+
+describe('IncomeService - getIncomeByTimeFrame', () => {
+    describe('given the time frame/period', () => {
+        it('should return all expense in that time frame', async () => {
+            (IncomeModel.aggregate as jest.Mock).mockReturnValue(incomeReturnPayload);
+
+            const filteredIncome = await IncomeService.getIncomeByTimeFrame({ accountId, timePeriod: 'thisMonth' });
+
+            expect(filteredIncome).toBe(incomeReturnPayload);
+
+            expect(IncomeModel.aggregate).toHaveBeenCalledTimes(1);
         })
     })
 })

@@ -119,6 +119,30 @@ export async function updateExpense(input: UpdateExpense) {
     }
 }
 
+export async function getExpenseByTimeFrame(input: GetExpenseByTimeFrame) {
+    try {
+        validateAccount(input.accountId);
+        
+        const { startDate: start, endDate: end } = getTimeFrame(input.timePeriod, input.startDate, input.endDate);
+    
+        const expenses = await ExpenseModel.aggregate([
+            {
+                $match: {
+                    account: new Types.ObjectId(input.accountId),
+                    date: { $gte: new Date(start), $lte: new Date(end) },
+                    status: 'active'
+                }
+            }
+        ]);
+
+        return expenses;
+        
+    } catch (error: any) {
+        log.error(`Error getting expense by time frame: ${error.message}`);
+        throw new AppError(error.message, error.statusCode)
+    }
+}
+
 export async function handleRecurringExpenses() {
     try {
         const recurringExpenses = await ExpenseModel.find({
@@ -148,30 +172,6 @@ export async function handleRecurringExpenses() {
         }
     } catch (error: any) {
         log.error(`Error handling recurring expenses: ${error.message}`);
-    }
-}
-
-export async function getExpenseByTimeFrame(input: GetExpenseByTimeFrame) {
-    try {
-        validateAccount(input.accountId);
-        
-        const { startDate: start, endDate: end } = getTimeFrame(input.timePeriod, input.startDate, input.endDate);
-    
-        const expenses = await ExpenseModel.aggregate([
-            {
-                $match: {
-                    account: new Types.ObjectId(input.accountId),
-                    date: { $gte: new Date(start), $lte: new Date(end) },
-                    status: 'active'
-                }
-            }
-        ]);
-
-        return expenses;
-        
-    } catch (error: any) {
-        log.error(`Error getting expense by time frame: ${error.message}`);
-        throw new AppError(error.message, error.statusCode)
     }
 }
 

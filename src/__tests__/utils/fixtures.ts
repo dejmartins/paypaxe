@@ -45,14 +45,15 @@ export const addIncomePayload = {
     account: accountId,
     amount: 400.50,
     category: "salary",
-    dateReceived: "2024-07-20"
+    dateReceived: "2024-07-20",
+    isRecurring: false
 }
 
 export const incomeReturnPayload  = new IncomeModel({
     _id: incomeId,
     account: accountId,
     amount: 400.50,
-    // category: "salary",
+    category: "salary",
     description: "",
     dateReceived: '2024-07-20'
 })
@@ -98,6 +99,31 @@ export const recentIncomesReturnPayload = [
         createdAt: "2024-07-23T00:00:00.000Z",
         updatedAt: "2024-07-23T00:00:00.000Z"
     },
+];
+
+export const deletedIncomesReturnPayload = [
+    {
+        _id: "60f7c4d7b4b8e72a9d06e432",
+        account: accountId,
+        amount: 500.00,
+        category: "Salary",
+        description: "Monthly Salary",
+        dateReceived: "2024-07-25",
+        status: 'deleted',
+        createdAt: "2024-07-25T00:00:00.000Z",
+        updatedAt: "2024-07-25T00:00:00.000Z"
+    },
+    {
+        _id: "60f7c4d7b4b8e72a9d06e433",
+        account: accountId,
+        amount: 250.00,
+        category: "Freelance",
+        description: "Freelance Project",
+        dateReceived: "2024-07-24",
+        status: 'deleted',
+        createdAt: "2024-07-24T00:00:00.000Z",
+        updatedAt: "2024-07-24T00:00:00.000Z"
+    }
 ];
 
 export const addExpensePayload = {
