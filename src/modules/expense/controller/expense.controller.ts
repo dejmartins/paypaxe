@@ -5,6 +5,7 @@ import { AddExpenseInput } from "../schema/expense.schema";
 import { addExpense, getDeletedExpenses, getExpenseByTimeFrame, getRecentExpenses, getTotalExpense, softDeleteExpense, updateExpense } from "../service/expense.service";
 import { AppError } from "../../../shared/utils/customErrors";
 import { format } from '@fast-csv/format'
+import PDFDocument from 'pdfkit'
 import { IExpense } from "../model/expense.model";
 
 export const addExpenseHandler = asyncHandler(async (req: Request<{}, {}, AddExpenseInput['body']>, res: Response) => {
@@ -78,9 +79,8 @@ export const exportExpenseHandler = asyncHandler(async (req: Request, res: Respo
 
     if(type === 'csv') {
         await exportToCsv(res, expenses);
-    } else {
-        // return 'Error'
-        return res.json(successResponse({ totalExpense: expenses }, 'Expense Report Successfully Exported'));
+    } else if (type === 'pdf'){
+        exportToPdf(res, expenses);
     }
 
 
@@ -106,4 +106,28 @@ async function exportToCsv(res: Response, expenses: IExpense[]) {
     });
 
     csvStream.end();
+}
+
+function exportToPdf(res: Response, expenses: IExpense[]) {
+    const doc = new PDFDocument();
+
+    res.setHeader('Content-Type', 'application/pdf');
+
+    doc.pipe(res);
+
+    doc.fontSize(20).text('Expense Report', {
+        align: 'center',
+    });
+
+    doc.moveDown();
+    doc.fontSize(12).text(`Total Expenses: ${expenses.length}`, {
+        align: 'left',
+    });
+
+    doc.moveDown();
+    expenses.forEach((expense, index) => {
+        doc.text(`${index + 1}. Category: ${expense.category}, Amount: ${expense.amount}, Date: ${expense.date}, Description: ${expense.description}`);
+    });
+
+    doc.end();
 }
