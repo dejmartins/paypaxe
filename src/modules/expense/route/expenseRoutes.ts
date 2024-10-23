@@ -56,7 +56,7 @@ router.patch(
 
 router.get(
     '/accounts/:accountId/expenses/export',
-    // validateSubscription,
+    validateSubscription,
     validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(exportExpenseSchema),
     exportExpenseHandler
