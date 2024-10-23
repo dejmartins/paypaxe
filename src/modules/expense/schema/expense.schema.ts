@@ -84,4 +84,65 @@ export const getRecentExpensesSchema = object({
     })
 });
 
+export const softDeleteExpenseSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        expenseId: objectIdValidator,
+    })
+});
+
+export const getDeletedExpensesSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    query: object({
+        limit: optional(string().refine(value => !isNaN(parseInt(value, 10)), {
+            message: 'Limit must be a number',
+        }))
+    })
+});
+
+export const updateExpenseSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        expenseId: objectIdValidator,
+    }),
+    body: object({
+        amount: optional(union([number(), string()]).refine(value => !isNaN(parseFloat(value as string)), {
+            message: 'Must be a valid decimal number',
+        }).transform(value => parseFloat(value as string))),
+        category: optional(string()),
+        description: optional(string()),
+        isRecurring: optional(boolean()),
+        frequency: optional(string().refine((val) => {
+            const allowedFrequencies = ['daily', 'weekly', 'monthly', 'yearly'];
+            return allowedFrequencies.includes(val);
+        }, {
+            message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'",
+        }))
+    })
+});
+
+export const exportExpenseSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    query: object({
+        timePeriod: string({
+            required_error: 'Time period is required',
+        }),
+        startDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
+            message: 'Invalid start date format',
+        })),
+        endDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
+            message: 'Invalid end date format',
+        })),
+        type: string().refine((val) => ['csv', 'pdf'].includes(val), {
+            message: 'Type must be either csv or pdf',
+        })
+    })
+});
+
+
+
 export type AddExpenseInput = TypeOf<typeof addExpenseSchema>;
