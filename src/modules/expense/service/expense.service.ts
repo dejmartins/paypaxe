@@ -103,9 +103,9 @@ export async function updateExpense(input: UpdateExpense) {
     try {
         validateAccount(input.accountId);
         
-        const updatedExpense = await ExpenseModel.findByIdAndUpdate(
-            input.expenseId, 
-            { $set: input.updateFields }, 
+        const updatedExpense = await ExpenseModel.findOneAndUpdate(
+            { _id: input.expenseId, status: 'active' },
+            { $set: input.updateFields },
             { new: true }
         );
 

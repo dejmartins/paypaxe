@@ -49,14 +49,15 @@ export const addIncomePayload = {
     isRecurring: false
 }
 
-export const incomeReturnPayload  = new IncomeModel({
+export const incomeReturnPayload  = {
     _id: incomeId,
     account: accountId,
     amount: 400.50,
     category: "salary",
     description: "",
-    dateReceived: '2024-07-20'
-})
+    dateReceived: '2024-07-20',
+    status: 'active'
+}
 
 const mockIncomeDocs = [
     { amount: 40050 },
@@ -135,7 +136,7 @@ export const addExpensePayload = {
     isRecurring: false
 }
 
-export const expenseReturnPayload  = new ExpenseModel({
+export const expenseReturnPayload  = {
     _id: expenseId,
     account: accountId,
     amount: 400.50,
@@ -143,7 +144,7 @@ export const expenseReturnPayload  = new ExpenseModel({
     description: "Food for family and friends",
     date: "2024-07-23",
     status: 'active'
-})
+}
 
 export const deletedExpenseReturnPayload  = new ExpenseModel({
     _id: expenseId,

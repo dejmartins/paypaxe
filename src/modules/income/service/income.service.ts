@@ -99,14 +99,18 @@ export async function updateIncome(input: UpdateIncome) {
     try {
         validateAccount(input.accountId);
         
-        const updatedIncome = await IncomeModel.findByIdAndUpdate(
-            input.incomeId, 
+        const updatedIncome = await IncomeModel.findOneAndUpdate(
+            { _id: input.incomeId, status: 'active' }, 
             { $set: input.updateFields }, 
             { new: true }
         );
 
         if (!updatedIncome) {
             throw new AppError("Income not found.", 404);
+        }
+
+        if (updatedIncome.status === 'deleted') {
+            throw new AppError("Deleted Income cannot be updated.", 404);
         }
 
         return updatedIncome;

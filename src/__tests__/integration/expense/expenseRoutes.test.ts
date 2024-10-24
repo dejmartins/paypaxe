@@ -3,6 +3,7 @@ import * as ExpenseService from '../../../modules/expense/service/expense.servic
 import createServer from '../../../shared/utils/server';
 import { accountId, addExpensePayload, deletedExpenseReturnPayload, deletedExpensesReturnPayload, expectedTotalExpense, expenseId, expenseReturnPayload, recentExpensesReturnPayload } from '../../utils/fixtures';
 import { NextFunction, Request, Response } from 'express';
+import ExpenseModel from '../../../modules/expense/model/expense.model';
 
 jest.mock('../../../shared/middlewares/validateAccount', () => ({
     validateAccountTypeAndPlan: () => (req: Request, res: Response, next: NextFunction) => next(),
@@ -18,10 +19,11 @@ describe('Expense', () => {
 
     describe('Expense Creation', () => { 
         describe('given the accountId and expense details are valid', () => {
+            const returnPayload = new ExpenseModel(expenseReturnPayload)
             it('should return expense payload', async () => {
                 const addExpenseMock = jest
                     .spyOn(ExpenseService, 'addExpense')
-                    .mockResolvedValue(expenseReturnPayload);
+                    .mockResolvedValue(returnPayload);
 
                 const { body, statusCode } = await supertest(app)
                     .post(`/api/accounts/${accountId}/expenses`)
@@ -30,7 +32,7 @@ describe('Expense', () => {
                 expect(statusCode).toBe(200);
 
                 const actualExpense = body.data;
-                const expectedExpense = expenseReturnPayload.toJSON();
+                const expectedExpense = returnPayload.toJSON();
                 // @ts-ignore
                 expectedExpense._id = expectedExpense._id.toString();
                 expectedExpense.account = expectedExpense.account.toString();
@@ -163,6 +165,7 @@ describe('Expense', () => {
 
     describe('Update Expense', () => {
         it('should return deleted expenses', async () => {
+            const returnPayload = new ExpenseModel(expenseReturnPayload)
             const getUpdatedExpensesMock = jest
                 .spyOn(ExpenseService, 'updateExpense')
                 // @ts-ignore
@@ -173,7 +176,7 @@ describe('Expense', () => {
                 .send({ category: "food" })
 
             expect(statusCode).toBe(200);
-            expect(body.data.category).toStrictEqual(expenseReturnPayload.toJSON().category);
+            expect(body.data.category).toStrictEqual(returnPayload.toJSON().category);
             expect(getUpdatedExpensesMock).toHaveBeenCalledWith({ accountId, expenseId, updateFields: { category: "food" } });
         });
     });

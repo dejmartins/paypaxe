@@ -121,7 +121,7 @@ describe('IncomeService - getDeletedIncomes', () => {
 describe('IncomeService - updateIncome', () => {
     describe('given that an income was already added', () => {
         it('should update and return the updated Income', async () => {
-            (IncomeModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(incomeReturnPayload);
+            (IncomeModel.findOneAndUpdate as jest.Mock).mockResolvedValue(incomeReturnPayload);
 
             const updateFields = { category: "salary" };
             const updatedIncome = await IncomeService.updateIncome({accountId, incomeId, updateFields});
@@ -129,11 +129,19 @@ describe('IncomeService - updateIncome', () => {
             expect(updatedIncome).toEqual(incomeReturnPayload)
             
             expect(validateAccount).toHaveBeenCalledWith(accountId);
-            expect(IncomeModel.findByIdAndUpdate).toHaveBeenCalledWith(
-                incomeId, 
+            expect(IncomeModel.findOneAndUpdate).toHaveBeenCalledWith(
+                { _id: incomeId, status: 'active' }, 
                 { $set: updateFields }, 
                 { new: true }
             );
+        })
+
+        it('should throw - income not found - error when the status is "deleted"', async () => {
+            const updateFields = { category: "food" };
+
+            await expect(IncomeService.updateIncome({ accountId, incomeId, updateFields }))
+                .rejects.toThrow(new AppError('Income not found.', 404))
+            
         })
     })
 })

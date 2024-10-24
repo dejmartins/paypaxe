@@ -9,7 +9,7 @@ const router = Router();
 router.post(
     '/accounts/:accountId/expenses',
     validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    validateAccountTypeAndPlan(['individual', 'family'], 'basic'),
     validate(addExpenseSchema), 
     addExpenseHandler
 );
@@ -17,7 +17,7 @@ router.post(
 router.get(
     '/accounts/:accountId/expenses/total',
     validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    validateAccountTypeAndPlan(['individual', 'family'], 'basic'),
     validate(getTotalExpenseSchema), 
     getTotalExpenseHandler
 );
@@ -25,7 +25,7 @@ router.get(
 router.get(
     '/accounts/:accountId/expenses/recent',
     validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    validateAccountTypeAndPlan(['individual', 'family'], 'basic'),
     validate(getRecentExpensesSchema), 
     getRecentExpensesHandler
 );
@@ -33,7 +33,7 @@ router.get(
 router.patch(
     '/accounts/:accountId/expenses/:expenseId/soft-delete',
     validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    validateAccountTypeAndPlan(['individual', 'family'], 'basic'),
     validate(softDeleteExpenseSchema), 
     softDeleteExpenseHandler
 );
@@ -41,7 +41,7 @@ router.patch(
 router.get(
     '/accounts/:accountId/expenses/deleted',
     validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    validateAccountTypeAndPlan(['individual', 'family'], 'basic'),
     validate(getDeletedExpensesSchema), 
     getDeletedExpensesHandler
 );
@@ -49,7 +49,7 @@ router.get(
 router.patch(
     '/accounts/:accountId/expenses/:expenseId',
     validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    validateAccountTypeAndPlan(['individual', 'family'], 'basic'),
     validate(updateExpenseSchema), 
     updateExpenseHandler
 );
@@ -57,7 +57,7 @@ router.patch(
 router.get(
     '/accounts/:accountId/expenses/export',
     validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    validateAccountTypeAndPlan(['individual', 'family'], 'basic'),
     validate(exportExpenseSchema),
     exportExpenseHandler
 );

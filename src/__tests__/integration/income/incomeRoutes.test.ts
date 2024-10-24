@@ -3,6 +3,7 @@ import * as IncomeService from '../../../modules/income/service/income.service';
 import createServer from '../../../shared/utils/server';
 import { accountId, addIncomePayload, expectedTotalIncome, incomeReturnPayload, recentIncomesReturnPayload } from '../../utils/fixtures';
 import { NextFunction, Request, Response } from 'express';
+import IncomeModel from '../../../modules/income/model/income.model';
 
 jest.mock('../../../shared/middlewares/validateAccount', () => ({
     validateAccountTypeAndPlan: () => (req: Request, res: Response, next: NextFunction) => next(),
@@ -14,10 +15,11 @@ const app = createServer();
 describe('Income', () => {
     describe('Income Creation', () => { 
         describe('given the accountId and income details are valid', () => {
+            const returnPayload = new IncomeModel(incomeReturnPayload);
             it('should return income payload', async () => {
                 const addIncomeMock = jest
                     .spyOn(IncomeService, 'addIncome')
-                    .mockResolvedValue(incomeReturnPayload);
+                    .mockResolvedValue(returnPayload);
 
                 const { body, statusCode } = await supertest(app)
                     .post(`/api/accounts/${accountId}/incomes`)
@@ -26,7 +28,7 @@ describe('Income', () => {
                 expect(statusCode).toBe(200);
 
                 const actualIncome = body.data;
-                const expectedIncome = incomeReturnPayload.toJSON();
+                const expectedIncome = returnPayload.toJSON();
                 // @ts-ignore
                 expectedIncome._id = expectedIncome._id.toString();
                 expectedIncome.account = expectedIncome.account.toString();

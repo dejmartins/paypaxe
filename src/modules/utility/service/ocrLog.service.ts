@@ -25,5 +25,5 @@ function extractAmount(ocrText: string): string {
 }
 
 function extractDescription(ocrText: string): string {
-    return ocrText.substring(50, 500);
+    return ocrText;
 }

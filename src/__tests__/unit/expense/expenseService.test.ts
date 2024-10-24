@@ -117,7 +117,7 @@ describe('ExpenseService - getDeletedExpenses', () => {
 describe('ExpenseService - updateExpense', () => {
     describe('given that an expense was already added', () => {
         it('should update and return the updated Expense', async () => {
-            (ExpenseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(expenseReturnPayload);
+            (ExpenseModel.findOneAndUpdate as jest.Mock).mockResolvedValue(expenseReturnPayload);
 
             const updateFields = { category: "food" };
             const updatedExpense = await ExpenseService.updateExpense({accountId, expenseId, updateFields});
@@ -125,11 +125,20 @@ describe('ExpenseService - updateExpense', () => {
             expect(updatedExpense).toEqual(expenseReturnPayload)
             
             expect(validateAccount).toHaveBeenCalledWith(accountId);
-            expect(ExpenseModel.findByIdAndUpdate).toHaveBeenCalledWith(
-                expenseId, 
+            
+            expect(ExpenseModel.findOneAndUpdate).toHaveBeenCalledWith(
+                { _id: expenseId, status: "active" }, 
                 { $set: updateFields }, 
                 { new: true }
             );
+        })
+
+        it('should throw - expense not found - error when the status is "deleted"', async () => {
+            const updateFields = { category: "food" };
+
+            await expect(ExpenseService.updateExpense({ accountId, expenseId, updateFields }))
+                .rejects.toThrow(new AppError('Expense not found.', 404))
+            
         })
     })
 })

@@ -73,8 +73,6 @@ export const exportIncomeHandler = asyncHandler(async (req: Request, res: Respon
 
     const incomes = await getIncomeByTimeFrame({ accountId: accountId, timePeriod, startDate, endDate });
 
-    console.log(incomes)
-
     if (!incomes || incomes.length === 0) {
         throw new AppError('No incomes found for the given time frame', 404);
     }
