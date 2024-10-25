@@ -216,7 +216,6 @@ function exportToPdf(res: Response, expenses: IExpense[]) {
         .text('Total', amountX - 70, y, { width: 70, align: 'left' })
         .text(totalAmount.toFixed(2), amountX, y, { width: 70, align: 'right' })
         .moveDown(1);
-
     // Additional Notes or Footer
     doc
         .fontSize(10)
