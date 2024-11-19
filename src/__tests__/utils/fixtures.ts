@@ -229,24 +229,27 @@ export const deletedExpensesReturnPayload = [
     }
 ];
 
-export const addGoalPayload = {
+export const createFinancialGoalPayload = {
     account: accountId,
     title: 'New Car Purchase',
     description: "Family car",
     targetAmount: 400.50,
     currentProgress: 100.50,
-    deadline: '2024-08-06'
+    deadline: '2024-08-06',
+    isRecurring: false
 }
 
 export const financialGoalReturnPayload = new FinancialGoalModel({
-    _id: financialGoalId,
-    account: accountId,
-    type: 'savings',
-    title: 'New Car Purchase',
-    targetAmount: 400.50,
-    currentProgress: 100.50,
+    _id: "6739c4fcc15c89a501ca89db",
+    account: "6739c4fcc15c89a501ca89d8",
+    title: "New Car Purchase",
+    type: "savings",
+    category: "general",
+    targetAmount: 400.5,
+    currentProgress: 100.5,
     description: "",
-    deadline: '2024-08-06'
+    deadline: "2024-08-06",
+    status: "ongoing",
 })
 
 export const updatedFinancialGoalPayload = new FinancialGoalModel({

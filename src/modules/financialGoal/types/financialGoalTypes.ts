@@ -1,12 +1,16 @@
 import { IFinancialGoal } from "../model/financialGoal.model"
 
-export interface FinancialGoalInput{
-    account: string,
-    title: string,
-    description: string,
-    targetAmount: number,
-    currentProgress: number,
-    deadline: string
+export interface FinancialGoalInput {
+    account: string;
+    title: string;
+    category?: string;
+    description?: string;
+    targetAmount: number;
+    priority?: string;
+    currentProgress: number;
+    deadline: string;
+    isRecurring: boolean;
+    frequency?: string;
 }
 
 export type GetFinancialGoals = {

@@ -4,7 +4,7 @@ import { validateAccount } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
 import { FinancialGoalInput, GetFinancialGoals, UpdateFinancialGoal } from "../types/financialGoalTypes";
 
-export async function addGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
+export async function createFinancialGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try {
         validateAccount(input.account);
 
@@ -69,6 +69,25 @@ export async function updateGoalNotificationStatus(goalId: string, updateFields:
         if (!goal) {
             throw new AppError('Financial goal not found', 404);
         }
+        return goal;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode);
+    }
+}
+
+export async function findFinancialGoal(goalId: string, accountId: string) {
+    try {
+        validateAccount(accountId);
+
+        const goal = await FinancialGoalModel.findOne({
+            _id: goalId,
+            account: accountId,
+        });
+    
+        if (!goal) {
+            throw new AppError("Financial goal not found", 404);
+        }
+    
         return goal;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);

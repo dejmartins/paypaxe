@@ -1,4 +1,4 @@
-import { number, object, optional, string, TypeOf, union } from "zod";
+import { number, object, optional, string, TypeOf, union, boolean } from "zod";
 import { objectIdValidator } from "../../../shared/utils/validator";
 
 export const addFinancialGoalSchema = object({
@@ -7,38 +7,45 @@ export const addFinancialGoalSchema = object({
     }),
     body: object({
         title: string({
-            required_error: 'Title is required'
+            required_error: "Title is required",
         }),
-        description: string({
-            required_error: 'Description is required'
-        }),
-        targetAmount: union([number(), string()])
-            .refine(value => !isNaN(parseFloat(value as string)), {
-                message: 'Must be a valid decimal number',
-            })
-            .transform(value => parseFloat(value as string))
-            .refine(value => value > 0, {
-                message: 'Target amount must be greater than zero'
-            }),
-        currentProgress: union([number(), string()])
-            .refine(value => !isNaN(parseFloat(value as string)), {
-                message: 'Must be a valid decimal number',
-            })
-            .transform(value => parseFloat(value as string))
-            .refine(value => value >= 0, {
-                message: 'Current progress must be greater than or equal to zero'
-            }),
+        type: optional(string({
+            required_error: "Type is required",
+        }).refine(
+            (val) => !val || ['savings', 'investment', 'retirement', 'debtRepayment', 'other'].includes(val),
+            { message: "Invalid type" }
+        )),
+        category: optional(string()),
+        targetAmount: number({
+            required_error: "Target amount is required",
+        }).positive("Target amount must be positive"),
+        currentProgress: number({
+            required_error: "Current progress is required",
+        }).min(0, "Current progress cannot be negative"),
         deadline: string({
-            required_error: 'Deadline is required'
-        }).refine(date => {
-            const parsedDate = new Date(date);
-            const currentDate = new Date();
-            return parsedDate >= currentDate;
-        }, {
-            message: 'Deadline cannot be in the past'
+            required_error: "Deadline is required",
+        }).refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" }),
+        description: optional(string()),
+        priority: optional(string()).refine(
+            (val) => !val || ['high', 'medium', 'low'].includes(val),
+            { message: "Invalid priority" }
+        ),
+        isRecurring: boolean({
+            required_error: "Recurring status is required",
         }),
-        type: string().optional()
-    })
+        frequency: optional(string()).refine(
+            (val) => !val || ['daily', 'weekly', 'monthly', 'yearly'].includes(val),
+            { message: "Invalid frequency" }
+        ),
+    }).superRefine((data, ctx) => {
+        if (data.isRecurring && !data.frequency) {
+            ctx.addIssue({
+                code: "custom",
+                path: ["frequency"],
+                message: "Frequency is required for recurring goals",
+            });
+        }
+    }),
 });
 
 export const getGoalsSchema = object({
@@ -90,4 +97,4 @@ export const updateFinancialGoalSchema = object({
 });
 
 
-export type AddGoalInput = TypeOf<typeof addFinancialGoalSchema>;
+export type CreateGoalInput = TypeOf<typeof addFinancialGoalSchema>;
