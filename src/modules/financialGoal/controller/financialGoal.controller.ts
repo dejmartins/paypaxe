@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { CreateGoalInput } from "../schema/financialGoal.schema";
-import { createFinancialGoal, getFinancialGoals, updateFinancialGoal } from "../service/financialGoal.service";
+import { createFinancialGoal, findFinancialGoalById, getFinancialGoals, updateFinancialGoal } from "../service/financialGoal.service";
 import { successResponse } from "../../../shared/utils/response";
 import log from "../../../shared/utils/logger";
-import { GetFinancialGoals } from "../types/financialGoalTypes";
+import { GetFinancialGoals, GetGoalByIdParams } from "../types/financialGoalTypes";
 
 export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {}, CreateGoalInput['body']>, res: Response) => {
     // @ts-ignore
@@ -23,6 +23,14 @@ export const getFinancialGoalHandler = asyncHandler(async (req: Request, res: Re
 
     return res.json(successResponse(goals, 'Financial Goals retrieved successfully'));
 });
+
+export const getFinancialGoalByIdHandler = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { goalId } = req.params;
+        const goal = await findFinancialGoalById(goalId);
+        return res.json(successResponse(goal, "Financial goal retrieved successfully"));
+    }
+);
 
 // export const updateGoalHandler = asyncHandler(async (req: Request, res: Response) => {
 //     // @ts-ignore

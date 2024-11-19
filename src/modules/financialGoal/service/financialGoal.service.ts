@@ -39,6 +39,20 @@ export async function getFinancialGoals(input: GetFinancialGoals){
     }
 }
 
+export async function findFinancialGoalById(goalId: string) {
+    try {
+        const goal = await FinancialGoalModel.findById(goalId);
+    
+        if (!goal) {
+            throw new AppError("Financial goal not found", 404);
+        }
+    
+        return goal;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode);
+    }
+}
+
 export async function updateFinancialGoal(input: UpdateFinancialGoal){
     try {
         validateAccount(input.account);

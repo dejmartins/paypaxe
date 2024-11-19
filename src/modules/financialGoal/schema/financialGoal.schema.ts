@@ -62,6 +62,13 @@ export const getGoalsSchema = object({
     })
 });
 
+export const getGoalByIdSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        goalId: objectIdValidator,
+    }),
+});
+
 export const updateFinancialGoalSchema = object({
     params: object({
         accountId: objectIdValidator,

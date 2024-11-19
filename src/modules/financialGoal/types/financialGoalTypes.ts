@@ -19,6 +19,10 @@ export type GetFinancialGoals = {
     page: number
 }
 
+export type GetGoalByIdParams = {
+    goalId: string;
+}
+
 export type UpdateFinancialGoal = {
     account: string
     goal: string,
