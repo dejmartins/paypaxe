@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { CreateGoalInput } from "../schema/financialGoal.schema";
-import { createFinancialGoal, findFinancialGoalById, getFinancialGoals, updateFinancialGoal } from "../service/financialGoal.service";
+import { createFinancialGoal, findFinancialGoalById, getFinancialGoals, getTotalCurrentProgress, updateFinancialGoal } from "../service/financialGoal.service";
 import { successResponse } from "../../../shared/utils/response";
 import log from "../../../shared/utils/logger";
 import { GetFinancialGoals, GetGoalByIdParams } from "../types/financialGoalTypes";
@@ -37,6 +37,14 @@ export const getFinancialGoalByIdHandler = asyncHandler(
         return res.json(successResponse(goal, "Financial goal retrieved successfully"));
     }
 );
+
+export const getTotalCurrentProgressHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId } = req.params;
+
+    const totalCurrentProgress = await getTotalCurrentProgress(accountId);
+
+    return res.json(successResponse({ totalCurrentProgress }, "Total current progress retrieved successfully"));
+});
 
 // export const updateGoalHandler = asyncHandler(async (req: Request, res: Response) => {
 //     // @ts-ignore

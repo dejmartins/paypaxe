@@ -1,5 +1,5 @@
+import mongoose from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
-import log from "../../../shared/utils/logger";
 import { validateAccount } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
 import { FinancialGoalInput, GetFinancialGoals, UpdateFinancialGoal } from "../types/financialGoalTypes";
@@ -54,6 +54,19 @@ export async function findFinancialGoalById(goalId: string) {
         return goal;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
+    }
+}
+
+export async function getTotalCurrentProgress(accountId: string): Promise<number> {
+    try {
+        const totalProgress = await FinancialGoalModel.aggregate([
+            { $match: { account: new mongoose.Types.ObjectId(accountId) } },
+            { $group: { _id: null, totalProgress: { $sum: "$currentProgress" } } },
+        ]);
+
+        return totalProgress.length > 0 ? totalProgress[0].totalProgress : 0;
+    } catch (error: any) {
+        throw new AppError(error.message, error.statusCode || 500);
     }
 }
 

@@ -60,6 +60,12 @@ export const getGoalByIdSchema = object({
     }),
 });
 
+export const getTotalCurrentProgressSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+});
+
 export const updateFinancialGoalSchema = object({
     params: object({
         accountId: objectIdValidator,

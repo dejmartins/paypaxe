@@ -1,8 +1,8 @@
 import { Router } from "express";
 import validate from "../../../shared/middlewares/validateResource";
-import { addFinancialGoalSchema, getGoalByIdSchema, getGoalsSchema, updateFinancialGoalSchema } from "../schema/financialGoal.schema";
+import { addFinancialGoalSchema, getGoalByIdSchema, getGoalsSchema, getTotalCurrentProgressSchema, updateFinancialGoalSchema } from "../schema/financialGoal.schema";
 import { validateAccountTypeAndPlan, validateSubscription } from "../../../shared/middlewares/validateAccount";
-import { createFinancialGoalHandler, getFinancialGoalByIdHandler, getFinancialGoalHandler } from "../controller/financialGoal.controller";
+import { createFinancialGoalHandler, getFinancialGoalByIdHandler, getFinancialGoalHandler, getTotalCurrentProgressHandler } from "../controller/financialGoal.controller";
 
 const router = Router();
 
@@ -16,10 +16,18 @@ router.post(
 
 router.get(
     '/accounts/:accountId/goals',
-    // validateSubscription,
-    // validateAccountTypeAndPlan(['individual'], 'basic'), 
+    validateSubscription,
+    validateAccountTypeAndPlan(['individual'], 'basic'), 
     validate(getGoalsSchema), 
     getFinancialGoalHandler
+);
+
+router.get(
+    "/accounts/:accountId/goals/total-progress",
+    validateSubscription,
+    validateAccountTypeAndPlan(["individual"], "basic"),
+    validate(getTotalCurrentProgressSchema),
+    getTotalCurrentProgressHandler
 );
 
 router.get(
