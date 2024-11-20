@@ -8,8 +8,8 @@ const router = Router();
 
 router.post(
     '/accounts/:accountId/goals/:goalId/savings',
-    validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    // validateSubscription,
+    // validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(logSavingsSchema),
     logSavingsHandler
 );

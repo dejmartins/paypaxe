@@ -7,7 +7,6 @@ export interface FinancialGoalInput {
     description?: string;
     targetAmount: number;
     priority?: string;
-    currentProgress: number;
     deadline: string;
 }
 

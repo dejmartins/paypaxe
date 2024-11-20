@@ -42,6 +42,7 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
         targetAmount: {
             type: Schema.Types.Number,
             required: true,
+            get: (v: number) => parseFloat((v / 100).toFixed(2)),
             set: (v: number) => Math.round(v * 100), // Store in cents
         },
         deadline: {
@@ -51,6 +52,8 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
         currentProgress: {
             type: Schema.Types.Number,
             required: true,
+            default: 0, // Default to zero
+            get: (v: number) => parseFloat((v / 100).toFixed(2)),
             set: (v: number) => Math.round(v * 100), // Store in cents
         },
         description: {
@@ -77,32 +80,38 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
     },
     {
         timestamps: true,
+        toJSON: {
+            getters: true,
+            transform: (doc, ret) => {
+                ret.deadline = ret.deadline.toISOString().split('T')[0];
+                return ret;
+            },
+        },
     }
 );
 
-// Pre-save middleware to automatically update status
-financialGoalSchema.pre<IFinancialGoal>('save', function (next) {
-    if (this.currentProgress >= this.targetAmount) {
-        this.status = 'completed';
-    } else {
-        this.status = 'ongoing';
-    }
-    next();
-});
-
-// Pre-update middleware to handle status changes during updates
 financialGoalSchema.pre<Query<IFinancialGoal, IFinancialGoal>>('findOneAndUpdate', function (next) {
     const update = this.getUpdate() as Partial<IFinancialGoal>;
+
     if (update.currentProgress !== undefined && update.targetAmount !== undefined) {
-        if (update.currentProgress >= update.targetAmount) {
+        // Scale down for comparison
+        const currentProgress = update.currentProgress / 100;
+        const targetAmount = update.targetAmount / 100;
+
+        // Update status based on scaled values
+        if (currentProgress >= targetAmount) {
             update.status = 'completed';
         } else {
             update.status = 'ongoing';
         }
+
+        // Apply the updated fields
         this.setUpdate(update);
     }
+
     next();
 });
+
 
 const FinancialGoalModel: Model<IFinancialGoal> = model<IFinancialGoal>('FinancialGoal', financialGoalSchema);
 

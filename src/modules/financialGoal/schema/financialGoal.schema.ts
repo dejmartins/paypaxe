@@ -19,9 +19,6 @@ export const addFinancialGoalSchema = object({
         targetAmount: number({
             required_error: "Target amount is required",
         }).positive("Target amount must be positive"),
-        currentProgress: number({
-            required_error: "Current progress is required",
-        }).min(0, "Current progress cannot be negative"),
         deadline: string({
             required_error: "Deadline is required",
         }).refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" }),
