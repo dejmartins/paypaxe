@@ -21,8 +21,7 @@ export async function getFinancialGoals(input: GetFinancialGoals){
 
         const goals = await FinancialGoalModel.find({ account: input.account })
             .skip((input.page - 1) * input.limit)
-            .limit(input.limit)
-            .lean();
+            .limit(input.limit);
 
         const totalGoals = await FinancialGoalModel.countDocuments({ account: input.account });
 
