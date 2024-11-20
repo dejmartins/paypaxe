@@ -64,7 +64,7 @@ export async function getTotalCurrentProgress(accountId: string): Promise<number
             { $group: { _id: null, totalProgress: { $sum: "$currentProgress" } } },
         ]);
 
-        return totalProgress.length > 0 ? totalProgress[0].totalProgress : 0;
+        return totalProgress.length > 0 ? totalProgress[0].totalProgress / 100 : 0;
     } catch (error: any) {
         throw new AppError(error.message, error.statusCode || 500);
     }
