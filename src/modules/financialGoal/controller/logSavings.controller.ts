@@ -8,6 +8,7 @@ export const logSavingsHandler = asyncHandler(
     async (req: Request<{}, {}, LogSavingsInput['body']>, res: Response) => {
          // @ts-ignore
         const { accountId, goalId } = req.params;
+
         const log = await logSavings({
             accountId,
             goalId,

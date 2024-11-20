@@ -3,4 +3,6 @@ export interface LogSavings {
     goalId: string;
     amount: number;
     date: string;
+    isRecurring: boolean;
+    frequency?: string;
 }

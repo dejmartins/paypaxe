@@ -28,6 +28,8 @@ export async function logSavings(input: LogSavings) {
             goal: input.goalId,
             amount: input.amount,
             date: input.date,
+            isRecurring: input.isRecurring,
+            frequency: input.frequency
         });
 
         return { updatedGoal, log };

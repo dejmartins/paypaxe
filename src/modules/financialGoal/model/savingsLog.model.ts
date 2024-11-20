@@ -7,6 +7,8 @@ export interface ISavingsLog extends Document {
     goal: IFinancialGoal["_id"];
     amount: number;
     date: Date;
+    isRecurring: boolean;
+    frequency?: "daily" | "weekly" | "monthly" | "yearly";
     createdAt: Date;
     updatedAt: Date;
 }
@@ -32,6 +34,18 @@ const savingsLogSchema = new Schema<ISavingsLog>(
         date: {
             type: Date,
             required: true,
+        },
+        isRecurring: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+        frequency: {
+            type: String,
+            enum: ["daily", "weekly", "monthly", "yearly"],
+            required: function () {
+                return this.isRecurring;
+            }
         },
     },
     {
