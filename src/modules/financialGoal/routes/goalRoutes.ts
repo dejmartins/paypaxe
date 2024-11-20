@@ -16,8 +16,8 @@ router.post(
 
 router.get(
     '/accounts/:accountId/goals',
-    validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'), 
+    // validateSubscription,
+    // validateAccountTypeAndPlan(['individual'], 'basic'), 
     validate(getGoalsSchema), 
     getFinancialGoalHandler
 );

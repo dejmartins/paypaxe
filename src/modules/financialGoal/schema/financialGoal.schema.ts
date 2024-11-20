@@ -35,13 +35,22 @@ export const getGoalsSchema = object({
         accountId: objectIdValidator,
     }),
     query: object({
-        limit: string().refine(value => !isNaN(parseInt(value)), {
-            message: 'Limit must be a valid number',
-        }).transform(value => parseInt(value)),
-        page: string().refine(value => !isNaN(parseInt(value)), {
-            message: 'Page must be a valid number',
-        }).transform(value => parseInt(value)),
-    })
+        limit: optional(
+            string().refine((value) => !isNaN(parseInt(value)), {
+                message: "Limit must be a valid number",
+            }).transform((value) => parseInt(value))
+        ),
+        page: optional(
+            string().refine((value) => !isNaN(parseInt(value)), {
+                message: "Page must be a valid number",
+            }).transform((value) => parseInt(value))
+        ),
+        status: optional(
+            string().refine((value) => ["completed", "ongoing"].includes(value), {
+                message: "Status must be either 'completed' or 'ongoing'",
+            })
+        ),
+    }),
 });
 
 export const getGoalByIdSchema = object({

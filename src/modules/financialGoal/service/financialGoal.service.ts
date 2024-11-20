@@ -19,7 +19,12 @@ export async function getFinancialGoals(input: GetFinancialGoals){
     try{
         validateAccount(input.account);
 
-        const goals = await FinancialGoalModel.find({ account: input.account })
+        const query: any = { account: input.account };
+        if (input.status) {
+            query.status = input.status;
+        }
+
+        const goals = await FinancialGoalModel.find(query)
             .skip((input.page - 1) * input.limit)
             .limit(input.limit);
 

@@ -14,15 +14,21 @@ export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {
 });
 
 export const getFinancialGoalHandler = asyncHandler(async (req: Request, res: Response) => {
-    // @ts-ignore
     const { accountId } = req.params;
-    const { limit, page } = req.query;
+    const { limit, page, status } = req.query;
 
-    // @ts-ignore
-    const goals = await getFinancialGoals({ account: accountId, limit, page });
+    const input = {
+        account: accountId,
+        limit: Number(limit),
+        page: Number(page),
+        status: status as 'completed' | 'ongoing' | undefined
+    };
+
+    const goals = await getFinancialGoals(input);
 
     return res.json(successResponse(goals, 'Financial Goals retrieved successfully'));
 });
+
 
 export const getFinancialGoalByIdHandler = asyncHandler(
     async (req: Request, res: Response) => {

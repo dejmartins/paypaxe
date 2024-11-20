@@ -13,7 +13,8 @@ export interface FinancialGoalInput {
 export type GetFinancialGoals = {
     account: string,
     limit: number,
-    page: number
+    page: number,
+    status?: string
 }
 
 export type GetGoalByIdParams = {
