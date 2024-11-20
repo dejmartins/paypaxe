@@ -9,8 +9,6 @@ export interface FinancialGoalInput {
     priority?: string;
     currentProgress: number;
     deadline: string;
-    isRecurring: boolean;
-    frequency?: string;
 }
 
 export type GetFinancialGoals = {

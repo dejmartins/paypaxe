@@ -29,23 +29,8 @@ export const addFinancialGoalSchema = object({
         priority: optional(string()).refine(
             (val) => !val || ['high', 'medium', 'low'].includes(val),
             { message: "Invalid priority" }
-        ),
-        isRecurring: boolean({
-            required_error: "Recurring status is required",
-        }),
-        frequency: optional(string()).refine(
-            (val) => !val || ['daily', 'weekly', 'monthly', 'yearly'].includes(val),
-            { message: "Invalid frequency" }
-        ),
-    }).superRefine((data, ctx) => {
-        if (data.isRecurring && !data.frequency) {
-            ctx.addIssue({
-                code: "custom",
-                path: ["frequency"],
-                message: "Frequency is required for recurring goals",
-            });
-        }
-    }),
+        )
+    })
 });
 
 export const getGoalsSchema = object({

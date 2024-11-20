@@ -11,8 +11,6 @@ export interface IFinancialGoal extends Document {
     currentProgress: number;
     description?: string;
     priority?: string;
-    isRecurring: boolean;
-    frequency?: string;
     deadlineNotificationSent: boolean;
     goalAchievedNotificationSent: boolean;
     status: 'completed' | 'ongoing';
@@ -62,17 +60,6 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             type: String,
             enum: ['high', 'medium', 'low'],
             default: 'medium',
-        },
-        isRecurring: {
-            type: Boolean,
-            default: false,
-        },
-        frequency: {
-            type: String,
-            enum: ['daily', 'weekly', 'monthly', 'yearly'],
-            required: function () {
-                return this.isRecurring;
-            },
         },
         deadlineNotificationSent: {
             type: Boolean,
