@@ -8,32 +8,32 @@ const router = Router();
 
 router.post(
     '/accounts/:accountId/goals',
-    validateSubscription, 
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    // validateSubscription, 
+    // validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(addFinancialGoalSchema), 
     createFinancialGoalHandler
 );
 
 router.get(
     '/accounts/:accountId/goals',
-    validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'), 
+    // validateSubscription,
+    // validateAccountTypeAndPlan(['individual'], 'basic'), 
     validate(getGoalsSchema), 
     getFinancialGoalHandler
 );
 
 router.get(
     "/accounts/:accountId/goals/total-progress",
-    validateSubscription,
-    validateAccountTypeAndPlan(["individual"], "basic"),
+    // validateSubscription,
+    // validateAccountTypeAndPlan(["individual"], "basic"),
     validate(getTotalCurrentProgressSchema),
     getTotalCurrentProgressHandler
 );
 
 router.get(
     '/accounts/:accountId/goals/:goalId',
-    validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'),
+    // validateSubscription,
+    // validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(getGoalByIdSchema),
     getFinancialGoalByIdHandler
 );
