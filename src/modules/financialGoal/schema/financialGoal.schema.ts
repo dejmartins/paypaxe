@@ -19,6 +19,9 @@ export const addFinancialGoalSchema = object({
         targetAmount: number({
             required_error: "Target amount is required",
         }).positive("Target amount must be positive"),
+        startDate: string({
+            required_error: "Start date is required",
+        }).refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" }),
         deadline: string({
             required_error: "Deadline is required",
         }).refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" }),
@@ -26,8 +29,57 @@ export const addFinancialGoalSchema = object({
         priority: optional(string()).refine(
             (val) => !val || ['high', 'medium', 'low'].includes(val),
             { message: "Invalid priority" }
-        )
-    })
+        ),
+        isRecurring: boolean({
+            required_error: "isRecurring flag is required",
+        }),
+        frequency: string()
+            .optional()
+            .refine(
+                (val) =>
+                    !val || ["daily", "weekly", "monthly", "yearly"].includes(val),
+                {
+                    message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'",
+                }
+            ),
+        preferredTime: optional(
+            string({
+                required_error: "Preferred time is required",
+            }).refine(
+                (val) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(val),
+                { message: "Preferred time must be in HH:mm format (e.g., '14:30')" }
+            )
+        ),
+        amount: optional(
+            number({
+                required_error: "Amount is required for recurring goals",
+            }).positive("Amount must be a positive number")
+        ),
+    }).superRefine((data, ctx) => {
+        if (data.isRecurring && !data.frequency) {
+            ctx.addIssue({
+                code: "custom",
+                message: "Frequency is required for recurring savings",
+                path: ["frequency"],
+            });
+        }
+
+        if (!data.isRecurring && data.frequency) {
+            ctx.addIssue({
+                code: "custom",
+                message: "Frequency should not be provided for non-recurring savings",
+                path: ["frequency"],
+            });
+        }
+
+        if (data.isRecurring && !data.amount) {
+            ctx.addIssue({
+                code: "custom",
+                message: "Amount is required for recurring savings",
+                path: ["amount"],
+            });
+        }
+    }),
 });
 
 export const getGoalsSchema = object({

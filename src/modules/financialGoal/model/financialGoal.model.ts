@@ -7,10 +7,15 @@ export interface IFinancialGoal extends Document {
     type: string;
     category: string;
     targetAmount: number;
+    startDate?: Date;
     deadline: Date;
     currentProgress: number;
     description?: string;
     priority?: string;
+    amount?: number;
+    frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+    isRecurring: boolean;
+    preferredTime?: string;
     deadlineNotificationSent: boolean;
     goalAchievedNotificationSent: boolean;
     status: 'completed' | 'ongoing';
@@ -43,7 +48,11 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             type: Schema.Types.Number,
             required: true,
             get: (v: number) => parseFloat((v / 100).toFixed(2)),
-            set: (v: number) => Math.round(v * 100), // Store in cents
+            set: (v: number) => Math.round(v * 100),
+        },
+        startDate: {
+            type: Date,
+            required: true
         },
         deadline: {
             type: Date,
@@ -54,7 +63,7 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             required: true,
             default: 0, // Default to zero
             get: (v: number) => parseFloat((v / 100).toFixed(2)),
-            set: (v: number) => Math.round(v * 100), // Store in cents
+            set: (v: number) => Math.round(v * 100),
         },
         description: {
             type: String,
@@ -63,6 +72,26 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             type: String,
             enum: ['high', 'medium', 'low'],
             default: 'medium',
+        },
+        amount: {
+            type: Schema.Types.Number,
+            default: 0,
+            get: (v: number) => parseFloat((v / 100).toFixed(2)),
+            set: (v: number) => Math.round(v * 100),
+        },
+        isRecurring: {
+            type: Boolean,
+            default: false,
+        },
+        frequency: {
+            type: String,
+            enum: ['daily', 'weekly', 'monthly', 'yearly'],
+            required: function () {
+                return this.isRecurring;
+            }
+        },
+        preferredTime: {
+            type: String,
         },
         deadlineNotificationSent: {
             type: Boolean,
@@ -94,18 +123,15 @@ financialGoalSchema.pre<Query<IFinancialGoal, IFinancialGoal>>('findOneAndUpdate
     const update = this.getUpdate() as Partial<IFinancialGoal>;
 
     if (update.currentProgress !== undefined && update.targetAmount !== undefined) {
-        // Scale down for comparison
         const currentProgress = update.currentProgress / 100;
         const targetAmount = update.targetAmount / 100;
 
-        // Update status based on scaled values
         if (currentProgress >= targetAmount) {
             update.status = 'completed';
         } else {
             update.status = 'ongoing';
         }
 
-        // Apply the updated fields
         this.setUpdate(update);
     }
 
