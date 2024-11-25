@@ -3,15 +3,14 @@ import { IFinancialGoal } from "../model/financialGoal.model"
 export interface FinancialGoalInput {
     account: string;
     title: string;
-    type: 'savings' | 'investment' | 'retirement' | 'debtRepayment' | 'other';
     category?: string;
     description?: string;
     targetAmount: number;
     startDate: string;
     deadline: string;
-    priority?: 'high' | 'medium' | 'low';
+    priority?: string;
     isRecurring: boolean;
-    frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+    frequency?: string;
     preferredTime?: string; // Optional preferred time for reminders (format: HH:mm)
     amount?: number;
 }

@@ -3,8 +3,6 @@ import asyncHandler from "../../../shared/utils/asyncHandler";
 import { CreateGoalInput } from "../schema/financialGoal.schema";
 import { createFinancialGoal, findFinancialGoalById, getFinancialGoals, getTotalCurrentProgress, updateFinancialGoal } from "../service/financialGoal.service";
 import { successResponse } from "../../../shared/utils/response";
-import log from "../../../shared/utils/logger";
-import { GetFinancialGoals, GetGoalByIdParams } from "../types/financialGoalTypes";
 
 export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {}, CreateGoalInput['body']>, res: Response) => {
     // @ts-ignore
