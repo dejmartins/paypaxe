@@ -152,5 +152,25 @@ export const updateFinancialGoalSchema = object({
     })
 });
 
+export const calculateSavingsSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    body: object({
+        targetAmount: number({
+            required_error: "Target amount is required",
+        }).positive("Target amount must be positive"),
+        deadline: string({
+            required_error: "Deadline is required",
+        }).refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" }),
+        frequency: string({
+            required_error: "Frequency is required",
+        }).refine(
+            (val) => ["daily", "weekly", "monthly", "yearly"].includes(val),
+            { message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'" }
+        ),
+    }),
+});
+
 
 export type CreateGoalInput = TypeOf<typeof addFinancialGoalSchema>;

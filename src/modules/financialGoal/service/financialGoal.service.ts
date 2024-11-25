@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import { validateAccount } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
-import { FinancialGoalInput, GetFinancialGoals, UpdateFinancialGoal } from "../types/financialGoalTypes";
+import { CalculateSavingsInput, FinancialGoalInput, GetFinancialGoals, UpdateFinancialGoal } from "../types/financialGoalTypes";
 
 export async function createFinancialGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try {
@@ -120,6 +120,49 @@ export async function findFinancialGoal(goalId: string, accountId: string) {
         }
     
         return goal;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode);
+    }
+}
+
+export function calculateSavingsAmount(input: CalculateSavingsInput): number {
+    try {
+
+        validateAccount(input.accountId);
+
+        const { targetAmount, deadline, frequency } = input;
+    
+        const deadlineDate = new Date(deadline);
+        const currentDate = new Date();
+    
+        if (deadlineDate <= currentDate) {
+            throw new AppError("Deadline must be in the future", 400);
+        }
+    
+        const timeDifference = deadlineDate.getTime() - currentDate.getTime();
+        const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    
+        let intervals: number;
+    
+        switch (frequency) {
+            case "daily":
+                intervals = daysRemaining;
+                break;
+            case "weekly":
+                intervals = Math.ceil(daysRemaining / 7);
+                break;
+            case "monthly":
+                intervals = Math.ceil(daysRemaining / 30);
+                break;
+            case "yearly":
+                intervals = Math.ceil(daysRemaining / 365);
+                break;
+            default:
+                throw new AppError("Invalid frequency provided", 400);
+        }
+    
+        const amountPerInterval = targetAmount / intervals;
+        return parseFloat(amountPerInterval.toFixed(2));
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
     }

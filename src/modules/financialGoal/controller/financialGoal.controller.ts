@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { CreateGoalInput } from "../schema/financialGoal.schema";
-import { createFinancialGoal, findFinancialGoalById, getFinancialGoals, getTotalCurrentProgress, updateFinancialGoal } from "../service/financialGoal.service";
+import { calculateSavingsAmount, createFinancialGoal, findFinancialGoalById, getFinancialGoals, getTotalCurrentProgress, updateFinancialGoal } from "../service/financialGoal.service";
 import { successResponse } from "../../../shared/utils/response";
 
 export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {}, CreateGoalInput['body']>, res: Response) => {
@@ -42,6 +42,16 @@ export const getTotalCurrentProgressHandler = asyncHandler(async (req: Request, 
     const totalCurrentProgress = await getTotalCurrentProgress(accountId);
 
     return res.json(successResponse({ totalCurrentProgress }, "Total current progress retrieved successfully"));
+});
+
+export const calculateSavingsAmountHandler = asyncHandler(async (req: Request, res: Response) => {
+    // @ts-ignore
+    const { accountId } = req.params;
+    const { targetAmount, deadline, frequency } = req.body;
+
+    const amountPerInterval = calculateSavingsAmount({ accountId, targetAmount, deadline, frequency });
+    
+    return res.json(successResponse({ amountPerInterval }, "Calculation successful"));
 });
 
 // export const updateGoalHandler = asyncHandler(async (req: Request, res: Response) => {

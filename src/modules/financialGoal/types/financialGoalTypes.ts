@@ -32,3 +32,10 @@ export type UpdateFinancialGoal = {
     goal: string,
     updateFields: Partial<IFinancialGoal>
 }
+
+export interface CalculateSavingsInput {
+    accountId: string;
+    targetAmount: number;
+    deadline: string;
+    frequency: "daily" | "weekly" | "monthly" | "yearly";
+}
