@@ -92,6 +92,10 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
         },
         preferredTime: {
             type: String,
+            default: () => new Date().toISOString().split('T')[1].slice(0, 5),
+            required: function () {
+                return this.isRecurring;
+            }
         },
         deadlineNotificationSent: {
             type: Boolean,
