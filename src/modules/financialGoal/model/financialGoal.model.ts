@@ -21,6 +21,7 @@ export interface IFinancialGoal extends Document {
     status: 'completed' | 'ongoing';
     deletionStatus: 'active' | 'deleted';
     pauseStatus: string;
+    lastIncrementAt: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -121,6 +122,10 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             type: String,
             enum: ['paused', 'active'],
             default: 'active',
+        },
+        lastIncrementAt: {
+            type: Date,
+            default: null,
         },
     },
     {

@@ -3,6 +3,7 @@ import { AppError } from "../../../shared/utils/customErrors";
 import { validateAccount } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
 import { CalculateSavingsInput, DeleteFinancialGoalInput, FinancialGoalInput, GetFinancialGoals, TransferFundsInput, UpdateFinancialGoal, UpdatePauseStatusInput } from "../types/financialGoalTypes";
+import log from "../../../shared/utils/logger";
 
 export async function createFinancialGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try {
@@ -314,6 +315,75 @@ export function calculateNewDeadline(
     newDeadline.setDate(newDeadline.getDate() + remainingDays);
 
     return newDeadline.toISOString().split('T')[0];
+}
+
+export async function incrementProgressForActiveGoals() {
+    try {
+        const now = new Date();
+        const currentTime = now.toISOString().split("T")[1].slice(0, 5);
+
+        const activeGoals = await FinancialGoalModel.find({
+            deletionStatus: "active",
+            pauseStatus: "active",
+            isRecurring: true,
+            status: { $ne: "completed" },
+            preferredTime: currentTime
+        });
+
+        if (!activeGoals.length) {
+            log.info("No active financial goals found for increment.");
+            return;
+        }
+
+
+        for (const goal of activeGoals) {
+            const lastIncrementDate = goal.lastIncrementAt || goal.startDate;
+            const timeDifference = now.getTime() - new Date(lastIncrementDate).getTime();
+
+            const isDue = isIncrementDue(goal.frequency, timeDifference);
+
+            if (isDue) {
+                const newProgress = goal.currentProgress + (goal.amount || 0);
+
+                if (newProgress < goal.targetAmount) {
+                    goal.currentProgress = newProgress;
+                } else {
+                    goal.currentProgress = newProgress;
+                    goal.status = "completed";
+                }
+
+                goal.lastIncrementAt = now;
+
+                await goal.save();
+            }
+
+        }
+
+        log.info(`Processed ${activeGoals.length} active financial goals.`);
+    } catch (e: any) {
+        log.error("Error incrementing financial goals:", e.message);
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}
+
+function isIncrementDue(frequency: string | undefined, timeDifference: number): boolean {
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneWeek = 7 * oneDay;
+    const oneMonth = 30 * oneDay; // Approximation
+    const oneYear = 365 * oneDay; // Approximation
+
+    switch (frequency) {
+        case "daily":
+            return timeDifference >= oneDay;
+        case "weekly":
+            return timeDifference >= oneWeek;
+        case "monthly":
+            return timeDifference >= oneMonth;
+        case "yearly":
+            return timeDifference >= oneYear;
+        default:
+            return false;
+    }
 }
 
 
