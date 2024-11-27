@@ -213,6 +213,10 @@ export async function updatePauseStatus(input: UpdatePauseStatusInput) {
 
         goal.pauseStatus = input.status;
 
+        if (input.status === 'active') {
+            adjustGoalDeadline(goal);
+        }
+
         await goal.save();
 
         return goal;
