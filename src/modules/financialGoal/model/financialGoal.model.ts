@@ -20,6 +20,7 @@ export interface IFinancialGoal extends Document {
     goalAchievedNotificationSent: boolean;
     status: 'completed' | 'ongoing';
     deletionStatus: 'active' | 'deleted';
+    pauseStatus: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -116,9 +117,10 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             enum: ['active', 'deleted'],
             default: 'active',
         },
-        isPaused: {
-            type: Boolean,
-            default: false
+        pauseStatus: {
+            type: String,
+            enum: ['paused', 'active'],
+            default: 'active',
         },
     },
     {

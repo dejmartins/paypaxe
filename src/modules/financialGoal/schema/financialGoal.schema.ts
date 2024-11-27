@@ -193,5 +193,20 @@ export const transferFundsSchema = object({
     }),
 });
 
+export const updatePauseStatusSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        goalId: objectIdValidator,
+    }),
+    body: object({
+        status: string({
+            required_error: 'Pause status is required',
+        }).refine((val) => ['paused', 'active'].includes(val), {
+            message: "Status must be either 'paused' or 'active'",
+        }),
+    }),
+});
+
+
 
 export type CreateGoalInput = TypeOf<typeof addFinancialGoalSchema>;

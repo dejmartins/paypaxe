@@ -53,3 +53,8 @@ export interface TransferFundsInput {
     transferAmount: number;
 }
 
+export interface UpdatePauseStatusInput {
+    goalId: string;
+    accountId: string;
+    status: 'paused' | 'active';
+}

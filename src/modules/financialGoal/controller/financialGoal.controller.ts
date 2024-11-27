@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { CreateGoalInput, transferFundsSchema } from "../schema/financialGoal.schema";
-import { calculateSavingsAmount, createFinancialGoal, deleteFinancialGoal, getFinancialGoal, getFinancialGoals, getTotalCurrentProgress, transferFunds, updateFinancialGoal } from "../service/financialGoal.service";
+import { calculateSavingsAmount, createFinancialGoal, deleteFinancialGoal, getFinancialGoal, getFinancialGoals, getTotalCurrentProgress, transferFunds, updateFinancialGoal, updatePauseStatus } from "../service/financialGoal.service";
 import { successResponse } from "../../../shared/utils/response";
 
 export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {}, CreateGoalInput['body']>, res: Response) => {
@@ -85,3 +85,12 @@ export const transferFundsHandler = asyncHandler(async (req: Request, res: Respo
         );
     }
 );
+
+export const updatePauseStatusHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { goalId, accountId } = req.params;
+    const { status } = req.body;
+
+    const goal = await updatePauseStatus({ goalId, accountId, status });
+
+    return res.json(successResponse(goal, `Financial goal is now ${status}`));
+});
