@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import { validateAccount } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
-import { CalculateSavingsInput, DeleteFinancialGoalInput, FinancialGoalInput, GetFinancialGoals, UpdateFinancialGoal } from "../types/financialGoalTypes";
+import { CalculateSavingsInput, DeleteFinancialGoalInput, FinancialGoalInput, GetFinancialGoals, TransferFundsInput, UpdateFinancialGoal } from "../types/financialGoalTypes";
 
 export async function createFinancialGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try {
@@ -175,5 +175,62 @@ async function getActiveGoal(goalId: string, accountId: string) {
     }
 
     return goal;
+}
+
+export async function transferFunds(input: TransferFundsInput) {
+    try {
+        if (input.sourceGoalId === input.destinationGoalId) {
+            throw new AppError("Cannot transfer funds to the same goal", 400);
+        }
+
+        const sourceGoal = await FinancialGoalModel.findOne({
+            _id: input.sourceGoalId,
+            account: input.accountId,
+            deletionStatus: "active",
+        });
+
+        const destinationGoal = await FinancialGoalModel.findOne({
+            _id: input.destinationGoalId,
+            account: input.accountId,
+            deletionStatus: "active",
+        });
+
+        if (!sourceGoal) {
+            throw new AppError("Source financial goal not found or inactive", 404);
+        }
+
+        if (!destinationGoal) {
+            throw new AppError("Destination financial goal not found or inactive", 404);
+        }
+
+        if (sourceGoal.currentProgress < input.transferAmount) {
+            throw new AppError(
+                `Insufficient funds. Available balance: ${sourceGoal.currentProgress}`,
+                400
+            );
+        }
+
+        // Perform fund transfer
+        sourceGoal.currentProgress -= input.transferAmount;
+        destinationGoal.currentProgress += input.transferAmount;
+
+        // Update statuses based on progress
+        sourceGoal.status =
+            sourceGoal.currentProgress >= sourceGoal.targetAmount ? "completed" : "ongoing";
+        destinationGoal.status =
+            destinationGoal.currentProgress >= destinationGoal.targetAmount ? "completed" : "ongoing";
+
+        // Save updates
+        await sourceGoal.save();
+        await destinationGoal.save();
+
+        return {
+            sourceGoal,
+            destinationGoal,
+            transferAmount: input.transferAmount,
+        };
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
 }
 

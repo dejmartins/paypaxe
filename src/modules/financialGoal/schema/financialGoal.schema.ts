@@ -179,5 +179,18 @@ export const deleteFinancialGoalSchema = object({
     }),
 });
 
+export const transferFundsSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    body: object({
+        sourceGoalId: objectIdValidator,
+        destinationGoalId: objectIdValidator,
+        transferAmount: number({
+            required_error: "Transfer amount is required",
+        }).positive("Transfer amount must be positive"),
+    }),
+});
+
 
 export type CreateGoalInput = TypeOf<typeof addFinancialGoalSchema>;

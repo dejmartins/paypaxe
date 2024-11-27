@@ -1,8 +1,8 @@
 import { Router } from "express";
 import validate from "../../../shared/middlewares/validateResource";
-import { addFinancialGoalSchema, calculateSavingsSchema, deleteFinancialGoalSchema, getGoalByIdSchema, getGoalsSchema, getTotalCurrentProgressSchema, updateFinancialGoalSchema } from "../schema/financialGoal.schema";
+import { addFinancialGoalSchema, calculateSavingsSchema, deleteFinancialGoalSchema, getGoalByIdSchema, getGoalsSchema, getTotalCurrentProgressSchema, transferFundsSchema, updateFinancialGoalSchema } from "../schema/financialGoal.schema";
 import { validateAccountTypeAndPlan, validateSubscription } from "../../../shared/middlewares/validateAccount";
-import { calculateSavingsAmountHandler, createFinancialGoalHandler, getFinancialGoalsHandler, getFinancialGoalHandler, getTotalCurrentProgressHandler, updateGoalHandler, deleteFinancialGoalHandler } from "../controller/financialGoal.controller";
+import { calculateSavingsAmountHandler, createFinancialGoalHandler, getFinancialGoalsHandler, getFinancialGoalHandler, getTotalCurrentProgressHandler, updateGoalHandler, deleteFinancialGoalHandler, transferFundsHandler } from "../controller/financialGoal.controller";
 
 const router = Router();
 
@@ -58,6 +58,12 @@ router.patch(
     // validateAccountTypeAndPlan(["individual"], "basic"),
     validate(deleteFinancialGoalSchema),
     deleteFinancialGoalHandler
+);
+
+router.post(
+    "/accounts/:accountId/goals/transfer",
+    validate(transferFundsSchema),
+    transferFundsHandler
 );
 
 

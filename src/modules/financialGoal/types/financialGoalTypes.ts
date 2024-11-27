@@ -44,3 +44,11 @@ export interface DeleteFinancialGoalInput {
     accountId: string;
     goalId: string;
 }
+
+export interface TransferFundsInput {
+    accountId: string;
+    sourceGoalId: string;
+    destinationGoalId: string;
+    transferAmount: number;
+}
+
