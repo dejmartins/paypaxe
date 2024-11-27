@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { CreateGoalInput } from "../schema/financialGoal.schema";
-import { calculateSavingsAmount, createFinancialGoal, findFinancialGoalById, getFinancialGoals, getTotalCurrentProgress, updateFinancialGoal } from "../service/financialGoal.service";
+import { calculateSavingsAmount, createFinancialGoal, getFinancialGoal, getFinancialGoals, getTotalCurrentProgress, updateFinancialGoal } from "../service/financialGoal.service";
 import { successResponse } from "../../../shared/utils/response";
 
 export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {}, CreateGoalInput['body']>, res: Response) => {
@@ -11,7 +11,7 @@ export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {
     return res.json(successResponse(goal, 'Financial Goal added successfully'));
 });
 
-export const getFinancialGoalHandler = asyncHandler(async (req: Request, res: Response) => {
+export const getFinancialGoalsHandler = asyncHandler(async (req: Request, res: Response) => {
     const { accountId } = req.params;
     const { limit, page, status } = req.query;
 
@@ -28,10 +28,10 @@ export const getFinancialGoalHandler = asyncHandler(async (req: Request, res: Re
 });
 
 
-export const getFinancialGoalByIdHandler = asyncHandler(
+export const getFinancialGoalHandler = asyncHandler(
     async (req: Request, res: Response) => {
-        const { goalId } = req.params;
-        const goal = await findFinancialGoalById(goalId);
+        const { goalId, accountId } = req.params;
+        const goal = await getFinancialGoal(goalId, accountId);
         return res.json(successResponse(goal, "Financial goal retrieved successfully"));
     }
 );
@@ -54,11 +54,11 @@ export const calculateSavingsAmountHandler = asyncHandler(async (req: Request, r
     return res.json(successResponse({ amountPerInterval }, "Calculation successful"));
 });
 
-// export const updateGoalHandler = asyncHandler(async (req: Request, res: Response) => {
-//     // @ts-ignore
-//     const { accountId, goalId } = req.params;
+export const updateGoalHandler = asyncHandler(async (req: Request, res: Response) => {
+    // @ts-ignore
+    const { accountId, goalId } = req.params;
 
-//     const goal = await updateFinancialGoal({ account: accountId, goal: goalId, updateFields: req.body });
+    const goal = await updateFinancialGoal({ account: accountId, goal: goalId, updateFields: req.body });
 
-//     return res.json(successResponse(goal, 'Financial Goal updated successfully'));
-// })
+    return res.json(successResponse(goal, 'Financial Goal updated successfully'));
+})

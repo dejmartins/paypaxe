@@ -19,7 +19,7 @@ export async function getFinancialGoals(input: GetFinancialGoals){
     try{
         validateAccount(input.account);
 
-        const query: any = { account: input.account };
+        const query: any = { account: input.account, deletionStatus: "active" };
         if (input.status) {
             query.status = input.status;
         }
@@ -43,13 +43,9 @@ export async function getFinancialGoals(input: GetFinancialGoals){
     }
 }
 
-export async function findFinancialGoalById(goalId: string) {
+export async function getFinancialGoal(goalId: string, accountId: string) {
     try {
-        const goal = await FinancialGoalModel.findById(goalId);
-    
-        if (!goal) {
-            throw new AppError("Financial goal not found", 404);
-        }
+        const goal = getActiveGoal(goalId, accountId);
     
         return goal;
     } catch (e: any) {
@@ -60,7 +56,7 @@ export async function findFinancialGoalById(goalId: string) {
 export async function getTotalCurrentProgress(accountId: string): Promise<number> {
     try {
         const totalProgress = await FinancialGoalModel.aggregate([
-            { $match: { account: new mongoose.Types.ObjectId(accountId) } },
+            { $match: { account: new mongoose.Types.ObjectId(accountId), deletionStatus: "active", } },
             { $group: { _id: null, totalProgress: { $sum: "$currentProgress" } } },
         ]);
 
@@ -100,25 +96,6 @@ export async function updateGoalNotificationStatus(goalId: string, updateFields:
         if (!goal) {
             throw new AppError('Financial goal not found', 404);
         }
-        return goal;
-    } catch (e: any) {
-        throw new AppError(e.message, e.statusCode);
-    }
-}
-
-export async function findFinancialGoal(goalId: string, accountId: string) {
-    try {
-        validateAccount(accountId);
-
-        const goal = await FinancialGoalModel.findOne({
-            _id: goalId,
-            account: accountId,
-        });
-    
-        if (!goal) {
-            throw new AppError("Financial goal not found", 404);
-        }
-    
         return goal;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
@@ -167,3 +144,23 @@ export function calculateSavingsAmount(input: CalculateSavingsInput): number {
         throw new AppError(e.message, e.statusCode);
     }
 }
+
+async function getActiveGoal(goalId: string, accountId: string) {
+    validateAccount(accountId);
+
+    const goal = await FinancialGoalModel.findOne({
+        _id: goalId,
+        account: accountId,
+    });
+
+    if (!goal) {
+        throw new AppError("Financial goal not found", 404);
+    }
+
+    if (goal.deletionStatus === "deleted") {
+        throw new AppError("Financial goal has been deleted", 400);
+    }
+
+    return goal;
+}
+

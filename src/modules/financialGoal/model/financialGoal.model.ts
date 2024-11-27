@@ -19,6 +19,7 @@ export interface IFinancialGoal extends Document {
     deadlineNotificationSent: boolean;
     goalAchievedNotificationSent: boolean;
     status: 'completed' | 'ongoing';
+    deletionStatus: 'active' | 'deleted';
     createdAt: Date;
     updatedAt: Date;
 }
@@ -109,6 +110,11 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             type: String,
             enum: ['completed', 'ongoing'],
             default: 'ongoing',
+        },
+        deletionStatus: {
+            type: String,
+            enum: ['active', 'deleted'],
+            default: 'active',
         },
     },
     {
