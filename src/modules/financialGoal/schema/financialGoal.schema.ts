@@ -172,5 +172,12 @@ export const calculateSavingsSchema = object({
     }),
 });
 
+export const deleteFinancialGoalSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        goalId: objectIdValidator,
+    }),
+});
+
 
 export type CreateGoalInput = TypeOf<typeof addFinancialGoalSchema>;

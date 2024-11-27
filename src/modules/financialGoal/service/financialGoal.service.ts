@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import { validateAccount } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
-import { CalculateSavingsInput, FinancialGoalInput, GetFinancialGoals, UpdateFinancialGoal } from "../types/financialGoalTypes";
+import { CalculateSavingsInput, DeleteFinancialGoalInput, FinancialGoalInput, GetFinancialGoals, UpdateFinancialGoal } from "../types/financialGoalTypes";
 
 export async function createFinancialGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try {
@@ -142,6 +142,19 @@ export function calculateSavingsAmount(input: CalculateSavingsInput): number {
         return parseFloat(amountPerInterval.toFixed(2));
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
+    }
+}
+
+export async function deleteFinancialGoal(input: DeleteFinancialGoalInput) {
+    try {
+        const goal = await getActiveGoal(input.goalId, input.accountId)
+
+        goal.deletionStatus = "deleted";
+        await goal.save();
+
+        return goal;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
     }
 }
 

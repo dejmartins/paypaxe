@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { CreateGoalInput } from "../schema/financialGoal.schema";
-import { calculateSavingsAmount, createFinancialGoal, getFinancialGoal, getFinancialGoals, getTotalCurrentProgress, updateFinancialGoal } from "../service/financialGoal.service";
+import { calculateSavingsAmount, createFinancialGoal, deleteFinancialGoal, getFinancialGoal, getFinancialGoals, getTotalCurrentProgress, updateFinancialGoal } from "../service/financialGoal.service";
 import { successResponse } from "../../../shared/utils/response";
 
 export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {}, CreateGoalInput['body']>, res: Response) => {
@@ -62,3 +62,12 @@ export const updateGoalHandler = asyncHandler(async (req: Request, res: Response
 
     return res.json(successResponse(goal, 'Financial Goal updated successfully'));
 })
+
+
+export const deleteFinancialGoalHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId, goalId } = req.params;
+
+    const goal = await deleteFinancialGoal({ goalId, accountId });
+
+    return res.json(successResponse(goal, "Financial goal deleted successfully"));
+});

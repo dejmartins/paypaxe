@@ -39,3 +39,8 @@ export interface CalculateSavingsInput {
     deadline: string;
     frequency: "daily" | "weekly" | "monthly" | "yearly";
 }
+
+export interface DeleteFinancialGoalInput {
+    accountId: string;
+    goalId: string;
+}
