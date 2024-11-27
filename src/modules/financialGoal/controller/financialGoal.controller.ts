@@ -13,19 +13,21 @@ export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {
 
 export const getFinancialGoalsHandler = asyncHandler(async (req: Request, res: Response) => {
     const { accountId } = req.params;
-    const { limit, page, status } = req.query;
+    const { limit, page, status, title } = req.query;
 
     const input = {
         account: accountId,
         limit: Number(limit),
         page: Number(page),
-        status: status as 'completed' | 'ongoing' | undefined
+        status: status as 'completed' | 'ongoing' | undefined,
+        title: title ? String(title) : undefined,
     };
 
     const goals = await getFinancialGoals(input);
 
     return res.json(successResponse(goals, 'Financial Goals retrieved successfully'));
 });
+
 
 
 export const getFinancialGoalHandler = asyncHandler(

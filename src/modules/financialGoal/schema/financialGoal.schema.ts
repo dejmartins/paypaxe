@@ -102,6 +102,7 @@ export const getGoalsSchema = object({
                 message: "Status must be either 'completed' or 'ongoing'",
             })
         ),
+        title: optional(string())
     }),
 });
 

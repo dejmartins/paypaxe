@@ -20,7 +20,8 @@ export type GetFinancialGoals = {
     account: string,
     limit: number,
     page: number,
-    status?: string
+    status?: string,
+    title?: string
 }
 
 export type GetGoalByIdParams = {

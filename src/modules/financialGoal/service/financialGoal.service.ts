@@ -20,8 +20,13 @@ export async function getFinancialGoals(input: GetFinancialGoals){
         validateAccount(input.account);
 
         const query: any = { account: input.account, deletionStatus: "active" };
+
         if (input.status) {
             query.status = input.status;
+        }
+
+        if (input.title) {
+            query.title = { $regex: input.title, $options: 'i' };
         }
 
         const goals = await FinancialGoalModel.find(query)
@@ -158,30 +163,9 @@ export async function deleteFinancialGoal(input: DeleteFinancialGoalInput) {
     }
 }
 
-async function getActiveGoal(goalId: string, accountId: string) {
-    validateAccount(accountId);
-
-    const goal = await FinancialGoalModel.findOne({
-        _id: goalId,
-        account: accountId,
-    });
-
-    if (!goal) {
-        throw new AppError("Financial goal not found", 404);
-    }
-
-    if (goal.deletionStatus === "deleted") {
-        throw new AppError("Financial goal has been deleted", 400);
-    }
-
-    return goal;
-}
-
 export async function transferFunds(input: TransferFundsInput) {
     try {
-        if (input.sourceGoalId === input.destinationGoalId) {
-            throw new AppError("Cannot transfer funds to the same goal", 400);
-        }
+        validateTransferInput(input);
 
         const sourceGoal = await FinancialGoalModel.findOne({
             _id: input.sourceGoalId,
@@ -203,26 +187,14 @@ export async function transferFunds(input: TransferFundsInput) {
             throw new AppError("Destination financial goal not found or inactive", 404);
         }
 
-        if (sourceGoal.currentProgress < input.transferAmount) {
-            throw new AppError(
-                `Insufficient funds. Available balance: ${sourceGoal.currentProgress}`,
-                400
-            );
-        }
+        checkFundsAvailability(sourceGoal, input.transferAmount);
 
-        // Perform fund transfer
-        sourceGoal.currentProgress -= input.transferAmount;
-        destinationGoal.currentProgress += input.transferAmount;
+        performFundTransfer(sourceGoal, destinationGoal, input.transferAmount);
 
-        // Update statuses based on progress
-        sourceGoal.status =
-            sourceGoal.currentProgress >= sourceGoal.targetAmount ? "completed" : "ongoing";
-        destinationGoal.status =
-            destinationGoal.currentProgress >= destinationGoal.targetAmount ? "completed" : "ongoing";
+        adjustGoalDeadline(sourceGoal);
+        adjustGoalDeadline(destinationGoal);
 
-        // Save updates
-        await sourceGoal.save();
-        await destinationGoal.save();
+        await saveGoals(sourceGoal, destinationGoal);
 
         return {
             sourceGoal,
@@ -233,4 +205,103 @@ export async function transferFunds(input: TransferFundsInput) {
         throw new AppError(e.message, e.statusCode || 500);
     }
 }
+
+// Helpers
+
+async function getActiveGoal(goalId: string, accountId: string) {
+    validateAccount(accountId);
+
+    const goal = await FinancialGoalModel.findOne({
+        _id: goalId,
+        account: accountId,
+    });
+
+    if (!goal) {
+        throw new AppError("Financial goal not found", 404);
+    }
+
+    if (goal.deletionStatus === "deleted") {
+        throw new AppError("Financial goal has been deleted", 400);
+    }
+
+    return goal;
+}
+
+function validateTransferInput(input: TransferFundsInput) {
+    if (input.sourceGoalId === input.destinationGoalId) {
+        throw new AppError("Cannot transfer funds to the same goal", 400);
+    }
+}
+
+function checkFundsAvailability(sourceGoal: IFinancialGoal, transferAmount: number) {
+    if (sourceGoal.currentProgress < transferAmount) {
+        throw new AppError(
+            `Insufficient funds. Available balance: ${sourceGoal.currentProgress}`,
+            400
+        );
+    }
+}
+
+function performFundTransfer( sourceGoal: IFinancialGoal, destinationGoal: IFinancialGoal, transferAmount: number) {
+    sourceGoal.currentProgress -= transferAmount;
+    destinationGoal.currentProgress += transferAmount;
+
+    sourceGoal.status =
+        sourceGoal.currentProgress >= sourceGoal.targetAmount ? "completed" : "ongoing";
+    destinationGoal.status =
+        destinationGoal.currentProgress >= destinationGoal.targetAmount ? "completed" : "ongoing";
+}
+
+async function saveGoals(sourceGoal: IFinancialGoal, destinationGoal: IFinancialGoal) {
+    await sourceGoal.save();
+    await destinationGoal.save();
+}
+
+function adjustGoalDeadline(goal: IFinancialGoal) {
+    if (!goal.isRecurring || !goal.amount || !goal.frequency) {
+        return;
+    }
+
+    const newDeadline = calculateNewDeadline(
+        goal.targetAmount,
+        goal.currentProgress,
+        goal.amount,
+        goal.frequency
+    );
+
+    goal.deadline = new Date(newDeadline);
+}
+
+
+export function calculateNewDeadline(
+    targetAmount: number,
+    currentProgress: number,
+    amount: number,
+    frequency: 'daily' | 'weekly' | 'monthly' | 'yearly'
+): string {
+    const remainingAmount = targetAmount - currentProgress;
+    const frequencyMap = {
+        daily: 1,
+        weekly: 7,
+        monthly: 30,
+        yearly: 365,
+    };
+
+    if (!frequencyMap[frequency]) {
+        throw new AppError("Invalid frequency", 400);
+    }
+
+    const daysPerFrequency = frequencyMap[frequency];
+    const remainingFrequencies = Math.ceil(remainingAmount / amount);
+    const remainingDays = remainingFrequencies * daysPerFrequency;
+
+    const newDeadline = new Date();
+    newDeadline.setDate(newDeadline.getDate() + remainingDays);
+
+    return newDeadline.toISOString().split('T')[0];
+}
+
+
+
+
 
