@@ -116,6 +116,10 @@ const financialGoalSchema = new Schema<IFinancialGoal>(
             enum: ['active', 'deleted'],
             default: 'active',
         },
+        isPaused: {
+            type: Boolean,
+            default: false
+        },
     },
     {
         timestamps: true,
