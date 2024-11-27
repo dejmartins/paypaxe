@@ -317,6 +317,8 @@ export function calculateNewDeadline(
     return newDeadline.toISOString().split('T')[0];
 }
 
+// Cron
+
 export async function incrementProgressForActiveGoals() {
     try {
         const now = new Date();
