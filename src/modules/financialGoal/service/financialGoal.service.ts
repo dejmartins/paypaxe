@@ -256,8 +256,7 @@ function validateTransferInput(input: TransferFundsInput) {
 function checkFundsAvailability(sourceGoal: IFinancialGoal, transferAmount: number) {
     if (sourceGoal.currentProgress < transferAmount) {
         throw new AppError(
-            `Insufficient funds. Available balance: ${sourceGoal.currentProgress}`,
-            400
+            `Insufficient funds. Available balance: ${sourceGoal.currentProgress}`, 400
         );
     }
 }

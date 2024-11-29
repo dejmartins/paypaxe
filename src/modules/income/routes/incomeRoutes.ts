@@ -16,8 +16,8 @@ router.post(
 
 router.get(
     '/accounts/:accountId/incomes/total',
-    validateSubscription,
-    validateAccountTypeAndPlan(['individual'], 'basic'), 
+    // validateSubscription,
+    // validateAccountTypeAndPlan(['individual'], 'basic'), 
     validate(getTotalIncomeSchema), 
     getTotalIncomeHandler
 );
