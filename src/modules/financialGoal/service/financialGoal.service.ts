@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
-import { validateAccount } from "../../account/service/account.service";
+import { findAccount, updateNetBalance, validateAccount } from "../../account/service/account.service";
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
 import { CalculateSavingsInput, DeleteFinancialGoalInput, FinancialGoalInput, GetFinancialGoals, TransferFundsInput, UpdateFinancialGoal, UpdatePauseStatusInput } from "../types/financialGoalTypes";
 import log from "../../../shared/utils/logger";
@@ -332,7 +332,7 @@ export async function incrementProgressForActiveGoals() {
             pauseStatus: "active",
             isRecurring: true,
             status: { $ne: "completed" },
-            preferredTime: currentTime
+            preferredTime: currentTime,
         });
 
         if (!activeGoals.length) {
@@ -340,15 +340,29 @@ export async function incrementProgressForActiveGoals() {
             return;
         }
 
-
         for (const goal of activeGoals) {
+            const account = await findAccount(goal.account as string);
+
+            if (!account) {
+                log.error(`Account not found for goal ID: ${goal._id}`);
+                continue;
+            }
+
+            if ((account.netBalance || 0) < (goal.amount || 0)) {
+                log.warn(
+                    `Insufficient net balance for goal ID: ${goal._id}. Skipping increment.`
+                );
+                continue;
+            }
+
             const lastIncrementDate = goal.lastIncrementAt || goal.startDate;
             const timeDifference = now.getTime() - new Date(lastIncrementDate).getTime();
 
             const isDue = isIncrementDue(goal.frequency, timeDifference);
 
             if (isDue) {
-                const newProgress = goal.currentProgress + (goal.amount || 0);
+                const incrementAmount = goal.amount || 0;
+                const newProgress = goal.currentProgress + incrementAmount;
 
                 if (newProgress < goal.targetAmount) {
                     goal.currentProgress = newProgress;
@@ -359,9 +373,11 @@ export async function incrementProgressForActiveGoals() {
 
                 goal.lastIncrementAt = now;
 
+                // Deduct from netBalance
+                await updateNetBalance(account._id as string, -incrementAmount);
+
                 await goal.save();
             }
-
         }
 
         log.info(`Processed ${activeGoals.length} active financial goals.`);
