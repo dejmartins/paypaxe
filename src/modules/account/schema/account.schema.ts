@@ -17,4 +17,10 @@ export const createAccountSchema = object({
     })
 });
 
+export const getNetBalanceSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+});
+
 export type CreateAccountInput = TypeOf<typeof createAccountSchema>;

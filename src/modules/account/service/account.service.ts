@@ -2,7 +2,7 @@ import { AppError } from '../../../shared/utils/customErrors';
 import log from '../../../shared/utils/logger';
 import UserModel from '../../user/model/user.model';
 import AccountModel, { IAccount } from '../model/account.model';
-import { AccountInput } from '../types/accountTypes';
+import { AccountInput, GetNetBalanceInput } from '../types/accountTypes';
 
 export async function createAccount(input: AccountInput): Promise<IAccount> {
     try {
@@ -47,6 +47,20 @@ export async function findAllUserAccounts(userId: string) {
         return accounts;
     } catch (e: any){
         throw new AppError(e.message, e.statusCode);
+    }
+}
+
+export async function getNetBalance(input: GetNetBalanceInput): Promise<number> {
+    try {
+        const account = await AccountModel.findById(input.accountId).lean();
+
+        if (!account) {
+            throw new AppError('Account not found', 404);
+        }
+
+        return account.netBalance;
+    } catch (error: any) {
+        throw new AppError(error.message, error.statusCode || 500);
     }
 }
 

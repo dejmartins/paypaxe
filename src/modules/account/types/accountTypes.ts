@@ -3,3 +3,7 @@ export type AccountInput = {
     accountType: string;
     subscriptionPlan: string;
 }
+
+export interface GetNetBalanceInput {
+    accountId: string;
+}
