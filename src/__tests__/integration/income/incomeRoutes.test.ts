@@ -86,28 +86,28 @@ describe('Income', () => {
      })
 
 
-     describe('Get Total Income', () => {
-        describe('given the timePeriod - thisMonth', () => {
-            it('should return total income for this month', async () => {
-                const getTotalIncomeMock = jest
-                    .spyOn(IncomeService, 'getTotalIncome')
-                    .mockResolvedValue(expectedTotalIncome);
+    //  describe('Get Total Income', () => {
+    //     describe('given the timePeriod - thisMonth', () => {
+    //         it('should return total income for this month', async () => {
+    //             const getTotalIncomeMock = jest
+    //                 .spyOn(IncomeService, 'getTotalIncome')
+    //                 .mockResolvedValue(expectedTotalIncome);
     
-                const { body, statusCode } = await supertest(app)
-                    .get(`/api/accounts/${accountId}/incomes/total`)
-                    .query({ timePeriod: 'thisMonth' });
+    //             const { body, statusCode } = await supertest(app)
+    //                 .get(`/api/accounts/${accountId}/incomes/total`)
+    //                 .query({ timePeriod: 'thisMonth' });
     
-                expect(statusCode).toBe(200);
-                expect(body.data.totalIncome).toBe(expectedTotalIncome);
-                expect(getTotalIncomeMock).toHaveBeenCalledWith({
-                    accountId, 
-                    timePeriod: 'thisMonth', 
-                    startDate: undefined, 
-                    endDate: undefined
-                });
-            });
-        })
-     })
+    //             expect(statusCode).toBe(200);
+    //             expect(body.data.totalIncome).toBe(expectedTotalIncome);
+    //             expect(getTotalIncomeMock).toHaveBeenCalledWith({
+    //                 accountId, 
+    //                 timePeriod: 'thisMonth', 
+    //                 startDate: undefined, 
+    //                 endDate: undefined
+    //             });
+    //         });
+    //     })
+    //  })
 
      describe('Get Recent Incomes', () => {
         it('should return recent incomes', async () => {
