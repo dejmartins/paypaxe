@@ -2,24 +2,25 @@ import { Types } from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
-import { validateAccount } from "../../account/service/account.service";
+import { updateNetBalance, validateAccount } from "../../account/service/account.service";
 import ExpenseModel, { IExpense } from "../model/expense.model";
 import { AddExpense, GetExpense, GetExpenseByTimeFrame, GetTotalExpense, SoftDeleteExpense, UpdateExpense } from "../types/expenseTypes";
 
-export async function addExpense(input: AddExpense){
-    try{
+export async function addExpense(input: AddExpense) {
+    try {
         validateAccount(input.account);
 
         const expense = await ExpenseModel.create(input);
+
+        await updateNetBalance(input.account, -expense.amount);
 
         log.info(`Expense added for account ID: ${input.account}`);
 
         return expense;
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode);
+        throw new AppError(e.message, e.statusCode || 500);
     }
 }
-
 export async function getTotalExpense(input: GetTotalExpense){
     try {
         validateAccount(input.accountId);
