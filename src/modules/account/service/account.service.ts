@@ -72,6 +72,22 @@ export async function validateAccount(accountId: string) {
     }
 }
 
+export async function updateNetBalance(accountId: string, amount: number): Promise<void> {
+    try {
+        const updatedAccount = await AccountModel.findByIdAndUpdate(
+            accountId,
+            { $inc: { netBalance: amount } },
+            { new: true }
+        );
+
+        if (!updatedAccount) {
+            throw new AppError("Account not found", 404);
+        }
+    } catch (error: any) {
+        throw new AppError(error.message, error.statusCode || 500);
+    }
+}
+
 async function accountExists(accountId: string): Promise<boolean> {
     try {
         const account = await AccountModel.findById(accountId);

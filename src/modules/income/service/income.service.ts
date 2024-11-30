@@ -1,19 +1,22 @@
 import mongoose, { Types } from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import { getTimeFrame } from "../../../shared/utils/time";
-import { findAccount, validateAccount } from "../../account/service/account.service";
+import { findAccount, updateNetBalance, validateAccount } from "../../account/service/account.service";
 import IncomeModel, { IIncome } from "../model/income.model";
 import { AddIncome, GetIncome, GetIncomeByTimeFrame, GetTotalIncome, SoftDeleteIncome, UpdateIncome } from "../types/incomeTypes";
 import log from "../../../shared/utils/logger";
 
-export async function addIncome(input: AddIncome): Promise<IIncome>{
-    try{    
+export async function addIncome(input: AddIncome): Promise<IIncome> {
+    try {
         validateAccount(input.account);
 
         const income = await IncomeModel.create(input);
+
+        await updateNetBalance(input.account, input.amount);
+
         return income;
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode)
+        throw new AppError(e.message, e.statusCode || 500);
     }
 }
 
