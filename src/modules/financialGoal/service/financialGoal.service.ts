@@ -189,6 +189,10 @@ export async function transferFunds(input: TransferFundsInput) {
             throw new AppError("Destination financial goal not found or inactive", 404);
         }
 
+        if (destinationGoal.status === "completed") {
+            throw new AppError("Cannot transfer funds to a completed financial goal", 400);
+        }
+
         checkFundsAvailability(sourceGoal, input.transferAmount);
 
         performFundTransfer(sourceGoal, destinationGoal, input.transferAmount);
@@ -213,6 +217,10 @@ export async function transferFromNetBalance(accountId: string, goalId: string, 
         const account = await validateNetBalance(accountId, transferAmount);
 
         const goal = await getActiveGoal(goalId, accountId);
+
+        if (goal.status === "completed") {
+            throw new AppError("Cannot transfer funds to a completed financial goal", 400);
+        }
 
         updateGoalProgress(goal, transferAmount);
         deductFromNetBalance(account, transferAmount);
@@ -280,10 +288,6 @@ async function getActiveGoal(goalId: string, accountId: string) {
 
     if (goal.deletionStatus === "deleted") {
         throw new AppError("Financial goal has been deleted", 400);
-    }
-
-    if (goal.status === "completed") {
-        throw new AppError("Cannot transfer funds to a completed financial goal", 400);
     }
 
     return goal;
