@@ -52,7 +52,7 @@ export async function findAllUserAccounts(userId: string) {
 
 export async function getNetBalance(input: GetNetBalanceInput): Promise<number> {
     try {
-        const account = await AccountModel.findById(input.accountId).lean();
+        const account = await AccountModel.findById(input.accountId);
 
         if (!account) {
             throw new AppError('Account not found', 404);
