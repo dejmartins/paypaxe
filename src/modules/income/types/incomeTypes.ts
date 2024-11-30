@@ -7,11 +7,12 @@ export type AddIncome = {
     dateReceived: string;
 }
 
-export type GetTotalIncome = {
-    accountId: string,
-    timePeriod: string,
-    startDate?: string,
-    endDate?: string
+export interface GetTotalIncome {
+    accountId: string;
+    timePeriod?: string;
+    startDate?: string;
+    endDate?: string;
+    includeNetBalance?: boolean;
 }
 
 export type GetIncome = {

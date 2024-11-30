@@ -55,22 +55,26 @@ export const getTotalIncomeSchema = object({
         accountId: objectIdValidator,
     }),
     query: object({
-        timePeriod: union([
+        timePeriod: optional(union([
             literal("thisWeek"),
             literal("lastWeek"),
             literal("thisMonth"),
             literal("lastMonth"),
             literal("lastTwoMonths"),
             literal("custom"),
-        ]),
+        ])),
         startDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
             message: "Invalid start date format",
         })),
         endDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
             message: "Invalid end date format",
         })),
-    })
+        includeNetBalance: optional(string().refine(val => ["true", "false"].includes(val), {
+            message: "includeNetBalance must be 'true' or 'false'",
+        }).transform(val => val === "true")),
+    }),
 });
+
 
 export const getRecentIncomesSchema = object({
     params: object({

@@ -17,15 +17,32 @@ export const addIncomeHandler = asyncHandler(async (req: Request<{}, {}, AddInco
 
 export const getTotalIncomeHandler = asyncHandler(async (req: Request, res: Response) => {
     const { accountId } = req.params;
-    const { timePeriod, startDate, endDate } = req.query;
+    const { timePeriod, startDate, endDate, includeNetBalance } = req.query;
 
-    if (typeof timePeriod !== 'string' || (startDate && typeof startDate !== 'string') || (endDate && typeof endDate !== 'string')) {
-        throw new AppError('Invalid query parameters', 400);
+    if (timePeriod && typeof timePeriod !== 'string') {
+        throw new AppError('Invalid timePeriod parameter', 400);
+    }
+    if (startDate && isNaN(Date.parse(startDate as string))) {
+        throw new AppError('Invalid startDate parameter', 400);
+    }
+    if (endDate && isNaN(Date.parse(endDate as string))) {
+        throw new AppError('Invalid endDate parameter', 400);
+    }
+    if (includeNetBalance && includeNetBalance !== 'true' && includeNetBalance !== 'false') {
+        throw new AppError('Invalid includeNetBalance parameter', 400);
     }
 
-    const income = await getTotalIncome({ accountId: accountId, timePeriod, startDate, endDate });
-    return res.json(successResponse({ totalIncome: income }, 'Total Income Calculated Successfully'));
+    const income = await getTotalIncome({
+        accountId,
+        timePeriod: timePeriod as string | undefined,
+        startDate: startDate as string | undefined,
+        endDate: endDate as string | undefined,
+        includeNetBalance: includeNetBalance === 'true',
+    });
+
+    return res.json(successResponse(income, 'Total Income Calculated Successfully'));
 });
+
 
 export const getRecentIncomesHandler = asyncHandler(async (req: Request, res: Response) => {
     const { accountId } = req.params;

@@ -1,7 +1,7 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import { getTimeFrame } from "../../../shared/utils/time";
-import { validateAccount } from "../../account/service/account.service";
+import { findAccount, validateAccount } from "../../account/service/account.service";
 import IncomeModel, { IIncome } from "../model/income.model";
 import { AddIncome, GetIncome, GetIncomeByTimeFrame, GetTotalIncome, SoftDeleteIncome, UpdateIncome } from "../types/incomeTypes";
 import log from "../../../shared/utils/logger";
@@ -17,19 +17,22 @@ export async function addIncome(input: AddIncome): Promise<IIncome>{
     }
 }
 
-export async function getTotalIncome(input: GetTotalIncome){
+export async function getTotalIncome(input: GetTotalIncome): Promise<{ totalIncome: number, netBalance?: number }> {
     try {
         validateAccount(input.accountId);
         
-        const { startDate: start, endDate: end } = getTimeFrame(input.timePeriod, input.startDate, input.endDate);
-    
+        const { startDate: start, endDate: end } = input.timePeriod 
+            ? getTimeFrame(input.timePeriod, input.startDate, input.endDate) 
+            : { startDate: undefined, endDate: undefined };
+        
+        const matchConditions: any = { account: new mongoose.Types.ObjectId(input.accountId), status: "active" };
+
+        if (start && end) {
+            matchConditions.dateReceived = { $gte: new Date(start), $lte: new Date(end) };
+        }
+
         const incomes = await IncomeModel.aggregate([
-            {
-                $match: {
-                    account: new Types.ObjectId(input.accountId),
-                    dateReceived: { $gte: new Date(start), $lte: new Date(end) }
-                }
-            },
+            { $match: matchConditions },
             {
                 $group: {
                     _id: null,
@@ -37,11 +40,21 @@ export async function getTotalIncome(input: GetTotalIncome){
                 }
             }
         ]);
-    
-        const totalIncome = incomes.length > 0 ? incomes[0].totalAmount : 0;
-        return totalIncome / 100;
+
+        const totalIncome = incomes.length > 0 ? incomes[0].totalAmount / 100 : 0;
+
+        let netBalance;
+        if (input.includeNetBalance) {
+            const account = await findAccount(input.accountId);
+            if (!account) {
+                throw new AppError("Account not found", 404);
+            }
+            netBalance = account.netBalance;
+        }
+
+        return { totalIncome, netBalance };
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode)
+        throw new AppError(e.message, e.statusCode || 500);
     }
 }
 
