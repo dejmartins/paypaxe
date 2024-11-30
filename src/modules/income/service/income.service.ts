@@ -49,10 +49,8 @@ export async function getTotalIncome(input: GetTotalIncome): Promise<{ totalInco
         let netBalance;
         if (input.includeNetBalance) {
             const account = await findAccount(input.accountId);
-            if (!account) {
-                throw new AppError("Account not found", 404);
-            }
-            netBalance = account.netBalance;
+
+            netBalance = account?.netBalance;
         }
 
         return { totalIncome, netBalance };

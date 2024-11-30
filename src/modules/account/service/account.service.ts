@@ -30,6 +30,7 @@ export async function createAccount(input: AccountInput): Promise<IAccount> {
 
 export async function findAccount(accountId: string): Promise<IAccount | null> {
     try {
+        validateAccount(accountId);
         const account = await AccountModel.findById(accountId);
         return account;
     } catch (e: any){
