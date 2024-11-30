@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { CreateGoalInput, transferFundsSchema } from "../schema/financialGoal.schema";
-import { calculateSavingsAmount, createFinancialGoal, deleteFinancialGoal, getFinancialGoal, getFinancialGoals, getTotalCurrentProgress, transferFunds, updateFinancialGoal, updatePauseStatus } from "../service/financialGoal.service";
+import { calculateSavingsAmount, createFinancialGoal, deleteFinancialGoal, getFinancialGoal, getFinancialGoals, getTotalCurrentProgress, transferFromNetBalance, transferFunds, updateFinancialGoal, updatePauseStatus } from "../service/financialGoal.service";
 import { successResponse } from "../../../shared/utils/response";
 
 export const createFinancialGoalHandler = asyncHandler(async (req: Request<{}, {}, CreateGoalInput['body']>, res: Response) => {
@@ -85,6 +85,15 @@ export const transferFundsHandler = asyncHandler(async (req: Request, res: Respo
         );
     }
 );
+
+export const transferFromNetBalanceHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId, goalId } = req.params;
+    const { transferAmount } = req.body;
+
+    const result = await transferFromNetBalance(accountId, goalId, transferAmount);
+
+    return res.json(successResponse(result, "Funds transferred successfully"));
+});
 
 export const updatePauseStatusHandler = asyncHandler(async (req: Request, res: Response) => {
     const { goalId, accountId } = req.params;

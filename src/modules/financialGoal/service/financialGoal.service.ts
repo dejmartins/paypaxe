@@ -4,6 +4,7 @@ import { findAccount, updateNetBalance, validateAccount } from "../../account/se
 import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model";
 import { CalculateSavingsInput, DeleteFinancialGoalInput, FinancialGoalInput, GetFinancialGoals, TransferFundsInput, UpdateFinancialGoal, UpdatePauseStatusInput } from "../types/financialGoalTypes";
 import log from "../../../shared/utils/logger";
+import { IAccount } from "../../account/model/account.model";
 
 export async function createFinancialGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try {
@@ -207,6 +208,24 @@ export async function transferFunds(input: TransferFundsInput) {
     }
 }
 
+export async function transferFromNetBalance(accountId: string, goalId: string, transferAmount: number) {
+    try {
+        const account = await validateNetBalance(accountId, transferAmount);
+
+        const goal = await getActiveGoal(goalId, accountId);
+
+        updateGoalProgress(goal, transferAmount);
+        deductFromNetBalance(account, transferAmount);
+
+        goal.save();
+        account.save();
+
+        return { updatedGoal: goal, updatedNetBalance: account.netBalance };
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}
+
 export async function updatePauseStatus(input: UpdatePauseStatusInput) {
     try {
         const goal = await getActiveGoal(input.goalId, input.accountId);
@@ -228,6 +247,25 @@ export async function updatePauseStatus(input: UpdatePauseStatusInput) {
 
 // Helpers
 
+function deductFromNetBalance(account: IAccount, transferAmount: number) {
+    account.netBalance -= transferAmount;
+}
+
+async function validateNetBalance(accountId: string, transferAmount: number) {
+    const account = await findAccount(accountId);
+
+    if (!account) {
+        throw new AppError("Account not found", 404);
+    }
+
+    if (account.netBalance < transferAmount) {
+        throw new AppError(`Insufficient funds in netBalance. Available: ${account.netBalance}`, 400);
+    }
+
+    return account;
+}
+
+
 async function getActiveGoal(goalId: string, accountId: string) {
     validateAccount(accountId);
 
@@ -244,8 +282,24 @@ async function getActiveGoal(goalId: string, accountId: string) {
         throw new AppError("Financial goal has been deleted", 400);
     }
 
+    if (goal.status === "completed") {
+        throw new AppError("Cannot transfer funds to a completed financial goal", 400);
+    }
+
     return goal;
 }
+
+function updateGoalProgress(goal: IFinancialGoal, transferAmount: number) {
+    const newProgress = goal.currentProgress + transferAmount;
+
+    if (newProgress >= goal.targetAmount) {
+        goal.currentProgress = newProgress;
+        goal.status = "completed";
+    } else {
+        goal.currentProgress = newProgress;
+    }
+}
+
 
 function validateTransferInput(input: TransferFundsInput) {
     if (input.sourceGoalId === input.destinationGoalId) {

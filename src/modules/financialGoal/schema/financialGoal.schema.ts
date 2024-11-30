@@ -193,6 +193,19 @@ export const transferFundsSchema = object({
     }),
 });
 
+export const transferFromNetBalanceSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        goalId: objectIdValidator,
+    }),
+    body: object({
+        transferAmount: number({
+            required_error: "Transfer amount is required",
+        })
+        .positive("Transfer amount must be greater than zero"),
+    }),
+});
+
 export const updatePauseStatusSchema = object({
     params: object({
         accountId: objectIdValidator,

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import validate from "../../../shared/middlewares/validateResource";
-import { addFinancialGoalSchema, calculateSavingsSchema, deleteFinancialGoalSchema, getGoalByIdSchema, getGoalsSchema, getTotalCurrentProgressSchema, transferFundsSchema, updateFinancialGoalSchema, updatePauseStatusSchema } from "../schema/financialGoal.schema";
+import { addFinancialGoalSchema, calculateSavingsSchema, deleteFinancialGoalSchema, getGoalByIdSchema, getGoalsSchema, getTotalCurrentProgressSchema, transferFromNetBalanceSchema, transferFundsSchema, updateFinancialGoalSchema, updatePauseStatusSchema } from "../schema/financialGoal.schema";
 import { validateAccountTypeAndPlan, validateSubscription } from "../../../shared/middlewares/validateAccount";
-import { calculateSavingsAmountHandler, createFinancialGoalHandler, getFinancialGoalsHandler, getFinancialGoalHandler, getTotalCurrentProgressHandler, updateGoalHandler, deleteFinancialGoalHandler, transferFundsHandler, updatePauseStatusHandler } from "../controller/financialGoal.controller";
+import { calculateSavingsAmountHandler, createFinancialGoalHandler, getFinancialGoalsHandler, getFinancialGoalHandler, getTotalCurrentProgressHandler, updateGoalHandler, deleteFinancialGoalHandler, transferFundsHandler, updatePauseStatusHandler, transferFromNetBalanceHandler } from "../controller/financialGoal.controller";
 
 const router = Router();
 
@@ -64,6 +64,12 @@ router.post(
     "/accounts/:accountId/goals/transfer",
     validate(transferFundsSchema),
     transferFundsHandler
+);
+
+router.post(
+    "/accounts/:accountId/goals/:goalId/transfer-from-net-balance",
+    validate(transferFromNetBalanceSchema),
+    transferFromNetBalanceHandler
 );
 
 router.patch(
