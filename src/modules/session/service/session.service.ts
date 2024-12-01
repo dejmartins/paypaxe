@@ -11,6 +11,7 @@ export async function createSession(userId: string, userAgent: string){
     try {
         const session = await SessionModel.create({user: userId, userAgent});
         const accounts = await findAllUserAccounts(userId);
+        const user = await findUser({ _id: userId })
 
         const accountDetails = accounts?.map(account => ({
             accountType: account.accountType,
@@ -18,9 +19,19 @@ export async function createSession(userId: string, userAgent: string){
             accountId: account._id
         }));
 
+        const userDetails = {
+            email: user?.email,
+            name: user?.name,
+            verified: user?.verified,
+            country: user?.country
+        }
+
+        console.log(userDetails)
+
         return {
             session: session.toJSON(),
-            accounts: accountDetails || []
+            accounts: accountDetails || [],
+            user: userDetails ? userDetails : null
         };
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
