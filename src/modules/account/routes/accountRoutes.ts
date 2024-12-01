@@ -7,7 +7,7 @@ const router = Router();
 
 router.post(
     '/accounts',
-    validate(createAccountSchema), 
+    validate(createAccountSchema),
     createAccountHandler
 );
 

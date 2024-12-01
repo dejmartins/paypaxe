@@ -5,12 +5,22 @@ import FinancialGoalModel, { IFinancialGoal } from "../model/financialGoal.model
 import { CalculateSavingsInput, DeleteFinancialGoalInput, FinancialGoalInput, GetFinancialGoals, TransferFundsInput, UpdateFinancialGoal, UpdatePauseStatusInput } from "../types/financialGoalTypes";
 import log from "../../../shared/utils/logger";
 import { IAccount } from "../../account/model/account.model";
+import { logActivity } from "../../activityLog/service/activityLog.service";
 
 export async function createFinancialGoal(input: FinancialGoalInput): Promise<IFinancialGoal> {
     try {
         validateAccount(input.account);
 
         const goal = await FinancialGoalModel.create(input);
+
+        await logActivity({
+            entityId: goal._id,
+            accountId: input.account,
+            entityType: "financialGoal",
+            action: "created",
+            details: `Financial goal titled '${goal.title}' was created.`}
+        );
+
         return goal;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode);
@@ -205,6 +215,22 @@ export async function transferFunds(input: TransferFundsInput) {
 
         await saveGoals(sourceGoal, destinationGoal);
 
+        await logActivity({
+            entityId: sourceGoal._id,
+            accountId: input.accountId,
+            entityType: "financialGoal",
+            action: "fundTransferred",
+            details: `Transferred ${input.transferAmount} from goal '${sourceGoal.title}' to '${destinationGoal.title}'.`}
+        );
+
+        await logActivity({
+            entityId: destinationGoal._id,
+            accountId: input.accountId,
+            entityType: "financialGoal",
+            action: "fundTransferred",
+            details: `Received ${input.transferAmount} from goal '${sourceGoal.title}'.`}
+        );
+
         return {
             sourceGoal,
             destinationGoal,
@@ -231,6 +257,22 @@ export async function transferFromNetBalance(accountId: string, goalId: string, 
         goal.save();
         account.save();
 
+        await logActivity({
+            entityId: accountId,
+            accountId: accountId,
+            entityType: "account",
+            action: "fundTransferred",
+            details: `Transferred ${transferAmount} from net balance to goal '${goal.title}'.`
+        });
+
+        await logActivity({
+            entityId: goal._id,
+            accountId: accountId,
+            entityType: "financialGoal",
+            action: "fundReceived",
+            details: `Received ${transferAmount} from net balance for goal '${goal.title}'.`
+        });
+
         return { updatedGoal: goal, updatedNetBalance: account.netBalance };
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
@@ -240,7 +282,8 @@ export async function transferFromNetBalance(accountId: string, goalId: string, 
 export async function updatePauseStatus(input: UpdatePauseStatusInput) {
     try {
         const goal = await getActiveGoal(input.goalId, input.accountId);
-
+        
+        const previousStatus = goal.pauseStatus;
         goal.pauseStatus = input.status;
 
         if (input.status === 'active') {
@@ -248,6 +291,15 @@ export async function updatePauseStatus(input: UpdatePauseStatusInput) {
         }
 
         await goal.save();
+
+        const action = input.status === "paused" ? "paused" : "resumed";
+        await logActivity({
+            entityId: goal._id,
+            accountId: input.accountId,
+            entityType: "financialGoal",
+            action,
+            details: `Financial goal titled '${goal.title}' was ${action}. Previous status: ${previousStatus}.`}
+        );
 
         return goal;
     } catch (e: any) {
@@ -434,10 +486,25 @@ export async function incrementProgressForActiveGoals() {
 
                 goal.lastIncrementAt = now;
 
-                // Deduct from netBalance
                 await updateNetBalance(account._id as string, -incrementAmount);
 
                 await goal.save();
+
+                await logActivity({
+                    entityId: goal._id,
+                    accountId: goal.account as string,
+                    entityType: "financialGoal",
+                    action: "incrementProgress",
+                    details: `Incremented progress by ${incrementAmount} for goal '${goal.title}'. Current progress: ${goal.currentProgress}.`
+                });
+
+                await logActivity({
+                    entityId: account._id as string,
+                    accountId: account._id as string,
+                    entityType: "account",
+                    action: "netBalanceDeduction",
+                    details: `Deducted ${incrementAmount} from net balance for goal '${goal.title}'.`
+                });
             }
         }
 
