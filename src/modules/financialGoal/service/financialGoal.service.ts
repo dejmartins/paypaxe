@@ -169,8 +169,20 @@ export async function deleteFinancialGoal(input: DeleteFinancialGoalInput) {
     try {
         const goal = await getActiveGoal(input.goalId, input.accountId)
 
+        if (goal.currentProgress > 0) {
+            await updateNetBalance(input.accountId, goal.currentProgress);
+        }
+
         goal.deletionStatus = "deleted";
         await goal.save();
+
+        await logActivity({
+            entityId: goal._id,
+            accountId: input.accountId,
+            entityType: "financialGoal",
+            action: "deleted",
+            details: `Financial goal '${goal.title}' deleted. ${goal.currentProgress} added back to net balance.`,
+        });
 
         return goal;
     } catch (e: any) {
