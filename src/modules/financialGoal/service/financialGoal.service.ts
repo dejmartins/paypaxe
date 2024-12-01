@@ -60,14 +60,17 @@ export async function getFinancialGoal(goalId: string, accountId: string) {
     }
 }
 
-export async function getTotalCurrentProgress(accountId: string): Promise<number> {
+export async function getTotalCurrentProgress(accountId: string) {
     try {
-        const totalProgress = await FinancialGoalModel.aggregate([
+        const result = await FinancialGoalModel.aggregate([
             { $match: { account: new mongoose.Types.ObjectId(accountId), deletionStatus: "active", } },
-            { $group: { _id: null, totalProgress: { $sum: "$currentProgress" } } },
+            { $group: { _id: null, totalProgress: { $sum: "$currentProgress" }, totalGoals: { $sum: 1 } } },
         ]);
 
-        return totalProgress.length > 0 ? totalProgress[0].totalProgress / 100 : 0;
+        const totalProgress = result.length > 0 ? result[0].totalProgress / 100 : 0;
+        const totalGoals = result.length > 0 ? result[0].totalGoals : 0;
+
+        return { totalProgress, totalGoals };
     } catch (error: any) {
         throw new AppError(error.message, error.statusCode || 500);
     }
