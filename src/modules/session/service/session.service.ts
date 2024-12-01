@@ -26,8 +26,6 @@ export async function createSession(userId: string, userAgent: string){
             country: user?.country
         }
 
-        console.log(userDetails)
-
         return {
             session: session.toJSON(),
             accounts: accountDetails || [],
