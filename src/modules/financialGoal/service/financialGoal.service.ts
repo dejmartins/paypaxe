@@ -450,7 +450,8 @@ export function calculateNewDeadline(
 export async function incrementProgressForActiveGoals() {
     try {
         const now = new Date();
-        const currentTime = now.toISOString().split("T")[1].slice(0, 5);
+        const localTime = new Date(now.getTime() - now.getTimezoneOffset() * 60 * 1000);
+        const currentTime = localTime.toISOString().split("T")[1].slice(0, 5);
 
         const activeGoals = await FinancialGoalModel.find({
             deletionStatus: "active",
