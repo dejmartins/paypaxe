@@ -7,6 +7,11 @@ export interface IAccount extends Document {
     subscriptionPlan: 'basic' | 'premium';
     subscriptionEndDate: Date;
     netBalance: number;
+    allocationRule: {
+        needs: number;
+        wants: number;
+        savings: number;
+    };
     createdAt: Date;
     updatedAt: Date;
 }
@@ -37,6 +42,23 @@ const accountSchema = new Schema<IAccount>(
             default: 0,
             get: (v: number) => parseFloat((v / 100).toFixed(2)),
             set: (v: number) => Math.round(v * 100)
+        },
+        allocationRule: {
+            needs: {
+                type: Schema.Types.Number,
+                required: true,
+                default: 50,
+            },
+            wants: {
+                type: Schema.Types.Number,
+                required: true,
+                default: 30,
+            },
+            savings: {
+                type: Schema.Types.Number,
+                required: true,
+                default: 20,
+            },
         }
     },
     {

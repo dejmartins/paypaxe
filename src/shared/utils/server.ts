@@ -10,6 +10,7 @@ import authRoutes from '../../modules/auth/routes/authRoutes';
 import paymentRoutes from '../../modules/payment/routes/paymentRoutes';
 import ocrLogRoutes from '../../modules/utility/routes/ocrLogRoutes';
 import activityLogRoutes from '../../modules/activityLog/routes/activityLogRoutes';
+import budgetRoutes from '../../modules/budget/route/budgetRoutes';
 import passport from '../../modules/auth/strategy/google.strategy'; 
 import cors from 'cors';
 import { generalLimiter } from '../middlewares/rateLimiter';
@@ -37,6 +38,7 @@ function createServer() {
     app.use('/api', paymentRoutes)
     app.use('/api', ocrLogRoutes)
     app.use('/api', activityLogRoutes)
+    app.use('/api', budgetRoutes)
     app.use('/api/auth', authRoutes)
 
     return app;
