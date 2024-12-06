@@ -96,3 +96,16 @@ async function accountExists(accountId: string): Promise<boolean> {
         throw new AppError(e.message, e.statusCode);
     }
 }
+
+export async function getCurrentAllocationRules(accountId: string): Promise<{ needs: number; wants: number; savings: number }> {
+    validateAccount(accountId);
+
+    const account = await findAccount(accountId) as IAccount;
+
+
+    return { 
+        needs: account.allocationRule.needs / 100, 
+        wants: account.allocationRule.wants / 100,
+        savings: account.allocationRule.savings / 100 
+    };
+}
