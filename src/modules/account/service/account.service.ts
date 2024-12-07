@@ -116,8 +116,7 @@ export async function updateBudgetStatus(accountId: string, status: boolean): Pr
 
         await AccountModel.findByIdAndUpdate(
             accountId,
-            { budgetStatus: status },
-            { new: true }
+            { budgetStatus: status }
         );
 
     } catch (e: any) {

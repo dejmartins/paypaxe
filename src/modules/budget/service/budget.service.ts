@@ -1,7 +1,7 @@
 import BudgetModel, { IBudget } from "../model/budget.model";
 import { ActivateBudgetInput, GetActiveBudgetInput } from "../types/budgetTypes";
 import { AppError } from "../../../shared/utils/customErrors";
-import { getCurrentAllocationRules } from "../../account/service/account.service";
+import { getCurrentAllocationRules, updateBudgetStatus } from "../../account/service/account.service";
 
 export async function activateBudget(input: ActivateBudgetInput): Promise<IBudget> {
     const { accountId, budgetAmount } = input;
@@ -32,6 +32,8 @@ export async function activateBudget(input: ActivateBudgetInput): Promise<IBudge
         },
         startDate: new Date(),
     });
+
+    await updateBudgetStatus(accountId, true);
 
     return budget;
 }
