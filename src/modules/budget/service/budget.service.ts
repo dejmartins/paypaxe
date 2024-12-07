@@ -1,5 +1,5 @@
 import BudgetModel, { IBudget } from "../model/budget.model";
-import { ActivateBudgetInput } from "../types/budgetTypes";
+import { ActivateBudgetInput, GetActiveBudgetInput } from "../types/budgetTypes";
 import { AppError } from "../../../shared/utils/customErrors";
 import { getCurrentAllocationRules } from "../../account/service/account.service";
 
@@ -34,4 +34,17 @@ export async function activateBudget(input: ActivateBudgetInput): Promise<IBudge
     });
 
     return budget;
+}
+
+export async function getActiveBudget(input: GetActiveBudgetInput) {
+    const activeBudget = await BudgetModel.findOne({
+        account: input.accountId,
+        isActive: true,
+    });
+
+    if (!activeBudget) {
+        throw new AppError("No active budget found for this account.", 404);
+    }
+
+    return activeBudget;
 }

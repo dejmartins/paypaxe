@@ -12,3 +12,9 @@ export const activateBudgetSchema = object({
         .positive("Budget amount must be a positive number"),
     }),
 });
+
+export const getActiveBudgetSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+});
