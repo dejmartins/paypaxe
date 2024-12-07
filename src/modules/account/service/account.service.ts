@@ -109,3 +109,30 @@ export async function getCurrentAllocationRules(accountId: string): Promise<{ ne
         savings: account.allocationRule.savings / 100 
     };
 }
+
+export async function updateBudgetStatus(accountId: string, status: boolean): Promise<void> {
+    try {
+        validateAccount(accountId);
+
+        await AccountModel.findByIdAndUpdate(
+            accountId,
+            { budgetStatus: status },
+            { new: true }
+        );
+
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}
+
+export async function getBudgetStatus(accountId: string): Promise<boolean> {
+    try {
+        validateAccount(accountId);
+
+        const account = await AccountModel.findById(accountId, { budgetStatus: 1 });
+
+        return !!account?.budgetStatus;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}

@@ -12,6 +12,7 @@ export interface IAccount extends Document {
         wants: number;
         savings: number;
     };
+    budgetStatus: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -59,7 +60,12 @@ const accountSchema = new Schema<IAccount>(
                 required: true,
                 default: 20,
             },
-        }
+        },
+        budgetStatus: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
     },
     {
         timestamps: true,
