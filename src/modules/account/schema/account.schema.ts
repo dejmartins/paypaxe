@@ -1,4 +1,4 @@
-import { TypeOf, object, string } from "zod";
+import { TypeOf, object, string, number } from "zod";
 import { objectIdValidator } from "../../../shared/utils/validator";
 
 export const createAccountSchema = object({
@@ -20,6 +20,31 @@ export const createAccountSchema = object({
 export const getNetBalanceSchema = object({
     params: object({
         accountId: objectIdValidator,
+    }),
+});
+
+export const updateAllocationRuleSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    body: object({
+        needs: number({
+            required_error: "Needs allocation percentage is required.",
+        })
+            .min(0, "Needs allocation must be at least 0%.")
+            .max(100, "Needs allocation cannot exceed 100%."),
+        wants: number({
+            required_error: "Wants allocation percentage is required.",
+        })
+            .min(0, "Wants allocation must be at least 0%.")
+            .max(100, "Wants allocation cannot exceed 100%."),
+        savings: number({
+            required_error: "Savings allocation percentage is required.",
+        })
+            .min(0, "Savings allocation must be at least 0%.")
+            .max(100, "Savings allocation cannot exceed 100%."),
+    }).refine((data) => data.needs + data.wants + data.savings === 100, {
+        message: "Allocation percentages must sum up to 100.",
     }),
 });
 

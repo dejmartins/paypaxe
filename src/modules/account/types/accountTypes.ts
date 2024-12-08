@@ -7,3 +7,12 @@ export type AccountInput = {
 export interface GetNetBalanceInput {
     accountId: string;
 }
+
+export interface UpdateAllocationRuleInput {
+    accountId: string;
+    allocationRule: {
+        needs: number;
+        wants: number;
+        savings: number;
+    }
+}

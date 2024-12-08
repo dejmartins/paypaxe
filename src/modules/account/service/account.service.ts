@@ -2,7 +2,7 @@ import { AppError } from '../../../shared/utils/customErrors';
 import log from '../../../shared/utils/logger';
 import UserModel from '../../user/model/user.model';
 import AccountModel, { IAccount } from '../model/account.model';
-import { AccountInput, GetNetBalanceInput } from '../types/accountTypes';
+import { AccountInput, GetNetBalanceInput, UpdateAllocationRuleInput } from '../types/accountTypes';
 
 export async function createAccount(input: AccountInput): Promise<IAccount> {
     try {
@@ -149,5 +149,28 @@ export async function updateBudgetStatusInAccounts(accountIds: string[], status:
     } catch (e: any) {
         log.error("Error updating budget statuses in accounts:", e.message);
         throw e;
+    }
+}
+
+export async function updateAllocationRule(input: UpdateAllocationRuleInput) {
+    try {
+        const { needs, wants, savings } = input.allocationRule;
+
+        if (needs + wants + savings !== 100) {
+            throw new AppError("Allocation percentages must sum up to 100.", 400);
+        }
+
+        const account = await findAccount(input.accountId);
+
+        if (!account) {
+            throw new AppError("Account not found.", 404);
+        }
+
+        account.allocationRule = { needs, wants, savings };
+        await account.save();
+
+        return account;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
     }
 }
