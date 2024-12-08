@@ -13,6 +13,7 @@ export interface IAccount extends Document {
         savings: number;
     };
     budgetStatus: boolean;
+    utilizationThreshold: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -38,7 +39,7 @@ const accountSchema = new Schema<IAccount>(
             type: Date
         },
         netBalance: {
-            type: Schema.Types.Number,
+            type: Number,
             required: true,
             default: 0,
             get: (v: number) => parseFloat((v / 100).toFixed(2)),
@@ -46,17 +47,17 @@ const accountSchema = new Schema<IAccount>(
         },
         allocationRule: {
             needs: {
-                type: Schema.Types.Number,
+                type: Number,
                 required: true,
                 default: 50,
             },
             wants: {
-                type: Schema.Types.Number,
+                type: Number,
                 required: true,
                 default: 30,
             },
             savings: {
-                type: Schema.Types.Number,
+                type: Number,
                 required: true,
                 default: 20,
             },
@@ -65,6 +66,13 @@ const accountSchema = new Schema<IAccount>(
             type: Boolean,
             required: true,
             default: false,
+        },
+        utilizationThreshold: {
+            type: Number,
+            required: true,
+            default: 30,
+            get: (v: number) => parseFloat((v / 100).toFixed(2)),
+            set: (v: number) => Math.round(v * 100),
         },
     },
     {
