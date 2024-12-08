@@ -2,25 +2,36 @@ import { Types } from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
-import { updateNetBalance, validateAccount } from "../../account/service/account.service";
+import { getBudgetStatus, updateNetBalance, validateAccount } from "../../account/service/account.service";
 import ExpenseModel, { IExpense } from "../model/expense.model";
 import { AddExpense, GetExpense, GetExpenseByTimeFrame, GetTotalExpense, SoftDeleteExpense, UpdateExpense } from "../types/expenseTypes";
+import { deductFromBudget } from "../../budget/service/budget.service";
 
 export async function addExpense(input: AddExpense) {
     try {
         validateAccount(input.account);
 
+        const isOnBudget = await getBudgetStatus(input.account);
+
+        if (!isOnBudget) {
+            const expense = await ExpenseModel.create(input);
+            await updateNetBalance(input.account, -expense.amount);
+            log.info(`Expense added for account ID: ${input.account}`);
+            return expense;
+        }
+
+        await deductFromBudget(input.account, input.amount);
+
         const expense = await ExpenseModel.create(input);
 
-        await updateNetBalance(input.account, -expense.amount);
-
-        log.info(`Expense added for account ID: ${input.account}`);
-
+        log.info(`Expense processed within budget for account ID: ${input.account}`);
         return expense;
+
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
     }
 }
+
 export async function getTotalExpense(input: GetTotalExpense){
     try {
         validateAccount(input.accountId);

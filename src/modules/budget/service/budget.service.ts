@@ -50,3 +50,45 @@ export async function getActiveBudget(input: GetActiveBudgetInput) {
 
     return activeBudget;
 }
+
+export async function deductFromBudget(accountId: string, expenseAmount: number) {
+    const budget = await getActiveBudget({ accountId });
+
+    let remainingAmount = expenseAmount;
+
+    if (budget.remainingAllocation.needs >= remainingAmount) {
+        budget.remainingAllocation.needs -= remainingAmount;
+        remainingAmount = 0;
+    } else {
+        remainingAmount -= budget.remainingAllocation.needs;
+        budget.remainingAllocation.needs = 0;
+    }
+
+    if (remainingAmount > 0) {
+        if (budget.remainingAllocation.wants >= remainingAmount) {
+            budget.remainingAllocation.wants -= remainingAmount;
+            remainingAmount = 0;
+        } else {
+            remainingAmount -= budget.remainingAllocation.wants;
+            budget.remainingAllocation.wants = 0;
+        }
+    }
+
+    if (remainingAmount > 0) {
+        if (budget.remainingAllocation.savings >= remainingAmount) {
+            budget.remainingAllocation.savings -= remainingAmount;
+            remainingAmount = 0;
+        } else {
+            remainingAmount -= budget.remainingAllocation.savings;
+            budget.remainingAllocation.savings = 0;
+        }
+    }
+
+    if (remainingAmount > 0) {
+        budget.negativeBalance += remainingAmount;
+    }
+
+    await budget.save();
+
+    return budget;
+}
