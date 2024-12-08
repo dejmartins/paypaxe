@@ -1,7 +1,8 @@
 import BudgetModel, { IBudget } from "../model/budget.model";
 import { ActivateBudgetInput, GetActiveBudgetInput } from "../types/budgetTypes";
 import { AppError } from "../../../shared/utils/customErrors";
-import { getCurrentAllocationRules, updateBudgetStatus } from "../../account/service/account.service";
+import { getCurrentAllocationRules, updateBudgetStatus, updateBudgetStatusInAccounts } from "../../account/service/account.service";
+import log from "../../../shared/utils/logger";
 
 export async function activateBudget(input: ActivateBudgetInput): Promise<IBudget> {
     const { accountId, budgetAmount } = input;
@@ -91,4 +92,33 @@ export async function deductFromBudget(accountId: string, expenseAmount: number)
     await budget.save();
 
     return budget;
+}
+
+
+export async function deactivateMonthlyBudgets() {
+    try {
+        log.info("Starting budget deactivation process.");
+
+        const activeBudgets = await BudgetModel.find({ isActive: true });
+
+        if (!activeBudgets.length) {
+            log.info("No active budgets found to deactivate.");
+            return;
+        }
+
+        const accountIds = new Set<string>();
+
+        for (const budget of activeBudgets) {
+            budget.isActive = false;
+            await budget.save();
+            accountIds.add(budget.account as string);
+        }
+
+        await updateBudgetStatusInAccounts(Array.from(accountIds), false);
+
+        log.info(`Deactivated ${activeBudgets.length} budgets and updated associated account statuses.`);
+    } catch (e: any) {
+        log.error("Error during budget deactivation process:", e.message);
+        throw e;
+    }
 }

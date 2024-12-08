@@ -135,3 +135,19 @@ export async function getBudgetStatus(accountId: string): Promise<boolean> {
         throw new AppError(e.message, e.statusCode || 500);
     }
 }
+
+export async function updateBudgetStatusInAccounts(accountIds: string[], status: boolean) {
+    try {
+        log.info(`Updating budget status for ${accountIds.length} accounts to ${status}.`);
+
+        await AccountModel.updateMany(
+            { _id: { $in: accountIds } },
+            { budgetStatus: status }
+        );
+
+        log.info("Budget statuses updated successfully.");
+    } catch (e: any) {
+        log.error("Error updating budget statuses in accounts:", e.message);
+        throw e;
+    }
+}
