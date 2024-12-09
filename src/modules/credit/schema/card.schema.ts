@@ -1,4 +1,4 @@
-import { object, string, number, date } from "zod";
+import { object, string, number, optional } from "zod";
 import { objectIdValidator } from "../../../shared/utils/validator";
 
 export const addCardSchema = object({
@@ -35,5 +35,22 @@ export const getCardSchema = object({
     params: object({
         accountId: objectIdValidator,
         cardId: objectIdValidator,
+    }),
+});
+
+export const editCardSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        cardId: objectIdValidator,
+    }),
+    body: object({
+        creditInstitution: optional(string().min(1, "Credit institution cannot be empty")),
+        creditLimit: optional(number().positive("Credit limit must be a positive number")),
+        utilizationAmount: optional(number().nonnegative("Utilization amount must be non-negative")),
+        paymentDueDate: optional(
+            string().refine((date) => !isNaN(Date.parse(date)), {
+                message: "Invalid date format. Use YYYY-MM-DD.",
+            })
+        ),
     }),
 });

@@ -1,5 +1,5 @@
 import CardModel from "../model/card.model";
-import { AddCardInput, GetAllCardsInput, GetCardInput } from "../types/cardTypes";
+import { AddCardInput, EditCardInput, GetAllCardsInput, GetCardInput } from "../types/cardTypes";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
 import { findOne } from "./creditBuilder.service";
@@ -59,6 +59,26 @@ export async function getCard(input: GetCardInput) {
 
         if (!card) {
             throw new AppError("Card not found for this account.", 404);
+        }
+
+        return card;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}
+
+export async function editCard(input: EditCardInput) {
+    const { accountId, cardId, ...updateFields } = input;
+
+    try {
+        const card = await CardModel.findOneAndUpdate(
+            { _id: cardId, account: accountId },
+            { $set: updateFields },
+            { new: true }
+        );
+
+        if (!card) {
+            throw new AppError("Card not found or update failed.", 404);
         }
 
         return card;
