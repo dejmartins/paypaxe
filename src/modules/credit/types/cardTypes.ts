@@ -6,3 +6,8 @@ export interface AddCardInput {
     paymentDueDate: string; // Format: YYYY-MM-DD
     cardNumber?: string;
 }
+
+export interface GetAllCardsInput {
+    accountId: string;
+}
+

@@ -1,10 +1,9 @@
 import { object, string, number, date } from "zod";
+import { objectIdValidator } from "../../../shared/utils/validator";
 
 export const addCardSchema = object({
     params: object({
-        accountId: string({
-            required_error: "Account ID is required",
-        }),
+        accountId: objectIdValidator
     }),
     body: object({
         creditInstitution: string({
@@ -23,5 +22,11 @@ export const addCardSchema = object({
             "Payment due date must be a valid date (YYYY-MM-DD)"
         ),
         cardNumber: string().optional(),
+    }),
+});
+
+export const getAllCardsSchema = object({
+    params: object({
+        accountId: objectIdValidator,
     }),
 });
