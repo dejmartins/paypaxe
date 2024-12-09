@@ -1,7 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface IActivityLog extends Document {
-    entityType: 'financialGoal' | 'budget' | 'income' | 'expense';
+    entityType: 'financialGoal' | 'budget' | 'income' | 'expense' | 'card';
     entityId: string;
     accountId: string;
     userId?: string;

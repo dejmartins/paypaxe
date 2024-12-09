@@ -12,6 +12,7 @@ export const getActivityLogsSchema = object({
             literal("account"),
             literal("expense"),
             literal("income"),
+            literal("card"),
             literal("other"),
         ])),
         limit: optional(

@@ -3,6 +3,7 @@ import { AddCardInput, DeleteCardInput, EditCardInput, GetAllCardsInput, GetCard
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
 import { findOne, updateCreditBuilderAfterCardDeletion } from "./creditBuilder.service";
+import { logActivity } from "../../activityLog/service/activityLog.service";
 
 export async function addCard(input: AddCardInput) {
     try {
@@ -28,6 +29,14 @@ export async function addCard(input: AddCardInput) {
         await creditBuilder.save();
     
         log.info(`Card added successfully for account ID: ${accountId}`);
+
+        await logActivity({
+            entityId: card._id,
+            accountId,
+            entityType: "card",
+            action: "add",
+            details: `Card added for '${creditInstitution}' with a credit limit of ${creditLimit}.`,
+        });
     
         return card;
     } catch (e: any) {
@@ -81,6 +90,14 @@ export async function editCard(input: EditCardInput) {
             throw new AppError("Card not found or update failed.", 404);
         }
 
+        await logActivity({
+            entityId: cardId,
+            accountId,
+            entityType: "card",
+            action: "edit",
+            details: `Card updated for card ID '${cardId}'.`,
+        });
+
         return card;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
@@ -103,6 +120,14 @@ export async function deleteCard(input: DeleteCardInput) {
             card.creditLimit || 0,
             card.utilizationAmount || 0
         );
+
+        await logActivity({
+            entityId: cardId,
+            accountId,
+            entityType: "card",
+            action: "delete",
+            details: `Card with ID '${cardId}' deleted. Credit limit was ${card.creditLimit}.`,
+        });
 
         return card;
     } catch (e: any) {
