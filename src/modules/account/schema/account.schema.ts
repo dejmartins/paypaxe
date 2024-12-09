@@ -48,4 +48,18 @@ export const updateAllocationRuleSchema = object({
     }),
 });
 
+export const customizeUtilizationThresholdSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    body: object({
+        utilizationThreshold: number()
+            .min(1, "Utilization threshold must be at least 1%")
+            .max(100, "Utilization threshold cannot exceed 100%")
+            .refine((val) => Number.isInteger(val), {
+                message: "Utilization threshold must be a whole number",
+            }),
+    }),
+});
+
 export type CreateAccountInput = TypeOf<typeof createAccountSchema>;

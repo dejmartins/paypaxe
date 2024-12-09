@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createAccount, getNetBalance, updateAllocationRule } from '../service/account.service';
+import { createAccount, customizeUtilizationThreshold, getNetBalance, updateAllocationRule } from '../service/account.service';
 import { CreateAccountInput } from '../schema/account.schema';
 import asyncHandler from '../../../shared/utils/asyncHandler';
 import { successResponse } from '../../../shared/utils/response';
@@ -21,5 +21,15 @@ export const updateAllocationRuleHandler = asyncHandler(async (req: Request, res
         const { accountId } = req.params;
         const updatedAccount = await updateAllocationRule({ accountId, allocationRule: req.body });
         return res.json(successResponse(updatedAccount, "Allocation rule updated successfully."));
+    }
+);
+
+export const customizeUtilizationThresholdHandler = asyncHandler(async (req: Request, res: Response) => {
+        const { accountId } = req.params;
+        const { utilizationThreshold } = req.body;
+
+        const updatedAccount = await customizeUtilizationThreshold({ accountId, utilizationThreshold });
+
+        return res.json(successResponse(updatedAccount, "Utilization threshold updated successfully"));
     }
 );

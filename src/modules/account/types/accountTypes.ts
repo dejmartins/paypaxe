@@ -16,3 +16,8 @@ export interface UpdateAllocationRuleInput {
         savings: number;
     }
 }
+
+export interface CustomizeUtilizationThresholdInput {
+    accountId: string;
+    utilizationThreshold: number;
+}

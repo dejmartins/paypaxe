@@ -2,7 +2,7 @@ import { AppError } from '../../../shared/utils/customErrors';
 import log from '../../../shared/utils/logger';
 import UserModel from '../../user/model/user.model';
 import AccountModel, { IAccount } from '../model/account.model';
-import { AccountInput, GetNetBalanceInput, UpdateAllocationRuleInput } from '../types/accountTypes';
+import { AccountInput, CustomizeUtilizationThresholdInput, GetNetBalanceInput, UpdateAllocationRuleInput } from '../types/accountTypes';
 
 export async function createAccount(input: AccountInput): Promise<IAccount> {
     try {
@@ -180,6 +180,20 @@ export async function getUtilizationThreshold(accountId: string): Promise<number
         const account = await findAccount(accountId) as IAccount;
 
         return account.utilizationThreshold;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}
+
+export async function customizeUtilizationThreshold(input: CustomizeUtilizationThresholdInput) {
+    try {
+        const account = await findAccount(input.accountId) as IAccount;
+
+        account.utilizationThreshold = input.utilizationThreshold;
+        
+        await account.save();
+
+        return account;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
     }
