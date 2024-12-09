@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
-import { addCard, editCard, getAllCards, getCard } from "../service/card.service";
+import { addCard, deleteCard, editCard, getAllCards, getCard } from "../service/card.service";
 import { successResponse } from "../../../shared/utils/response";
 import { AddCardInput } from "../types/cardTypes";
 
@@ -44,5 +44,15 @@ export const editCardHandler = asyncHandler(async (req: Request, res: Response) 
         const updatedCard = await editCard({ accountId, cardId, ...updateFields });
 
         return res.json(successResponse(updatedCard, "Card updated successfully"));
+    }
+);
+
+export const deleteCardHandler = asyncHandler(
+    async (req: Request, res: Response) => {
+        const { accountId, cardId } = req.params;
+
+        const deletedCard = await deleteCard({ accountId, cardId });
+
+        return res.json(successResponse(deletedCard, "Card deleted successfully"));
     }
 );

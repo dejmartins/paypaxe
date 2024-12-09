@@ -25,3 +25,8 @@ export interface EditCardInput {
     paymentDueDate?: string;
 }
 
+export interface DeleteCardInput {
+    accountId: string;
+    cardId: string;
+}
+

@@ -1,8 +1,8 @@
 import CardModel from "../model/card.model";
-import { AddCardInput, EditCardInput, GetAllCardsInput, GetCardInput } from "../types/cardTypes";
+import { AddCardInput, DeleteCardInput, EditCardInput, GetAllCardsInput, GetCardInput } from "../types/cardTypes";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
-import { findOne } from "./creditBuilder.service";
+import { findOne, updateCreditBuilderAfterCardDeletion } from "./creditBuilder.service";
 
 export async function addCard(input: AddCardInput) {
     try {
@@ -80,6 +80,29 @@ export async function editCard(input: EditCardInput) {
         if (!card) {
             throw new AppError("Card not found or update failed.", 404);
         }
+
+        return card;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}
+
+export async function deleteCard(input: DeleteCardInput) {
+    const { accountId, cardId } = input;
+
+    try {
+        const card = await CardModel.findOneAndDelete({ _id: cardId, account: accountId });
+
+        if (!card) {
+            throw new AppError("Card not found or deletion failed.", 404);
+        }
+
+        await updateCreditBuilderAfterCardDeletion(
+            accountId,
+            cardId,
+            card.creditLimit || 0,
+            card.utilizationAmount || 0
+        );
 
         return card;
     } catch (e: any) {

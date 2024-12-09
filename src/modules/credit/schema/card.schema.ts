@@ -54,3 +54,10 @@ export const editCardSchema = object({
         ),
     }),
 });
+
+export const deleteCardSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        cardId: objectIdValidator,
+    }),
+});

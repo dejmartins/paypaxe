@@ -2,6 +2,7 @@ import CreditBuilderModel from "../model/creditBuilder.model";
 import { AppError } from "../../../shared/utils/customErrors";
 import { findAccount } from "../../account/service/account.service";
 import { OptInCreditBuilderInput, OptOutCreditBuilderInput } from "../types/creditBuilderTypes";
+import mongoose from "mongoose";
 
 export async function optInCreditBuilder(input: OptInCreditBuilderInput): Promise<void> {
     try {
@@ -55,5 +56,34 @@ export async function findOne(accountId: string){
         return creditBuilder;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
+    }
+}
+
+export async function updateCreditBuilderAfterCardDeletion(
+    accountId: string,
+    cardId: string,
+    creditLimit: number,
+    utilizationAmount: number
+) {
+    try {
+        const updatedCreditBuilder = await CreditBuilderModel.findOneAndUpdate(
+            { account: new mongoose.Types.ObjectId(accountId) },
+            {
+                $pull: { activeCards: cardId },
+                $inc: {
+                    aggregateCreditLimit: -creditLimit,
+                    aggregateUtilization: -utilizationAmount,
+                },
+            },
+            { new: true }
+        );
+
+        if (!updatedCreditBuilder) {
+            throw new AppError("CreditBuilder record not found for the account.", 404);
+        }
+
+        return updatedCreditBuilder;
+    } catch (error: any) {
+        throw new AppError(error.message, error.statusCode || 500);
     }
 }
