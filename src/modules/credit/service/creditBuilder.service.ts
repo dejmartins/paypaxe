@@ -47,3 +47,13 @@ export async function optOutCreditBuilder(input: OptOutCreditBuilderInput): Prom
     creditBuilder.isOptedIn = false;
     await creditBuilder.save();
 }
+
+export async function findOne(accountId: string){
+    try {
+        const creditBuilder = await CreditBuilderModel.findOne({ account: accountId, isOptedIn: true });
+
+        return creditBuilder;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}

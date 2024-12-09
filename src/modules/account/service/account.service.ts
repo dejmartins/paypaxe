@@ -174,3 +174,13 @@ export async function updateAllocationRule(input: UpdateAllocationRuleInput) {
         throw new AppError(e.message, e.statusCode || 500);
     }
 }
+
+export async function getUtilizationThreshold(accountId: string): Promise<number> {
+    try {
+        const account = await findAccount(accountId) as IAccount;
+
+        return account.utilizationThreshold;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}

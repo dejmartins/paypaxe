@@ -12,6 +12,7 @@ import ocrLogRoutes from '../../modules/utility/routes/ocrLogRoutes';
 import activityLogRoutes from '../../modules/activityLog/routes/activityLogRoutes';
 import budgetRoutes from '../../modules/budget/route/budgetRoutes';
 import creditRoutes from '../../modules/credit/route/creditBuilder.route';
+import cardRoutes from '../../modules/credit/route/card.route';
 import passport from '../../modules/auth/strategy/google.strategy'; 
 import cors from 'cors';
 import { generalLimiter } from '../middlewares/rateLimiter';
@@ -41,6 +42,7 @@ function createServer() {
     app.use('/api', activityLogRoutes)
     app.use('/api', budgetRoutes)
     app.use('/api', creditRoutes)
+    app.use('/api', cardRoutes)
     app.use('/api/auth', authRoutes)
 
     return app;
