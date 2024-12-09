@@ -1,12 +1,13 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 import { IAccount } from '../../account/model/account.model';
+import { ICard } from './card.model';
 
 export interface ICreditBuilder extends Document {
     account: IAccount['_id'];
     isOptedIn: boolean;
     aggregateCreditLimit: number;
     aggregateUtilization: number;
-    activeCards: string[];
+    activeCards: ICard['_id'][];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -58,10 +59,18 @@ const creditBuilderSchema = new Schema<ICreditBuilder>(
 );
 
 
-creditBuilderSchema.post('save', async function (creditBuilder) {
-    const CreditBuilderModel = mongoose.model<ICreditBuilder>('CreditBuilder');
-    await CreditBuilderModel.findByIdAndUpdate(creditBuilder._id, { $set: {} });
+creditBuilderSchema.pre('save', async function (next) {
+    if (!this.isModified('activeCards')) return next();
+    const CardModel = mongoose.model<ICard>('Card');
+    const cards = await CardModel.find({ _id: { $in: this.activeCards } });
+
+    this.aggregateCreditLimit = cards.reduce((total, card) => total + card.creditLimit, 0);
+    this.aggregateUtilization = cards.reduce((total, card) => total + card.utilizationAmount, 0);
+
+    next();
 });
+
+
 
 const CreditBuilderModel: Model<ICreditBuilder> = mongoose.model<ICreditBuilder>('CreditBuilder', creditBuilderSchema);
 
