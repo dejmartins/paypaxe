@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { addCardHandler, getAllCardsHandler } from "../controller/card.controller";
+import { addCardHandler, getAllCardsHandler, getCardHandler } from "../controller/card.controller";
 import validate from "../../../shared/middlewares/validateResource";
-import { addCardSchema, getAllCardsSchema } from "../schema/card.schema";
+import { addCardSchema, getAllCardsSchema, getCardSchema } from "../schema/card.schema";
 
 const router = Router();
 
@@ -15,6 +15,12 @@ router.get(
     "/accounts/:accountId/cards",
     validate(getAllCardsSchema),
     getAllCardsHandler
+);
+
+router.get(
+    "/accounts/:accountId/cards/:cardId",
+    validate(getCardSchema),
+    getCardHandler
 );
 
 export default router;

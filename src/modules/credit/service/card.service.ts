@@ -1,5 +1,5 @@
 import CardModel from "../model/card.model";
-import { AddCardInput, GetAllCardsInput } from "../types/cardTypes";
+import { AddCardInput, GetAllCardsInput, GetCardInput } from "../types/cardTypes";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
 import { findOne } from "./creditBuilder.service";
@@ -46,6 +46,22 @@ export async function getAllCards(input: GetAllCardsInput) {
         }
 
         return cards;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
+    }
+}
+
+export async function getCard(input: GetCardInput) {
+    const { accountId, cardId } = input;
+
+    try {
+        const card = await CardModel.findOne({ _id: cardId, account: accountId });
+
+        if (!card) {
+            throw new AppError("Card not found for this account.", 404);
+        }
+
+        return card;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
     }

@@ -30,3 +30,10 @@ export const getAllCardsSchema = object({
         accountId: objectIdValidator,
     }),
 });
+
+export const getCardSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+        cardId: objectIdValidator,
+    }),
+});

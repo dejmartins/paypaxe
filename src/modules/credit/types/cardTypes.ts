@@ -11,3 +11,7 @@ export interface GetAllCardsInput {
     accountId: string;
 }
 
+export interface GetCardInput {
+    accountId: string;
+    cardId: string;
+}

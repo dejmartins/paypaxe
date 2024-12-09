@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
-import { addCard, getAllCards } from "../service/card.service";
+import { addCard, getAllCards, getCard } from "../service/card.service";
 import { successResponse } from "../../../shared/utils/response";
 import { AddCardInput } from "../types/cardTypes";
 
@@ -25,5 +25,14 @@ export const getAllCardsHandler = asyncHandler( async (req: Request, res: Respon
         const cards = await getAllCards({ accountId });
 
         return res.json(successResponse(cards, "Cards retrieved successfully"));
+    }
+);
+
+export const getCardHandler = asyncHandler(async (req: Request, res: Response) => {
+        const { accountId, cardId } = req.params;
+
+        const card = await getCard({ accountId, cardId });
+
+        return res.json(successResponse(card, "Card retrieved successfully"));
     }
 );
