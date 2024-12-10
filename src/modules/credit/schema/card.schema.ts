@@ -12,9 +12,6 @@ export const addCardSchema = object({
         creditLimit: number({
             required_error: "Credit limit is required",
         }).positive("Credit limit must be positive"),
-        utilizationAmount: number({
-            required_error: "Utilization amount is required",
-        }).min(0, "Utilization amount cannot be negative"),
         paymentDueDate: string({
             required_error: "Payment due date is required",
         }).refine(
@@ -46,7 +43,6 @@ export const editCardSchema = object({
     body: object({
         creditInstitution: optional(string().min(1, "Credit institution cannot be empty")),
         creditLimit: optional(number().positive("Credit limit must be a positive number")),
-        utilizationAmount: optional(number().nonnegative("Utilization amount must be non-negative")),
         paymentDueDate: optional(
             string().refine((date) => !isNaN(Date.parse(date)), {
                 message: "Invalid date format. Use YYYY-MM-DD.",

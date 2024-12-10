@@ -22,8 +22,8 @@ export async function addCard(input: AddCardInput) {
             paymentDueDate,
         });
     
-        creditBuilder.aggregateCreditLimit += creditLimit;
-        creditBuilder.aggregateUtilization += utilizationAmount;
+        creditBuilder.aggregateCreditLimit += card.creditLimit;
+        creditBuilder.aggregateUtilization += card.utilizationAmount;
         creditBuilder.activeCards.push(card._id);
     
         await creditBuilder.save();

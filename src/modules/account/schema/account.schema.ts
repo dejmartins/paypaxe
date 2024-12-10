@@ -62,4 +62,10 @@ export const customizeUtilizationThresholdSchema = object({
     }),
 });
 
+export const getUtilizationThresholdSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+});
+
 export type CreateAccountInput = TypeOf<typeof createAccountSchema>;

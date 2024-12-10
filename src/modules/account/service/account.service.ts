@@ -2,7 +2,7 @@ import { AppError } from '../../../shared/utils/customErrors';
 import log from '../../../shared/utils/logger';
 import UserModel from '../../user/model/user.model';
 import AccountModel, { IAccount } from '../model/account.model';
-import { AccountInput, CustomizeUtilizationThresholdInput, GetNetBalanceInput, UpdateAllocationRuleInput } from '../types/accountTypes';
+import { AccountInput, CustomizeUtilizationThresholdInput, GetNetBalanceInput, GetUtilizationThresholdInput, UpdateAllocationRuleInput } from '../types/accountTypes';
 
 export async function createAccount(input: AccountInput): Promise<IAccount> {
     try {
@@ -175,14 +175,14 @@ export async function updateAllocationRule(input: UpdateAllocationRuleInput) {
     }
 }
 
-export async function getUtilizationThreshold(accountId: string): Promise<number> {
-    try {
-        const account = await findAccount(accountId) as IAccount;
+export async function getUtilizationThreshold(input: GetUtilizationThresholdInput): Promise<number> {
+    const account = await AccountModel.findById(input.accountId);
 
-        return account.utilizationThreshold;
-    } catch (e: any) {
-        throw new AppError(e.message, e.statusCode || 500);
+    if (!account) {
+        throw new AppError("Account not found", 404);
     }
+
+    return account.utilizationThreshold;
 }
 
 export async function customizeUtilizationThreshold(input: CustomizeUtilizationThresholdInput) {

@@ -21,3 +21,7 @@ export interface CustomizeUtilizationThresholdInput {
     accountId: string;
     utilizationThreshold: number;
 }
+
+export interface GetUtilizationThresholdInput {
+    accountId: string;
+}

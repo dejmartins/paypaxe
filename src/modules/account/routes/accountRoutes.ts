@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { createAccountHandler, customizeUtilizationThresholdHandler, getNetBalanceHandler, updateAllocationRuleHandler } from "../controller/account.controller";
+import { createAccountHandler, customizeUtilizationThresholdHandler, getNetBalanceHandler, getUtilizationThresholdHandler, updateAllocationRuleHandler } from "../controller/account.controller";
 import validate from "../../../shared/middlewares/validateResource";
-import { createAccountSchema, customizeUtilizationThresholdSchema, getNetBalanceSchema, updateAllocationRuleSchema } from "../schema/account.schema";
+import { createAccountSchema, customizeUtilizationThresholdSchema, getNetBalanceSchema, getUtilizationThresholdSchema, updateAllocationRuleSchema } from "../schema/account.schema";
 
 const router = Router();
 
@@ -27,6 +27,12 @@ router.patch(
     "/accounts/:accountId/utilization-threshold",
     validate(customizeUtilizationThresholdSchema),
     customizeUtilizationThresholdHandler
+);
+
+router.get(
+    "/accounts/:accountId/utilization-threshold",
+    validate(getUtilizationThresholdSchema),
+    getUtilizationThresholdHandler
 );
 
 export default router;
