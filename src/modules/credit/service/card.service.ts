@@ -37,6 +37,14 @@ export async function addCard(input: AddCardInput) {
             action: "add",
             details: `Card added for '${creditInstitution}' with a credit limit of ${creditLimit}.`,
         });
+
+        await logActivity({
+            accountId,
+            entityId: accountId,
+            entityType: "creditBuilder",
+            action: "cardAdded",
+            details: `Card with ID ${card._id} was added.`,
+        });
     
         return card;
     } catch (e: any) {

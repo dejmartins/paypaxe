@@ -3,6 +3,7 @@ import { AppError } from "../../../shared/utils/customErrors";
 import { findAccount } from "../../account/service/account.service";
 import { CheckOptInStatusInput, OptInCreditBuilderInput, OptOutCreditBuilderInput } from "../types/creditBuilderTypes";
 import mongoose from "mongoose";
+import { logActivity } from "../../activityLog/service/activityLog.service";
 
 export async function optInCreditBuilder(input: OptInCreditBuilderInput): Promise<void> {
     try {
@@ -27,6 +28,14 @@ export async function optInCreditBuilder(input: OptInCreditBuilderInput): Promis
             creditBuilder.isOptedIn = true;
             await creditBuilder.save();
         }
+
+        await logActivity({
+            accountId,
+            entityId: accountId,
+            entityType: "creditBuilder",
+            action: "optIn",
+            details: "User opted into Credit Builder.",
+        });
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
     }
@@ -47,6 +56,14 @@ export async function optOutCreditBuilder(input: OptOutCreditBuilderInput): Prom
 
     creditBuilder.isOptedIn = false;
     await creditBuilder.save();
+
+    await logActivity({
+        accountId,
+        entityId: accountId,
+        entityType: "creditBuilder",
+        action: "optOut",
+        details: "User opted out of Credit Builder.",
+    });
 }
 
 export async function findOne(accountId: string){
@@ -82,6 +99,14 @@ export async function updateCreditBuilderAfterCardDeletion(
             throw new AppError("CreditBuilder record not found for the account.", 404);
         }
 
+        await logActivity({
+            accountId,
+            entityId: accountId,
+            entityType: "creditBuilder",
+            action: "cardDeleted",
+            details: `Card with ID ${cardId} was removed.`,
+        });
+
         return updatedCreditBuilder;
     } catch (error: any) {
         throw new AppError(error.message, error.statusCode || 500);
@@ -97,6 +122,14 @@ export async function checkOptInStatus(input: CheckOptInStatusInput): Promise<bo
         if (!creditBuilder) {
             throw new AppError("Credit Builder record not found for this account.", 404);
         }
+
+        await logActivity({
+            accountId,
+            entityId: accountId,
+            entityType: "creditBuilder",
+            action: "checkOptInStatus",
+            details: `Checked opt-in status: ${creditBuilder.isOptedIn ? "Opted in" : "Opted out"}.`,
+        });
 
         return creditBuilder.isOptedIn;
     } catch (e: any) {
