@@ -13,7 +13,7 @@ export const getActivityLogsSchema = object({
             literal("expense"),
             literal("income"),
             literal("card"),
-            literal("other"),
+            literal("creditBuilder"),
         ])),
         limit: optional(
             string().refine((value) => !isNaN(parseInt(value)), {
