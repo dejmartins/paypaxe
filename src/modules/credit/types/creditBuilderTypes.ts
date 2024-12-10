@@ -5,3 +5,7 @@ export interface OptInCreditBuilderInput {
 export interface OptOutCreditBuilderInput {
     accountId: string;
 }
+
+export interface CheckOptInStatusInput {
+    accountId: string;
+}

@@ -12,3 +12,9 @@ export const optOutCreditBuilderSchema = object({
         accountId: objectIdValidator,
     }),
 });
+
+export const checkOptInStatusSchema = object({
+    params: object({
+        accountId: objectIdValidator
+    }),
+});

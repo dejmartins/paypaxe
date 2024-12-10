@@ -1,7 +1,7 @@
 import CreditBuilderModel from "../model/creditBuilder.model";
 import { AppError } from "../../../shared/utils/customErrors";
 import { findAccount } from "../../account/service/account.service";
-import { OptInCreditBuilderInput, OptOutCreditBuilderInput } from "../types/creditBuilderTypes";
+import { CheckOptInStatusInput, OptInCreditBuilderInput, OptOutCreditBuilderInput } from "../types/creditBuilderTypes";
 import mongoose from "mongoose";
 
 export async function optInCreditBuilder(input: OptInCreditBuilderInput): Promise<void> {
@@ -85,5 +85,21 @@ export async function updateCreditBuilderAfterCardDeletion(
         return updatedCreditBuilder;
     } catch (error: any) {
         throw new AppError(error.message, error.statusCode || 500);
+    }
+}
+
+export async function checkOptInStatus(input: CheckOptInStatusInput): Promise<boolean> {
+    const { accountId } = input;
+
+    try {
+        const creditBuilder = await CreditBuilderModel.findOne({ account: accountId });
+
+        if (!creditBuilder) {
+            throw new AppError("Credit Builder record not found for this account.", 404);
+        }
+
+        return creditBuilder.isOptedIn;
+    } catch (e: any) {
+        throw new AppError(e.message, e.statusCode || 500);
     }
 }

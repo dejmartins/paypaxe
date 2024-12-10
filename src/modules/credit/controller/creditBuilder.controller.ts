@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
-import { optInCreditBuilder, optOutCreditBuilder } from "../service/creditBuilder.service";
+import { checkOptInStatus, optInCreditBuilder, optOutCreditBuilder } from "../service/creditBuilder.service";
 import { successResponse } from "../../../shared/utils/response";
 
 export const optInCreditBuilderHandler = asyncHandler(async (req: Request, res: Response) => {
@@ -17,4 +17,12 @@ export const optOutCreditBuilderHandler = asyncHandler(async (req: Request, res:
     await optOutCreditBuilder({ accountId });
 
     return res.status(200).json(successResponse({}, "Successfully opted out of credit builder."));
+});
+
+export const checkOptInStatusHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId } = req.params;
+
+    const isOptedIn = await checkOptInStatus({ accountId });
+
+    return res.json(successResponse({ isOptedIn }, "Opt-in status retrieved successfully."));
 });
