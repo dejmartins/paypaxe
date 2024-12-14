@@ -5,7 +5,12 @@ export type AddIncome = {
     amount: number;
     category: string;
     dateReceived: string;
-}
+    isRecurring?: boolean;
+    frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+    financialGoalId?: string;
+    savingsAmount?: number;
+};
+
 
 export interface GetTotalIncome {
     accountId: string;

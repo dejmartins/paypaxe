@@ -291,6 +291,21 @@ export async function transferFromNetBalance(accountId: string, goalId: string, 
     }
 }
 
+export async function transferToGoal(goalId: string, amount: number): Promise<void> {
+    try {
+        const goal = await FinancialGoalModel.findById(goalId);
+        if (!goal) {
+            throw new AppError("Financial Goal not found", 404);
+        }
+
+        goal.currentProgress += amount;
+        await goal.save();
+    } catch (e: any) {
+        throw new AppError(`Failed to transfer to financial goal: ${e.message}`, e.statusCode || 500);
+    }
+}
+
+
 export async function updatePauseStatus(input: UpdatePauseStatusInput) {
     try {
         const goal = await getActiveGoal(input.goalId, input.accountId);

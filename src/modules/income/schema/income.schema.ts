@@ -1,6 +1,5 @@
 import { literal, number, object, optional, string, TypeOf, union, boolean } from "zod";
 import { objectIdValidator } from "../../../shared/utils/validator";
-import { incomeId } from "../../../__tests__/utils/fixtures";
 
 export const addIncomeSchema = object({
     params: object({
@@ -8,47 +7,85 @@ export const addIncomeSchema = object({
     }),
     body: object({
         amount: union([number(), string()])
-        .refine(value => !isNaN(parseFloat(value as string)), {
-          message: 'Must be a valid decimal number',
-        })
-        .transform(value => parseFloat(value as string))
-        .refine(value => value > 0, {
-            message: 'Amount must be greater than zero'
-        }),
+            .refine(value => {
+                const parsed = parseFloat(value as string);
+                return !isNaN(parsed) && parsed > 0;
+            }, {
+                message: 'Amount must be a valid decimal number greater than zero',
+            })
+            .transform(value => parseFloat(value as string)),
         category: string({
-            required_error: 'Income category is required'
+            required_error: 'Income category is required',
         }),
         dateReceived: string({
-            required_error: 'Date received is required'
+            required_error: 'Date received is required',
         }).refine(date => {
             const parsedDate = new Date(date);
             const currentDate = new Date();
             return parsedDate <= currentDate;
         }, {
-            message: 'Date cannot be in the future'
+            message: 'Date cannot be in the future',
         }),
-        description: optional(string({
-            required_error: 'Income description is required'
+        description: optional(string().max(255, {
+            message: 'Description cannot exceed 255 characters',
         })),
         isRecurring: boolean({
-            required_error: 'isRecurring flag is required'
+            required_error: 'isRecurring flag is required',
         }),
-        frequency: optional(string().refine((val) => {
+        frequency: optional(string().refine(val => {
             const allowedFrequencies = ['daily', 'weekly', 'monthly', 'yearly'];
             return allowedFrequencies.includes(val);
         }, {
-            message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'"
-        }))
+            message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'",
+        })),
+        financialGoalId: optional(string().refine(id => id.trim() !== '', {
+            message: 'financialGoalId must not be empty if provided',
+        })),
+        savingsAmount: optional(
+            union([number(), string()])
+                .refine(value => {
+                    const parsed = parseFloat(value as string);
+                    return !isNaN(parsed) && parsed > 0;
+                }, {
+                    message: 'Savings amount must be a valid decimal number greater than zero',
+                })
+                .transform(value => parseFloat(value as string))
+        ),
     }).superRefine((data, ctx) => {
         if (data.isRecurring && !data.frequency) {
             ctx.addIssue({
                 code: 'custom',
-                message: 'Frequency is required for recurring incomes',
+                message: 'Frequency is required when income is recurring',
                 path: ['frequency'],
+            });
+        }
+
+        if (!data.isRecurring && data.frequency) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'Frequency should not be specified for non-recurring incomes',
+                path: ['frequency'],
+            });
+        }
+
+        if (data.financialGoalId && !data.savingsAmount) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'savingsAmount is required when financialGoalId is provided',
+                path: ['savingsAmount'],
+            });
+        }
+
+        if (data.savingsAmount && !data.financialGoalId) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'financialGoalId is required when savingsAmount is provided',
+                path: ['savingsTargetId'],
             });
         }
     }),
 });
+
 
 export const getTotalIncomeSchema = object({
     params: object({

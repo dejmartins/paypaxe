@@ -5,20 +5,45 @@ import { findAccount, updateNetBalance, validateAccount } from "../../account/se
 import IncomeModel, { IIncome } from "../model/income.model";
 import { AddIncome, GetIncome, GetIncomeByTimeFrame, GetTotalIncome, SoftDeleteIncome, UpdateIncome } from "../types/incomeTypes";
 import log from "../../../shared/utils/logger";
+import { transferToGoal } from "../../financialGoal/service/financialGoal.service";
 
 export async function addIncome(input: AddIncome): Promise<IIncome> {
     try {
         validateAccount(input.account);
 
-        const income = await IncomeModel.create(input);
+        const { financialGoalId, savingsAmount, amount } = input;
 
-        await updateNetBalance(input.account, input.amount);
+        let amountToSave = 0;
+        let amountToNetBalance = amount;
+
+        if (financialGoalId) {
+            if (!savingsAmount || savingsAmount <= 0) {
+                throw new AppError("Savings amount must be greater than zero when financialGoalId is provided", 400);
+            }
+
+            if (savingsAmount > amount) {
+                throw new AppError("Savings amount cannot exceed the income amount", 400);
+            }
+
+            amountToSave = savingsAmount;
+            amountToNetBalance = amount - savingsAmount;
+
+            await transferToGoal(financialGoalId, savingsAmount);
+        }
+
+        const income = await IncomeModel.create({
+            ...input,
+            amount: amountToNetBalance,
+        });
+
+        await updateNetBalance(input.account, amountToNetBalance);
 
         return income;
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
     }
 }
+
 
 export async function getTotalIncome(input: GetTotalIncome): Promise<{ totalIncome: number, netBalance?: number }> {
     try {
