@@ -6,6 +6,7 @@ import IncomeModel, { IIncome } from "../model/income.model";
 import { AddIncome, GetIncome, GetIncomeByTimeFrame, GetTotalIncome, IncomeBreakdown, SoftDeleteIncome, UpdateIncome } from "../types/incomeTypes";
 import log from "../../../shared/utils/logger";
 import { transferToGoal } from "../../financialGoal/service/financialGoal.service";
+import { logActivity } from "../../activityLog/service/activityLog.service";
 
 export async function addIncome(input: AddIncome): Promise<IIncome> {
     try {
@@ -37,6 +38,19 @@ export async function addIncome(input: AddIncome): Promise<IIncome> {
         });
 
         await updateNetBalance(input.account, amountToNetBalance);
+
+        await logActivity({
+            entityType: "Income",
+            entityId: income._id,
+            accountId: input.account,
+            action: "Add",
+            details: `Added income of ${amount} under category ${income.category}${
+                financialGoalId ? `, with ${savingsAmount} saved to goal ${financialGoalId}` : ""
+            }. Date received: ${income.dateReceived}${
+                input.frequency ? `, Recurring frequency: ${income.frequency}` : ""
+            }.`,
+            
+        });
 
         return income;
     } catch (e: any) {
