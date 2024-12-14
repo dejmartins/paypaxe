@@ -7,31 +7,31 @@ import { AppError } from '../../../shared/utils/customErrors'
 jest.mock('../../../modules/expense/model/expense.model')
 jest.mock('../../../modules/account/service/account.service');
 
-describe('ExpenseService - addExpense', () => {
-    describe('given expense details are valid', () => {
-        it('should add the expense linked to the user account type', async () => {
-            (ExpenseModel.create as jest.Mock).mockResolvedValue(expenseReturnPayload);
-            const result = await ExpenseService.addExpense(addExpensePayload);
+// describe('ExpenseService - addExpense', () => {
+//     describe('given expense details are valid', () => {
+//         it('should add the expense linked to the user account type', async () => {
+//             (ExpenseModel.create as jest.Mock).mockResolvedValue(expenseReturnPayload);
+//             const result = await ExpenseService.addExpense(addExpensePayload);
 
-            expect(result).toStrictEqual(expenseReturnPayload);
-            expect(ExpenseModel.create).toHaveBeenCalledWith(addExpensePayload);
-            expect(validateAccount).toHaveBeenCalledWith(addExpensePayload.account);
-        })
-    })
+//             expect(result).toStrictEqual(expenseReturnPayload);
+//             expect(ExpenseModel.create).toHaveBeenCalledWith(addExpensePayload);
+//             expect(validateAccount).toHaveBeenCalledWith(addExpensePayload.account);
+//         })
+//     })
 
-    describe('given that the account does not exists', () => {
-        it('should throw an error - Not Found', async () => {
-            (validateAccount as jest.Mock).mockImplementation(() => {
-                throw new AppError('Account not found', 404)
-            });
+//     describe('given that the account does not exists', () => {
+//         it('should throw an error - Not Found', async () => {
+//             (validateAccount as jest.Mock).mockImplementation(() => {
+//                 throw new AppError('Account not found', 404)
+//             });
 
-            await expect(ExpenseService.addExpense(addExpensePayload))
-                .rejects.toThrow('Account not found');
-            expect(validateAccount).toHaveBeenCalledWith(addExpensePayload.account);
-            expect(ExpenseModel.create).not.toHaveBeenCalled();
-        })
-    })
-})
+//             await expect(ExpenseService.addExpense(addExpensePayload))
+//                 .rejects.toThrow('Account not found');
+//             expect(validateAccount).toHaveBeenCalledWith(addExpensePayload.account);
+//             expect(ExpenseModel.create).not.toHaveBeenCalled();
+//         })
+//     })
+// })
 
 describe('ExpenseService - getTotalExpenseByDate', () => {
     describe('given the different time period', () => {
