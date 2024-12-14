@@ -6,7 +6,7 @@ export type AddIncome = {
     category: string;
     dateReceived: string;
     isRecurring?: boolean;
-    frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+    frequency?: string;
     financialGoalId?: string;
     savingsAmount?: number;
 };
