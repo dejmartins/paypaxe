@@ -7,37 +7,43 @@ export const addExpenseSchema = object({
     }),
     body: object({
         amount: union([number(), string()])
-        .refine(value => !isNaN(parseFloat(value as string)), {
-          message: 'Must be a valid decimal number',
-        })
-        .transform(value => parseFloat(value as string))
-        .refine(value => value > 0, {
-            message: 'Amount must be greater than zero'
-        }),
+            .refine(value => !isNaN(parseFloat(value as string)), {
+                message: 'Must be a valid decimal number',
+            })
+            .transform(value => parseFloat(value as string))
+            .refine(value => value > 0, {
+                message: 'Amount must be greater than zero',
+            }),
         category: string({
-            required_error: 'Expense category is required'
+            required_error: 'Expense category is required',
         }),
         date: string({
-            required_error: 'Date is required'
+            required_error: 'Date is required',
         }).refine(date => {
             const parsedDate = new Date(date);
             const currentDate = new Date();
             return parsedDate <= currentDate;
         }, {
-            message: 'Date cannot be in the future'
+            message: 'Date cannot be in the future',
         }),
         description: string({
-            required_error: 'Expense description is required'
+            required_error: 'Expense description is required',
         }),
         isRecurring: boolean({
-            required_error: 'isRecurring flag is required'
+            required_error: 'isRecurring flag is required',
         }),
         frequency: optional(string().refine((val) => {
             const allowedFrequencies = ['daily', 'weekly', 'monthly', 'yearly'];
             return allowedFrequencies.includes(val);
         }, {
-            message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'"
-        }))
+            message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'",
+        })),
+        expenseSource: string({
+            required_error: 'Expense source is required',
+        }).refine(source => ['creditCard', 'netBalance'].includes(source), {
+            message: "Expense source must be one of 'creditCard', 'netBalance'",
+        }),
+        cardId: optional(objectIdValidator)
     }).superRefine((data, ctx) => {
         if (data.isRecurring && !data.frequency) {
             ctx.addIssue({
@@ -46,8 +52,25 @@ export const addExpenseSchema = object({
                 path: ['frequency'],
             });
         }
+
+        if (data.expenseSource === 'creditCard' && !data.cardId) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'Card ID is required when the expense source is creditCard',
+                path: ['cardId'],
+            });
+        }
+
+        if (data.expenseSource === 'netBalance' && data.cardId) {
+            ctx.addIssue({
+                code: 'custom',
+                message: 'Card ID should not be provided when the expense source is netBalance',
+                path: ['cardId'],
+            });
+        }
     }),
-})
+});
+
 
 export const getTotalExpenseSchema = object({
     params: object({

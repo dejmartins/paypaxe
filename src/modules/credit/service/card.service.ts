@@ -142,3 +142,44 @@ export async function deleteCard(input: DeleteCardInput) {
         throw new AppError(e.message, e.statusCode || 500);
     }
 }
+
+export async function validateAndFetchCard(cardId: string, accountId: string) {
+    const card = await CardModel.findOne({ _id: cardId, account: accountId });
+
+    if (!card) {
+        throw new AppError("Card not found or does not belong to this account", 404);
+    }
+
+    return card;
+}
+
+export async function checkCreditLimit(cardId: string, amount: number) {
+    const card = await CardModel.findById(cardId);
+
+    if (!card) {
+        throw new AppError("Card not found", 404);
+    }
+
+    const newUtilizationAmount = card.utilizationAmount + amount;
+
+    if (newUtilizationAmount > card.creditLimit) {
+        throw new AppError("Expense exceeds the credit card limit", 400);
+    }
+
+    return true;
+}
+
+export async function updateCardUtilization(cardId: string, amount: number) {
+    const updatedCard = await CardModel.findByIdAndUpdate(
+        cardId,
+        { $inc: { utilizationAmount: amount } },
+        { new: true }
+    );
+
+    if (!updatedCard) {
+        throw new AppError("Failed to update card utilization", 500);
+    }
+
+    return updatedCard;
+}
+

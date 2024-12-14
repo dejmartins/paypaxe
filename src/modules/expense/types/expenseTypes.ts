@@ -3,10 +3,15 @@ import { IExpense } from "../model/expense.model";
 export interface AddExpense {
     account: string;
     amount: number;
-    description: string
+    description: string;
     category: string;
-    date: string;
+    date: string; // Date in "YYYY-MM-DD" format
+    expenseSource: string
+    cardId?: string;
+    isRecurring?: boolean;
+    frequency?: string
 }
+
 
 export type GetTotalExpense = {
     accountId: string,

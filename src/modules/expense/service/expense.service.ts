@@ -6,6 +6,8 @@ import { getBudgetStatus, updateNetBalance, validateAccount } from "../../accoun
 import ExpenseModel, { IExpense } from "../model/expense.model";
 import { AddExpense, GetExpense, GetExpenseByTimeFrame, GetTotalExpense, SoftDeleteExpense, UpdateExpense } from "../types/expenseTypes";
 import { deductFromBudget } from "../../budget/service/budget.service";
+import { checkCreditLimit, updateCardUtilization, validateAndFetchCard } from "../../credit/service/card.service";
+import { logActivity } from "../../activityLog/service/activityLog.service";
 
 export async function addExpense(input: AddExpense) {
     try {
@@ -13,20 +15,71 @@ export async function addExpense(input: AddExpense) {
 
         const isOnBudget = await getBudgetStatus(input.account);
 
-        if (!isOnBudget) {
-            const expense = await ExpenseModel.create(input);
-            await updateNetBalance(input.account, -expense.amount);
-            log.info(`Expense added for account ID: ${input.account}`);
+        let expense;
+
+        if (input.expenseSource === 'creditCard') {
+            if (!input.cardId) {
+                throw new AppError("Card ID is required for credit card expenses", 400);
+            }
+
+            const card = await validateAndFetchCard(input.cardId, input.account);
+
+            await checkCreditLimit(input.cardId, input.amount);
+
+            await updateCardUtilization(input.cardId, input.amount);
+
+            expense = await ExpenseModel.create(input);
+
+            log.info(`Credit card expense added for card ID: ${input.cardId}`);
+
+            await logActivity({
+                entityType: "card",
+                entityId: input.cardId,
+                accountId: input.account,
+                action: "creditCardExpense",
+                details: `Added a credit card expense of ${input.amount} under category ${input.category} on ${input.date}.`,
+            });
+
             return expense;
         }
 
-        await deductFromBudget(input.account, input.amount);
+        if (input.expenseSource === 'netBalance') {
+            if (!isOnBudget) {
+                expense = await ExpenseModel.create(input);
 
-        const expense = await ExpenseModel.create(input);
+                await updateNetBalance(input.account, -expense.amount);
 
-        log.info(`Expense processed within budget for account ID: ${input.account}`);
-        return expense;
+                log.info(`Net balance expense added for account ID: ${input.account}`);
 
+                await logActivity({
+                    entityType: "expense",
+                    entityId: expense._id,
+                    accountId: input.account,
+                    action: "netBalanceExpense",
+                    details: `Added a net balance expense of ${input.amount} under category ${input.category} on ${input.date}.`,
+                });
+
+                return expense;
+            }
+
+            await deductFromBudget(input.account, input.amount);
+
+            expense = await ExpenseModel.create(input);
+
+            log.info(`Net balance expense processed within budget for account ID: ${input.account}`);
+
+            await logActivity({
+                entityType: "expense",
+                entityId: expense._id,
+                accountId: input.account,
+                action: "budgetExpense",
+                details: `Added a budgeted expense of ${input.amount} under category ${input.category} on ${input.date}.`,
+            });
+
+            return expense;
+        }
+
+        throw new AppError("Invalid expense source provided", 400);
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode || 500);
     }
