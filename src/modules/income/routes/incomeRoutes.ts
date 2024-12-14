@@ -1,7 +1,7 @@
 import { Router } from "express";
 import validate from "../../../shared/middlewares/validateResource";
-import { addIncomeSchema, exportIncomeSchema, getDeletedIncomesSchema, getRecentIncomesSchema, getTotalIncomeSchema, softDeleteIncomeSchema, updateIncomeSchema } from "../schema/income.schema";
-import { addIncomeHandler, exportIncomeHandler, getDeletedIncomesHandler, getRecentIncomesHandler, getTotalIncomeHandler, softDeleteIncomeHandler, updateIncomeHandler } from "../controller/income.controller";
+import { addIncomeSchema, exportIncomeSchema, getDeletedIncomesSchema, getRecentIncomesSchema, getTotalIncomeSchema, incomeBreakdownSchema, softDeleteIncomeSchema, updateIncomeSchema } from "../schema/income.schema";
+import { addIncomeHandler, exportIncomeHandler, getDeletedIncomesHandler, getIncomeBreakdownHandler, getRecentIncomesHandler, getTotalIncomeHandler, softDeleteIncomeHandler, updateIncomeHandler } from "../controller/income.controller";
 import { validateAccountTypeAndPlan, validateSubscription } from "../../../shared/middlewares/validateAccount";
 
 const router = Router();
@@ -60,6 +60,12 @@ router.get(
     validateAccountTypeAndPlan(['individual'], 'basic'),
     validate(exportIncomeSchema),
     exportIncomeHandler
+);
+
+router.get(
+    '/accounts/:accountId/breakdown',
+    validate(incomeBreakdownSchema),
+    getIncomeBreakdownHandler
 );
 
 export default router;

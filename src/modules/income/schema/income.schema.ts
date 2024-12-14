@@ -185,4 +185,10 @@ export const exportIncomeSchema = object({
     })
 });
 
+export const incomeBreakdownSchema = object({
+    params: object({
+        accountId: objectIdValidator
+    })
+});
+
 export type AddIncomeInput = TypeOf<typeof addIncomeSchema>;

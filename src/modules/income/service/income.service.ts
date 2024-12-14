@@ -3,7 +3,7 @@ import { AppError } from "../../../shared/utils/customErrors";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { findAccount, updateNetBalance, validateAccount } from "../../account/service/account.service";
 import IncomeModel, { IIncome } from "../model/income.model";
-import { AddIncome, GetIncome, GetIncomeByTimeFrame, GetTotalIncome, SoftDeleteIncome, UpdateIncome } from "../types/incomeTypes";
+import { AddIncome, GetIncome, GetIncomeByTimeFrame, GetTotalIncome, IncomeBreakdown, SoftDeleteIncome, UpdateIncome } from "../types/incomeTypes";
 import log from "../../../shared/utils/logger";
 import { transferToGoal } from "../../financialGoal/service/financialGoal.service";
 
@@ -179,5 +179,30 @@ export async function getIncomeByTimeFrame(input: GetIncomeByTimeFrame) {
     } catch (error: any) {
         log.error(`Error getting income by time frame: ${error.message}`);
         throw new AppError(error.message, error.statusCode)
+    }
+}
+
+export async function getIncomeBreakdown(accountId: string): Promise<IncomeBreakdown[]> {
+    try {
+        const breakdown = await IncomeModel.aggregate([
+            { $match: { account: new mongoose.Types.ObjectId(accountId) } },
+            {
+                $group: {
+                    _id: '$category',
+                    totalAmount: { $sum: '$amount' }
+                }
+            },
+            {
+                $project: {
+                    category: '$_id',
+                    totalAmount: { $divide: ['$totalAmount', 100] },
+                    _id: 0
+                }
+            }
+        ]);
+
+        return breakdown;
+    } catch (error: any) {
+        throw new AppError(error.message, error.statusCode || 500);
     }
 }

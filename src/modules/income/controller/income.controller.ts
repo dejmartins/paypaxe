@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { successResponse } from "../../../shared/utils/response";
-import { addIncome, getDeletedIncomes, getIncomeByTimeFrame, getRecentIncomes, getTotalIncome, softDeleteIncome, updateIncome } from "../service/income.service";
+import { addIncome, getDeletedIncomes, getIncomeBreakdown, getIncomeByTimeFrame, getRecentIncomes, getTotalIncome, softDeleteIncome, updateIncome } from "../service/income.service";
 import { AddIncomeInput } from "../schema/income.schema";
 import { AppError } from "../../../shared/utils/customErrors";
 import { IIncome } from "../model/income.model";
@@ -78,6 +78,14 @@ export const updateIncomeHandler = asyncHandler(async (req: Request, res: Respon
     const updatedIncome = await updateIncome({ accountId, incomeId, updateFields: {...req.body} });
 
     return res.json(successResponse(updatedIncome, 'Incomes Updated Successfully'));
+});
+
+export const getIncomeBreakdownHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId } = req.params;
+
+    const incomeBreakdown = await getIncomeBreakdown(accountId);
+
+    return res.json(successResponse(incomeBreakdown, 'Income Breakdown Retrieved Successfully'));
 });
 
 export const exportIncomeHandler = asyncHandler(async (req: Request, res: Response) => {

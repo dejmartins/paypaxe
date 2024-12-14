@@ -42,3 +42,8 @@ export type GetIncomeByTimeFrame = {
     startDate?: string,
     endDate?: string
 }
+
+export type IncomeBreakdown = {
+    category: string;
+    totalAmount: number;
+};
