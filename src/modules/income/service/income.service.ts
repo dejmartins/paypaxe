@@ -199,7 +199,7 @@ export async function getIncomeByTimeFrame(input: GetIncomeByTimeFrame) {
 export async function getIncomeBreakdown(accountId: string): Promise<IncomeBreakdown[]> {
     try {
         const breakdown = await IncomeModel.aggregate([
-            { $match: { account: new mongoose.Types.ObjectId(accountId) } },
+            { $match: { account: new mongoose.Types.ObjectId(accountId), status: "active" } },
             {
                 $group: {
                     _id: '$category',
