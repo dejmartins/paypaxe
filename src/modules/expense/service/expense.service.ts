@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { AppError } from "../../../shared/utils/customErrors";
 import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
@@ -88,16 +88,20 @@ export async function addExpense(input: AddExpense) {
 export async function getTotalExpense(input: GetTotalExpense){
     try {
         validateAccount(input.accountId);
-        
-        const { startDate: start, endDate: end } = getTimeFrame(input.timePeriod, input.startDate, input.endDate);
+
+        const { startDate: start, endDate: end } = input.timePeriod 
+        ? getTimeFrame(input.timePeriod, input.startDate, input.endDate) 
+        : { startDate: undefined, endDate: undefined };
+
+        const matchConditions: any = { account: new mongoose.Types.ObjectId(input.accountId), status: "active" };
+
+        if (start && end) {
+            matchConditions.dateReceived = { $gte: new Date(start), $lte: new Date(end) };
+        }
     
         const expenses = await ExpenseModel.aggregate([
             {
-                $match: {
-                    account: new Types.ObjectId(input.accountId),
-                    date: { $gte: new Date(start), $lte: new Date(end) },
-                    status: 'active'
-                }
+                $match: matchConditions
             },
             {
                 $group: {

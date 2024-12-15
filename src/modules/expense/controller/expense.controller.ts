@@ -19,11 +19,24 @@ export const getTotalExpenseHandler = asyncHandler(async (req: Request, res: Res
     const { accountId } = req.params;
     const { timePeriod, startDate, endDate } = req.query;
 
-    if (typeof timePeriod !== 'string' || (startDate && typeof startDate !== 'string') || (endDate && typeof endDate !== 'string')) {
-        throw new AppError('Invalid query parameters', 400);
+    if (timePeriod && typeof timePeriod !== 'string') {
+        throw new AppError('Invalid timePeriod parameter', 400);
+    }
+    if (startDate && isNaN(Date.parse(startDate as string))) {
+        throw new AppError('Invalid startDate parameter', 400);
+    }
+    if (endDate && isNaN(Date.parse(endDate as string))) {
+        throw new AppError('Invalid endDate parameter', 400);
     }
 
-    const expense = await getTotalExpense({ accountId: accountId, timePeriod, startDate, endDate });
+    const expense = 
+        await getTotalExpense({ 
+            accountId: accountId, 
+            timePeriod, 
+            startDate: startDate as string | undefined, 
+            endDate: endDate as string | undefined
+        });
+        
     return res.json(successResponse({ totalExpense: expense }, 'Total Expense Calculated Successfully'));
 });
 

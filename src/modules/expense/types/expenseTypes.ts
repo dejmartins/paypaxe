@@ -15,7 +15,7 @@ export interface AddExpense {
 
 export type GetTotalExpense = {
     accountId: string,
-    timePeriod: string,
+    timePeriod?: string,
     startDate?: string,
     endDate?: string
 }

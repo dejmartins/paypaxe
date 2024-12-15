@@ -77,14 +77,14 @@ export const getTotalExpenseSchema = object({
         accountId: objectIdValidator,
     }),
     query: object({
-        timePeriod: union([
+        timePeriod: optional(union([
             literal("thisWeek"),
             literal("lastWeek"),
             literal("thisMonth"),
             literal("lastMonth"),
             literal("lastTwoMonths"),
             literal("custom"),
-        ]),
+        ])),
         startDate: optional(string().refine(date => !isNaN(Date.parse(date)), {
             message: "Invalid start date format",
         })),
