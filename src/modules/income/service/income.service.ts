@@ -102,7 +102,7 @@ export async function getRecentIncomes(input: GetIncome): Promise<IIncome[]> {
     try {
         validateAccount(input.accountId);
 
-        const recentIncomes = await IncomeModel.find({ account: input.accountId })
+        const recentIncomes = await IncomeModel.find({ account: input.accountId, status: 'active' })
             .sort({ dateReceived: -1 })
             .limit(input.limit)
             .lean();
