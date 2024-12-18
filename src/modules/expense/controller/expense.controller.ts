@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import asyncHandler from "../../../shared/utils/asyncHandler";
 import { successResponse } from "../../../shared/utils/response";
 import { AddExpenseInput } from "../schema/expense.schema";
-import { addExpense, getDeletedExpenses, getExpenseByTimeFrame, getRecentExpenses, getTotalExpense, softDeleteExpense, updateExpense } from "../service/expense.service";
+import { addExpense, getDeletedExpenses, getExpenseBreakdown, getExpenseByTimeFrame, getRecentExpenses, getTotalExpense, softDeleteExpense, updateExpense } from "../service/expense.service";
 import { AppError } from "../../../shared/utils/customErrors";
 import { format } from '@fast-csv/format'
 import PDFDocument from 'pdfkit'
@@ -95,6 +95,14 @@ export const exportExpenseHandler = asyncHandler(async (req: Request, res: Respo
     } else if (type === 'pdf'){
         exportToPdf(res, expenses);
     }
+});
+
+export const getExpenseBreakdownHandler = asyncHandler(async (req: Request, res: Response) => {
+    const { accountId } = req.params;
+
+    const breakdown = await getExpenseBreakdown(accountId);
+
+    return res.json(successResponse(breakdown, "Expense breakdown retrieved successfully."));
 });
 
 async function exportToCsv(res: Response, expenses: IExpense[]) {

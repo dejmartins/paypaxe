@@ -42,3 +42,8 @@ export type GetExpenseByTimeFrame = {
     startDate?: string,
     endDate?: string
 }
+
+export interface ExpenseBreakdown {
+    category: string;
+    totalAmount: number;
+}

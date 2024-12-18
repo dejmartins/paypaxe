@@ -166,6 +166,11 @@ export const exportExpenseSchema = object({
     })
 });
 
+export const expenseBreakdownSchema = object({
+    params: object({
+        accountId: objectIdValidator
+    })
+});
 
 
 export type AddExpenseInput = TypeOf<typeof addExpenseSchema>;

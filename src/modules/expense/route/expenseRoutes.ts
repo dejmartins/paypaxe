@@ -1,7 +1,7 @@
 import { Router } from "express";
 import validate from "../../../shared/middlewares/validateResource";
-import { addExpenseSchema, exportExpenseSchema, getDeletedExpensesSchema, getRecentExpensesSchema, getTotalExpenseSchema, softDeleteExpenseSchema, updateExpenseSchema } from "../schema/expense.schema";
-import { addExpenseHandler, exportExpenseHandler, getDeletedExpensesHandler, getRecentExpensesHandler, getTotalExpenseHandler, softDeleteExpenseHandler, updateExpenseHandler } from "../controller/expense.controller";
+import { addExpenseSchema, expenseBreakdownSchema, exportExpenseSchema, getDeletedExpensesSchema, getRecentExpensesSchema, getTotalExpenseSchema, softDeleteExpenseSchema, updateExpenseSchema } from "../schema/expense.schema";
+import { addExpenseHandler, exportExpenseHandler, getDeletedExpensesHandler, getExpenseBreakdownHandler, getRecentExpensesHandler, getTotalExpenseHandler, softDeleteExpenseHandler, updateExpenseHandler } from "../controller/expense.controller";
 import { validateAccountTypeAndPlan, validateSubscription } from "../../../shared/middlewares/validateAccount";
 
 const router = Router();
@@ -60,6 +60,12 @@ router.get(
     // validateAccountTypeAndPlan(['individual', 'family'], 'basic'),
     validate(exportExpenseSchema),
     exportExpenseHandler
+);
+
+router.get(
+    "/accounts/:accountId/expense-breakdown",
+    validate(expenseBreakdownSchema),
+    getExpenseBreakdownHandler
 );
 
 export default router;

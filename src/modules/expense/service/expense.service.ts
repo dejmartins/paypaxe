@@ -4,7 +4,7 @@ import log from "../../../shared/utils/logger";
 import { getTimeFrame } from "../../../shared/utils/time";
 import { getBudgetStatus, updateNetBalance, validateAccount } from "../../account/service/account.service";
 import ExpenseModel, { IExpense } from "../model/expense.model";
-import { AddExpense, GetExpense, GetExpenseByTimeFrame, GetTotalExpense, SoftDeleteExpense, UpdateExpense } from "../types/expenseTypes";
+import { AddExpense, ExpenseBreakdown, GetExpense, GetExpenseByTimeFrame, GetTotalExpense, SoftDeleteExpense, UpdateExpense } from "../types/expenseTypes";
 import { deductFromBudget } from "../../budget/service/budget.service";
 import { checkCreditLimit, updateCardUtilization, validateAndFetchCard } from "../../credit/service/card.service";
 import { logActivity } from "../../activityLog/service/activityLog.service";
@@ -209,6 +209,31 @@ export async function getExpenseByTimeFrame(input: GetExpenseByTimeFrame) {
     } catch (error: any) {
         log.error(`Error getting expense by time frame: ${error.message}`);
         throw new AppError(error.message, error.statusCode)
+    }
+}
+
+export async function getExpenseBreakdown(accountId: string): Promise<ExpenseBreakdown[]> {
+    try {
+        const breakdown = await ExpenseModel.aggregate([
+            { $match: { account: new mongoose.Types.ObjectId(accountId), status: "active" } },
+            {
+                $group: {
+                    _id: '$category',
+                    totalAmount: { $sum: '$amount' }
+                }
+            },
+            {
+                $project: {
+                    category: '$_id',
+                    totalAmount: { $divide: ['$totalAmount', 100] },
+                    _id: 0
+                }
+            }
+        ]);
+
+        return breakdown;
+    } catch (error: any) {
+        throw new AppError(error.message, error.statusCode || 500);
     }
 }
 
