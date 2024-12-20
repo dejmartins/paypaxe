@@ -3,7 +3,7 @@ import { IExpense } from "../model/expense.model";
 export interface AddExpense {
     account: string;
     amount: number;
-    description: string;
+    description?: string;
     category: string;
     date: string; // Date in "YYYY-MM-DD" format
     expenseSource: string
