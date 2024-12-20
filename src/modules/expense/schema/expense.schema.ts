@@ -26,9 +26,9 @@ export const addExpenseSchema = object({
         }, {
             message: 'Date cannot be in the future',
         }),
-        description: string({
+        description: optional(string({
             required_error: 'Expense description is required',
-        }),
+        })),
         isRecurring: boolean({
             required_error: 'isRecurring flag is required',
         }),
