@@ -5,7 +5,7 @@ import { findAccount, updateNetBalance, validateAccount } from "../../account/se
 import IncomeModel, { IIncome } from "../model/income.model";
 import { AddIncome, GetIncome, GetIncomeByTimeFrame, GetTotalIncome, IncomeBreakdown, SoftDeleteIncome, UpdateIncome } from "../types/incomeTypes";
 import log from "../../../shared/utils/logger";
-import { transferToGoal } from "../../financialGoal/service/financialGoal.service";
+import { transferFromNetBalance, transferToGoal } from "../../financialGoal/service/financialGoal.service";
 import { logActivity } from "../../activityLog/service/activityLog.service";
 
 export async function addIncome(input: AddIncome): Promise<IIncome> {
@@ -14,28 +14,16 @@ export async function addIncome(input: AddIncome): Promise<IIncome> {
 
         const { financialGoalId, savingsAmount, amount } = input;
 
-        if (financialGoalId) {
-            if (savingsAmount === undefined || savingsAmount <= 0) {
-                throw new AppError("Savings amount must be greater than zero when financialGoalId is provided", 400);
-            }
+        const income = await IncomeModel.create(input);
 
+        if (financialGoalId && savingsAmount) {
             if (savingsAmount > amount) {
                 throw new AppError("Savings amount cannot exceed the income amount", 400);
             }
+
+            await transferFromNetBalance(input.account, financialGoalId, savingsAmount);
         }
-
-        const income = await IncomeModel.create(input);
-
-        if (financialGoalId && savingsAmount !== undefined) {
-            await transferToGoal(financialGoalId, savingsAmount);
-        }
-
-        const amountToNetBalance = financialGoalId && savingsAmount !== undefined
-            ? amount - savingsAmount
-            : amount;
-
-        await updateNetBalance(input.account, amountToNetBalance);
-
+        
         await logActivity({
             entityType: "Income",
             entityId: income._id,
@@ -53,6 +41,7 @@ export async function addIncome(input: AddIncome): Promise<IIncome> {
         throw new AppError(e.message, e.statusCode || 500);
     }
 }
+
 
 export async function getTotalIncome(input: GetTotalIncome): Promise<{ totalIncome: number, netBalance?: number }> {
     try {
