@@ -14,28 +14,25 @@ export async function addIncome(input: AddIncome): Promise<IIncome> {
 
         const { financialGoalId, savingsAmount, amount } = input;
 
-        let amountToSave = 0;
-        let amountToNetBalance = amount;
-
         if (financialGoalId) {
-            if (!savingsAmount || savingsAmount <= 0) {
+            if (savingsAmount === undefined || savingsAmount <= 0) {
                 throw new AppError("Savings amount must be greater than zero when financialGoalId is provided", 400);
             }
 
             if (savingsAmount > amount) {
                 throw new AppError("Savings amount cannot exceed the income amount", 400);
             }
+        }
 
-            amountToSave = savingsAmount;
-            amountToNetBalance = amount - savingsAmount;
+        const income = await IncomeModel.create(input);
 
+        if (financialGoalId && savingsAmount !== undefined) {
             await transferToGoal(financialGoalId, savingsAmount);
         }
 
-        const income = await IncomeModel.create({
-            ...input,
-            amount: amountToNetBalance,
-        });
+        const amountToNetBalance = financialGoalId && savingsAmount !== undefined
+            ? amount - savingsAmount
+            : amount;
 
         await updateNetBalance(input.account, amountToNetBalance);
 
@@ -49,7 +46,6 @@ export async function addIncome(input: AddIncome): Promise<IIncome> {
             }. Date received: ${income.dateReceived}${
                 input.frequency ? `, Recurring frequency: ${income.frequency}` : ""
             }.`,
-            
         });
 
         return income;
@@ -57,7 +53,6 @@ export async function addIncome(input: AddIncome): Promise<IIncome> {
         throw new AppError(e.message, e.statusCode || 500);
     }
 }
-
 
 export async function getTotalIncome(input: GetTotalIncome): Promise<{ totalIncome: number, netBalance?: number }> {
     try {
