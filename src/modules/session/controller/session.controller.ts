@@ -14,7 +14,7 @@ export const createUserSessionHandler =  asyncHandler(async (req: Request, res: 
 
     const { accessToken, refreshToken } = await generateSessionTokens(user, session.session._id);
 
-    return res.send(successResponse({ accessToken, refreshToken, accounts: session.accounts, user: session.user }, "Session created successfully"))
+    return res.send(successResponse({ accessToken, refreshToken, accounts: session.accounts, user: {...session.user, id: user.id} }, "Session created successfully"))
 })
 
 export const getUserSessionsHandler = asyncHandler(async (req: Request, res: Response) => {
