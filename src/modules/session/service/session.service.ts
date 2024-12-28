@@ -20,6 +20,7 @@ export async function createSession(userId: string, userAgent: string){
         }));
 
         const userDetails = {
+            id: user?._id,
             email: user?.email,
             name: user?.name,
             verified: user?.verified,
