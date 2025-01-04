@@ -68,4 +68,10 @@ export const getUtilizationThresholdSchema = object({
     }),
 });
 
+export const getAllocationRulesSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+});
+
 export type CreateAccountInput = TypeOf<typeof createAccountSchema>;
