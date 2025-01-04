@@ -1,5 +1,5 @@
 import BudgetModel, { IBudget } from "../model/budget.model";
-import { ActivateBudgetInput, GetActiveBudgetInput } from "../types/budgetTypes";
+import { ActivateBudgetInput, CustomizeBudgetAmountInput, GetActiveBudgetInput } from "../types/budgetTypes";
 import { AppError } from "../../../shared/utils/customErrors";
 import { findAccount, getCurrentAllocationRules, updateBudgetStatus, updateBudgetStatusInAccounts } from "../../account/service/account.service";
 import log from "../../../shared/utils/logger";
@@ -37,6 +37,40 @@ export async function activateBudget(input: ActivateBudgetInput): Promise<IBudge
     await updateBudgetStatus(accountId, true);
 
     return budget;
+}
+
+export async function customizeBudgetAmount(input: CustomizeBudgetAmountInput) {
+    const { accountId, newBudgetAmount } = input;
+
+    const activeBudget = await BudgetModel.findOne({ account: accountId, isActive: true });
+
+    if (!activeBudget) {
+        throw new AppError("No active budget found. Activate a budget before customizing.", 404);
+    }
+
+    const allocationRules = await getCurrentAllocationRules(accountId);
+
+    // Recalculate allocations based on the new budget amount
+    const needsAllocation = newBudgetAmount * allocationRules.needs;
+    const wantsAllocation = newBudgetAmount * allocationRules.wants;
+    const savingsAllocation = newBudgetAmount * allocationRules.savings;
+
+    // Update the active budget with new amounts
+    activeBudget.budgetAmount = newBudgetAmount;
+    activeBudget.allocation = {
+        needs: needsAllocation,
+        wants: wantsAllocation,
+        savings: savingsAllocation,
+    };
+    activeBudget.remainingAllocation = {
+        needs: needsAllocation,
+        wants: wantsAllocation,
+        savings: savingsAllocation,
+    };
+
+    await activeBudget.save();
+
+    return activeBudget;
 }
 
 export async function getActiveBudget(input: GetActiveBudgetInput) {

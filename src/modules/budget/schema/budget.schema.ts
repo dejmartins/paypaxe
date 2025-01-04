@@ -18,3 +18,14 @@ export const getActiveBudgetSchema = object({
         accountId: objectIdValidator,
     }),
 });
+
+export const customizeBudgetSchema = object({
+    params: object({
+        accountId: objectIdValidator,
+    }),
+    body: object({
+        newBudgetAmount: number()
+            .min(1, "Budget amount must be greater than zero")
+            .max(100000000, "Budget amount is too high")
+    })
+});

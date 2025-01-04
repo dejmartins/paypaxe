@@ -6,3 +6,8 @@ export interface ActivateBudgetInput {
 export interface GetActiveBudgetInput {
     accountId: string;
 }
+
+export interface CustomizeBudgetAmountInput {
+    accountId: string;
+    newBudgetAmount: number;
+}
