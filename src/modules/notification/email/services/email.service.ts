@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import config from '../../../../../config/default';
 import { verificationEmailTemplate } from '../templates/verificationEmail';
 import { passwordResetEmailTemplate } from '../templates/passwordResetEmail';
+import { paymentFailureEmailTemplate, subscriptionConfirmationEmailTemplate } from '../templates/subscriptionStatusEmail';
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -39,6 +40,35 @@ export async function sendEmailNotification(to: string, subject: string, message
         to,
         subject,
         text: message
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+
+export async function sendSubscriptionConfirmationEmail(email: string, plan: string, numberOfMonths: number) {
+    const mailOptions = {
+        from: config.emailUser,
+        to: email,
+        subject: 'Subscription Successful',
+        html: subscriptionConfirmationEmailTemplate({
+            plan,
+            numberOfMonths,
+            clientUrl: config.clientUrl,
+        }),
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+
+export async function sendPaymentFailureEmail(email: string, reference: string) {
+    const mailOptions = {
+        from: config.emailUser,
+        to: email,
+        subject: 'Payment Failed',
+        html: paymentFailureEmailTemplate({
+            reference,
+            clientUrl: config.clientUrl,
+        }),
     };
 
     await transporter.sendMail(mailOptions);

@@ -4,6 +4,7 @@ import { InitiatePayment } from "../types/paymentTypes";
 import config from "../../../../config/default";
 import { createTransaction, findTransactionByReference } from "../../transaction/service/transaction.service";
 import { findAccount } from "../../account/service/account.service";
+import { sendPaymentFailureEmail, sendSubscriptionConfirmationEmail } from "../../notification/email/services/email.service";
 
 export async function initiatePayment(input: InitiatePayment){
     try {
@@ -23,7 +24,8 @@ export async function initiatePayment(input: InitiatePayment){
             metadata: { 
                 accountId: input.account,
                 plan: input.plan,
-                numberOfMonths: input.numberOfMonths
+                numberOfMonths: input.numberOfMonths,
+                email: input.user
             }
         }, {
             headers: {
@@ -49,6 +51,8 @@ export async function initiatePayment(input: InitiatePayment){
 export async function handleWebhookEvent(event: any) {
     try {
         const { reference, status, metadata } = event.data;
+
+        const { plan, numberOfMonths, email } = metadata;
     
         const transaction = await findTransactionByReference(reference);
     
@@ -60,10 +64,17 @@ export async function handleWebhookEvent(event: any) {
         await transaction.save();
     
         if (transaction.status === 'success') {
-            const { plan, numberOfMonths } = metadata;
     
             // @ts-ignore
             await updateSubscription(transaction.account.toString(), plan, numberOfMonths);
+
+            await sendSubscriptionConfirmationEmail(
+                email,
+                plan,
+                numberOfMonths
+            );
+        } else {
+            await sendPaymentFailureEmail(email, reference)
         }
     } catch (e: any) {
         throw new AppError(e.message, e.statusCode)
