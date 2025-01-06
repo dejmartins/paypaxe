@@ -16,12 +16,19 @@ export async function addIncome(input: AddIncome): Promise<IIncome> {
 
         const income = await IncomeModel.create(input);
 
+        let remainingAmount = amount;
+
         if (financialGoalId && savingsAmount) {
             if (savingsAmount > amount) {
                 throw new AppError("Savings amount cannot exceed the income amount", 400);
             }
 
             await transferFromNetBalance(input.account, financialGoalId, savingsAmount);
+            remainingAmount -= savingsAmount;
+        }
+
+        if (remainingAmount > 0) {
+            await updateNetBalance(input.account, remainingAmount);
         }
         
         await logActivity({
