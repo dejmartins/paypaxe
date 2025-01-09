@@ -25,7 +25,7 @@ describe('validateAccountTypeAndPlan Middleware', () => {
             subscriptionPlan: 'premium',
         });
 
-        const middleware = validateAccountTypeAndPlan(['individual', 'trader'], 'premium');
+        const middleware = validateAccountTypeAndPlan(['individual', 'trader'], ['premium']);
 
         await middleware(req as Request, res as Response, next);
 
@@ -36,7 +36,7 @@ describe('validateAccountTypeAndPlan Middleware', () => {
     it('should throw an error if account is not found', async () => {
         (findAccount as jest.Mock).mockResolvedValue(null);
 
-        const middleware = validateAccountTypeAndPlan(['individual', 'trader'], 'premium');
+        const middleware = validateAccountTypeAndPlan(['individual', 'trader'], ['premium']);
         await middleware(req as Request, res as Response, next);
 
         expect(res.status).toHaveBeenCalledWith(404);
@@ -56,7 +56,7 @@ describe('validateAccountTypeAndPlan Middleware', () => {
             subscriptionPlan: 'premium',
         });
 
-        const middleware = validateAccountTypeAndPlan(['individual', 'trader'], 'premium');
+        const middleware = validateAccountTypeAndPlan(['individual', 'trader'], ['premium']);
 
         await middleware(req as Request, res as Response, next);
         
@@ -77,7 +77,7 @@ describe('validateAccountTypeAndPlan Middleware', () => {
             subscriptionPlan: 'basic',
         });
 
-        const middleware = validateAccountTypeAndPlan(['individual', 'trader'], 'premium');
+        const middleware = validateAccountTypeAndPlan(['individual', 'trader'], ['premium']);
 
         await middleware(req as Request, res as Response, next);
         
