@@ -37,6 +37,7 @@ export type UpdateFinancialGoal = {
 export interface CalculateSavingsInput {
     accountId: string;
     targetAmount: number;
+    startDate: string;
     deadline: string;
     frequency: "daily" | "weekly" | "monthly" | "yearly";
 }

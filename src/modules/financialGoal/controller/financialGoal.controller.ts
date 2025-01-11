@@ -49,9 +49,9 @@ export const getTotalCurrentProgressHandler = asyncHandler(async (req: Request, 
 export const calculateSavingsAmountHandler = asyncHandler(async (req: Request, res: Response) => {
     // @ts-ignore
     const { accountId } = req.params;
-    const { targetAmount, deadline, frequency } = req.body;
+    const { targetAmount, deadline, frequency, startDate } = req.body;
 
-    const amountPerInterval = calculateSavingsAmount({ accountId, targetAmount, deadline, frequency });
+    const amountPerInterval = calculateSavingsAmount({ accountId, targetAmount, deadline, frequency, startDate });
     
     return res.json(successResponse({ amountPerInterval }, "Calculation successful"));
 });

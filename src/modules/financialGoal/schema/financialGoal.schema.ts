@@ -170,8 +170,18 @@ export const calculateSavingsSchema = object({
             (val) => ["daily", "weekly", "monthly", "yearly"].includes(val),
             { message: "Frequency must be one of 'daily', 'weekly', 'monthly', 'yearly'" }
         ),
+        startDate: string({
+            required_error: "Start date is required",
+        })
+            .refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" })
+            .refine((val) => {
+                const inputDate = new Date(val).setHours(0, 0, 0, 0);
+                const today = new Date().setHours(0, 0, 0, 0);
+                return inputDate >= today;
+            }, { message: "Start date must be today or a future date" }),
     }),
 });
+
 
 export const deleteFinancialGoalSchema = object({
     params: object({

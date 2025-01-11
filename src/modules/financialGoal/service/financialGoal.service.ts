@@ -124,23 +124,31 @@ export async function updateGoalNotificationStatus(goalId: string, updateFields:
 
 export function calculateSavingsAmount(input: CalculateSavingsInput): number {
     try {
-
         validateAccount(input.accountId);
 
-        const { targetAmount, deadline, frequency } = input;
-    
+        const { targetAmount, startDate, deadline, frequency } = input;
+
+        const start = new Date(startDate);
         const deadlineDate = new Date(deadline);
         const currentDate = new Date();
-    
+
         if (deadlineDate <= currentDate) {
             throw new AppError("Deadline must be in the future", 400);
         }
-    
-        const timeDifference = deadlineDate.getTime() - currentDate.getTime();
+
+        if (start < currentDate) {
+            throw new AppError("Start date cannot be in the past", 400);
+        }
+
+        if (deadlineDate <= start) {
+            throw new AppError("Deadline must be after the start date", 400);
+        }
+
+        const timeDifference = deadlineDate.getTime() - start.getTime();
         const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-    
+
         let intervals: number;
-    
+
         switch (frequency) {
             case "daily":
                 intervals = daysRemaining;
@@ -157,11 +165,11 @@ export function calculateSavingsAmount(input: CalculateSavingsInput): number {
             default:
                 throw new AppError("Invalid frequency provided", 400);
         }
-    
+
         const amountPerInterval = targetAmount / intervals;
         return parseFloat(amountPerInterval.toFixed(2));
     } catch (e: any) {
-        throw new AppError(e.message, e.statusCode);
+        throw new AppError(e.message, e.statusCode || 500);
     }
 }
 
