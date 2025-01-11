@@ -20,15 +20,7 @@ import { generalLimiter } from '../middlewares/rateLimiter';
 function createServer() {
     const app = express();
 
-    const corsOptions = {
-        origin: ['http://localhost:5137', 'https://paxepay.netlify.app'],
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        credentials: true, 
-    };
-
-    app.use(cors(corsOptions));
-
+    app.use(cors());
 
     app.set('trust proxy', 1);
     
