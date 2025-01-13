@@ -89,7 +89,7 @@ const accountSchema = new Schema<IAccount>(
 
 accountSchema.pre<IAccount>('save', function (next) {
     if (this.isNew && this.subscriptionPlan === 'basic') {
-        this.subscriptionEndDate = new Date(this.createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
+        this.subscriptionEndDate = new Date(this.createdAt.getTime() + 5 * 24 * 60 * 60 * 1000);
     }
     next();
 });
