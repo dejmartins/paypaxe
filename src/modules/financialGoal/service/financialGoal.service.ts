@@ -136,10 +136,6 @@ export function calculateSavingsAmount(input: CalculateSavingsInput): number {
             throw new AppError("Deadline must be in the future", 400);
         }
 
-        if (start < currentDate) {
-            throw new AppError("Start date cannot be in the past", 400);
-        }
-
         if (deadlineDate <= start) {
             throw new AppError("Deadline must be after the start date", 400);
         }
