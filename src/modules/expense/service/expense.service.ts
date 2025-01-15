@@ -44,8 +44,9 @@ export async function addExpense(input: AddExpense) {
         }
 
         if (input.expenseSource === 'netBalance') {
+            expense = await ExpenseModel.create(input);
+            
             if (!isOnBudget) {
-                expense = await ExpenseModel.create(input);
 
                 await updateNetBalance(input.account, -expense.amount);
 
@@ -62,9 +63,11 @@ export async function addExpense(input: AddExpense) {
                 return expense;
             }
 
-            await deductFromBudget(input.account, input.amount);
+            if (isOnBudget) {
+                await updateNetBalance(input.account, -expense.amount);
+            }
 
-            expense = await ExpenseModel.create(input);
+            await deductFromBudget(input.account, input.amount);
 
             log.info(`Net balance expense processed within budget for account ID: ${input.account}`);
 
