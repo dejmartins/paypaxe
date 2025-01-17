@@ -43,6 +43,11 @@ export const addExpenseSchema = object({
         }).refine(source => ['creditCard', 'netBalance'].includes(source), {
             message: "Expense source must be one of 'creditCard', 'netBalance'",
         }),
+        expenseType: string({
+            required_error: 'Expense type is required',
+        }).refine(type => ['cash', 'debitCard', 'creditCard', 'linkedCreditCard'].includes(type), {
+            message: "Expense type must be one of 'cash', 'debitCard', 'creditCard', 'linkedCreditCard'",
+        }),
         cardId: optional(objectIdValidator)
     }).superRefine((data, ctx) => {
         if (data.isRecurring && !data.frequency) {

@@ -7,6 +7,7 @@ export interface AddExpense {
     category: string;
     date: string; // Date in "YYYY-MM-DD" format
     expenseSource: string
+    expenseType: string
     cardId?: string;
     isRecurring?: boolean;
     frequency?: string

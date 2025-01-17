@@ -10,6 +10,7 @@ export interface IExpense extends Document {
     isRecurring: boolean;
     frequency?: string;
     expenseSource: 'creditCard' | 'netBalance';
+    expenseType: 'cash' | 'debitCard' | 'creditCard' | 'linkedCreditCard';
     status: string;
     createdAt: Date;
     updatedAt: Date;
@@ -58,6 +59,12 @@ const expenseSchema = new Schema<IExpense>(
             enum: ['creditCard', 'netBalance'],
             required: true,
             default: 'netBalance',
+        },
+        expenseType: {
+            type: String,
+            enum: ['cash', 'debitCard', 'creditCard', 'linkedCreditCard'],
+            required: true,
+            default: 'cash',
         },
         status: {
             type: String,
