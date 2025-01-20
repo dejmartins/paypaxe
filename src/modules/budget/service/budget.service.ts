@@ -12,6 +12,15 @@ export async function activateBudget(input: ActivateBudgetInput): Promise<IBudge
         throw new AppError("An active budget already exists. Complete or cancel the current budget before starting a new one.", 400);
     }
 
+    const account = await findAccount(accountId);
+    if (!account) {
+        throw new AppError("Account not found.", 404);
+    }
+
+    if (budgetAmount > account.netBalance) {
+        throw new AppError("Budget amount cannot exceed the current net balance.", 400);
+    }
+
     const allocationRules = await getCurrentAllocationRules(accountId);
 
     const needsAllocation = budgetAmount * allocationRules.needs;
