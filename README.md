@@ -88,4 +88,4 @@
 1. **Run Tests:**
 
    ```bash
-   npm run dev# paypaxe
+   npm run dev
